@@ -129,8 +129,8 @@ UpdateRow := function( f, T, H, Bjk )
  ###
  # If A is empty, there are no rowoperations form above to consider
  ###
- if IsEmty(A) then
-  Z := H:
+ if IsEmpty(A) then
+  Z := H;
  else 
   Z := A*B+H;
  fi;
