@@ -121,21 +121,42 @@ ClearColumn := function( f, H, t, R )
     return [RR, ttt, T];
 end;
 
-UpdateRow := function( i, f, T, H, Bjk )
+UpdateRow := function( f, T, H, Bjk )
  local A, E, M, K, s, u,  tmp, Z, V, X, W, S, B;
  B := Bjk;
  A:=T[1];M:=T[2];E:=T[3];K:=T[4];s:=T[5];u:=T[6];
+ 
+ ###
+ # If A is empty, there are no rowoperations form above to consider
+ ###
+ if IsEmty(A) then
+  Z := H:
+ else 
+  Z := A*B+H;
+ fi;
 
- Z := A*B+H;
  tmp := REX( f, BitstringToCharFct(s), Z );
  V:=tmp[1];W:=tmp[2];
- X:=M*V;
-
- if i = 1 then return [K*V+W, X ]; fi;
+ ###
+ # If V is empty, then there where no operations exept from A
+ # in this case there is nothing more to update
+ ###
+ if IsEmpty(V) then
+  return [Z,B]; 
+ else 
+  X:=M*V;
+ fi;
 
  S:= E*X+B;
  B:=RRF( S, X, u );
- H :=K*V+W;
+ 
+ ###
+ # if K is empty, then s is the all-one-bitstring and there are no non-pivot rows
+ # which would change according to K. So K should be empty and there is nothing more to update
+ ###
+ if not IsEmpty(K) then
+  H :=K*V+W;
+ fi;
 
  return [H, B];
 end;
