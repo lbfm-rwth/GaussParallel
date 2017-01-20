@@ -18,13 +18,13 @@
 ###############################
 ClearColumn := function( f, H, t, R )
     local tmp, Chi, ct, HH, tt, RR, ttt, RRR, i, RRn, A, AA, T, M, K, E, s, u;
-    if not Length(t) = DimensionsMat(H)[2] then
-        Error( "Length of bitlist t does not match dimensions of H!" );
-    fi;
+   # if not Length(t) = DimensionsMat(H)[2] then
+   #     Error( "Length of bitlist t does not match dimensions of H!" );
+   # fi;
 
     #### INITIALIZATION ####
     ## Residue R was empty. Thus matrix above has full column-rank.
-    if IsEmpty( R ) then
+    if not IsEmpty(t) and IsEmpty( R ) then
         A := H;
         M := [];
         E := [];
@@ -56,17 +56,20 @@ ClearColumn := function( f, H, t, R )
     # Echelonization
     tmp := ECH( f, HH );
     M:=tmp[1];K:=tmp[2];RR:=tmp[3];s:=tmp[4];tt:=tmp[5];
-    Error( "Break Point - echel" );
+    #Error( "Break Point - echel" );
 
     # TODO complement then extend?
-    Chi := [];ct:=1;
-    if not tt=[] then
-        for i in [1..Length(t)] do
+    if IsEmpty(t) then Chi := tt;
+    else
+     Chi := 0*[1..DimensionsMat(H)[2]];ct:=1;
+     if not tt=[] then
+        for i in [1..Length(Chi)] do
             if t[i]=0 then
-                if tt[ct]=1 then Add(Chi, i); fi;
+                if tt[ct]=1 then Chi[i] := 1; fi;
                 ct:= ct+1;
             fi;
         od;
+     fi;
     fi;
 
     ## Are we running into any special cases, where return values
@@ -94,19 +97,19 @@ ClearColumn := function( f, H, t, R )
     # the positions of the new pivot columns, is AllOne.
     # In this case, there is nothing to be done here.
 
-    Error( "Break Point - before CEX new residue" );
+    #Error( "Break Point - before CEX new residue" );
     tmp := CEX( f, BitstringToCharFct(tt), R );
     E:=tmp[1];RRn:=tmp[2];
     ## Update the residue and the pivot column bitstring
-    tmp := PVC( BitstringToCharFct(t), Chi );
-    ttt:=CharFctToBitstring(Length(t), tmp[1]); u:=tmp[2];
-    Error( "Break Point - after CEX new residue" );
+    tmp := PVC( BitstringToCharFct(t), BitstringToCharFct(Chi) );
+    ttt:=CharFctToBitstring(DimensionsMat(H)[2], tmp[1]); u:=tmp[2];
+    # Error( "Break Point - after CEX new residue" );
+    
+    T:=[A, M, E, K, s, u];
 
     ## Did column extraction return empty values?
-    ## E should never be empty in this context!
-    ## TODO proof?
     if IsEmpty(E) then
-        Error( "This should not have happened!" );
+        return [RR, ttt, T];
     fi;
     ## RRn is empty, iff. the new pivot columns completely
     ## annihilate the old residue.
@@ -117,7 +120,6 @@ ClearColumn := function( f, H, t, R )
         RR := RRF( RRR, RR, u );
     fi;
 
-    T:=[A, M, E, K, s, u];
     return [RR, ttt, T];
 end;
 
@@ -155,7 +157,10 @@ UpdateRow := function( f, T, H, Bjk )
  # which would change according to K. So K should be empty and there is nothing more to update
  ###
  if not IsEmpty(K) then
-  H :=K*V+W;
+  # s is neither empty nor all-one at this point
+  H := RRF( Zero(f)*V,K*V+W,s );
+ else
+  H := Zero(f)*Z;
  fi;
 
  return [H, B];
@@ -168,9 +173,15 @@ end;
 Step1 := function( A )
  local C, n, f, tmp,   i, j, k, B, T, Rj, H, tj, V, W;
  f := DefaultFieldOfMatrix( A );
- n := 2; #Gcd( DimensionsMat(A)[1], DimensionsMat(A)[2] );
+ n := 3; #Gcd( DimensionsMat(A)[1], DimensionsMat(A)[2] );
  C := ChopMatrix( n, A );
- B := ShallowCopy(C); #Init B as nxn
+ B := []; #Init B as nxn
+ for i in [1..n] do
+  B[i] :=[];
+  for j in [1..n] do
+   B[i][j]:=[];
+  od;
+ od;
  Rj := [];
  tj := [];
 
@@ -179,36 +190,21 @@ Step1 := function( A )
    H := C[i][j];
 
    if i = 1 then
-    tmp := ECH( f, H );
-    tj[j] := tmp[5];
-    Rj[j] := tmp[3];
-    T := [
-        [],
-        tmp[1],
-        CEX( f, BitstringToCharFct(tj[j]), Rj[j] )[1],
-        tmp[2],
-        tmp[4],
-        tj[j]
-    ];
-   else
-    tmp := ClearColumn( f, H, tj[j], Rj[j] );
-    Rj[j] := tmp[1];
-    tj[j] := tmp[2];
-    T := tmp[3];
+    tj[j] := [];
+    Rj[j] := []; 
    fi;
+  
+   tmp := ClearColumn( f, H, tj[j], Rj[j] );
+   Rj[j] := tmp[1];
+   tj[j] := tmp[2];
+   T := tmp[3];
 
    for k in [j+1..n] do
     if i = 1 then
-     tmp := REX( f, BitstringToCharFct(T[5]), C[i][k] );
-     V:=tmp[1];
-     if V = [] then
       B[j][k]:=[];
-      continue;
-     fi;
-     B[j][k] := ShallowCopy(T[2]*V);
-    fi;
-
-    tmp := UpdateRow( i, f, T, C[i][k], B[j][k] );
+    fi; 
+    
+    tmp := UpdateRow( f, T, C[i][k], B[j][k] );
     C[i][k] := tmp[1];
     B[j][k] := tmp[2];
    od;
@@ -216,5 +212,5 @@ Step1 := function( A )
   od;
  od;
 
- return [C, B, Rj, tj];
+ return [ B, Rj, tj];
 end;
