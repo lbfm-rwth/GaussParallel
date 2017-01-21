@@ -228,3 +228,25 @@ ChopMatrix := function( n,C )
  
  return CChop;
 end;
+
+BuildPermutationMat := function( f,t )
+ local Id,P,i,ct1,ct0;
+
+ Id := IdentityMat( Length(t),f );
+ P := [];
+ ct1 := 1; ct0 := 1;
+ for i in [1..Length(t)] do
+  if t[i] = 1 then ct0 := ct0+1; fi;
+ od; 
+ for i in [1..Length(t)] do
+  if t[i] = 1 then 
+   P[i] := Id[ct1]; ct1 := ct1+1;
+  else
+   P[i] := Id[ct0]; ct0 := ct0+1;
+  fi;
+ od;
+  
+ return TransposedMat( P ); 
+end;
+
+

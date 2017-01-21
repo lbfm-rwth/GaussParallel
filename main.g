@@ -166,10 +166,6 @@ UpdateRow := function( f, T, H, Bjk )
  return [H, B];
 end;
 
-BackClean := function( k, Bjk, T, Cij )
-    return 0;
-end;
-
 Step1 := function( A )
  local C, n, f, tmp,   i, j, k, B, T, Rj, H, tj, V, W;
  f := DefaultFieldOfMatrix( A );
@@ -208,9 +204,52 @@ Step1 := function( A )
     C[i][k] := tmp[1];
     B[j][k] := tmp[2];
    od;
-
   od;
  od;
 
- return [ B, Rj, tj];
+ return [ C, B, Rj, tj];
 end;
+
+BackClean := function( f,k,n,B,t,C )
+ local tmp,i,j,X,m;
+ 
+ for i in [1..n] do
+  for j in [1..n] do
+   C[i][j] := MutableCopyMat(C[i][j]);
+  od;
+ od;
+ for j in [1..k-1] do
+  tmp := CEX( f,BitstringToCharFct( t ),B[j][k] );
+  X := tmp[1]; C[j][k] := tmp[2];
+  for m in [k..n] do
+   if not IsEmpty( C[k][m] ) then
+    C[j][m] := C[j][m] + X*C[k][m];
+   fi;
+  od;
+ od; 
+ 
+ return C;
+end;
+
+Step2 := function( f,returnList )
+ local C,B,t,R, k,n,T;
+ C := returnList[1];
+ B := returnList[2];
+ t := returnList[4];
+ R := returnList[3];
+ n := Length(t);
+ T := [];
+
+ for k in [1..n] do
+  C[k][k] := R[k];
+  T := Concatenation( T,t[k] ); 
+ od;
+ for k in [1..n] do
+  C := BackClean( f,n-k+1,n,B,t[n-k+1],C );
+ od;
+ 
+ return [C,BuildPermutationMat( f,T )];
+end;
+
+
+
