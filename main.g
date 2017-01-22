@@ -158,7 +158,7 @@ UpdateRow := function( f, T, H, Bjk )
  ###
  if not IsEmpty(K) then
   # s is neither empty nor all-one at this point
-  H := RRF( Zero(f)*V,K*V+W,s );
+  H := RRF( K*V+W,Zero(f)*V,s );
  else
   H := Zero(f)*Z;
  fi;
@@ -166,10 +166,9 @@ UpdateRow := function( f, T, H, Bjk )
  return [H, B];
 end;
 
-Step1 := function( A )
- local C, n, f, tmp,   i, j, k, B, T, Rj, H, tj, V, W;
+Step1 := function( A,n )
+ local C, f, tmp,   i, j, k, B, T, Rj, H, tj, V, W;
  f := DefaultFieldOfMatrix( A );
- n := 3; #Gcd( DimensionsMat(A)[1], DimensionsMat(A)[2] );
  C := ChopMatrix( n, A );
  B := []; #Init B as nxn
  for i in [1..n] do
@@ -231,8 +230,44 @@ BackClean := function( f,k,n,B,t,C )
  return C;
 end;
 
-Step2 := function( f,returnList )
- local C,B,t,R, k,n,T;
+InsertBlock := function( f,X,t,R,C,i,j,ct,n,rct )
+ local k,l,newct,B,Rct;
+ newct:=0; Rct:=1; B := MutableCopyMat(X);
+ if i=j then
+  for k in [1..Length(t[j])] do
+   if t[j][k] = 1 then
+    B[ct+newct][Length(t[j])*(j-1)+k] := -One(f);
+    newct := newct+1;
+   else
+    for l in [1..DimensionsMat(R[j])[1]] do
+     B[ct-1+l][Length(t[j])*(j-1)+k] := R[j][l][Rct];
+    od;
+    Rct := Rct+1;
+   fi;
+  od;
+ fi;
+ 
+ if not i=j then
+  if IsEmpty(C[i][j]) then return [B,ct]; fi;
+  for k in [1..DimensionsMat(C[i][j])[1] ] do
+   newct := 0;
+   for l in [1..DimensionsMat(C[i][j])[2] ] do
+    if not IsEmpty(t[j]) then
+     while t[j][l+newct] = 1 do newct := newct+1; od;
+    fi;
+    B[rct-1+k][ (DimensionsMat(X)[2]/n)*(j-1)+l+newct ] := C[i][j][k][l];
+   od;
+  od;
+  newct := 0;
+ fi;
+
+ return [B,ct+newct];
+end;
+
+
+
+Step2 := function( f,nrows,ncols,returnList )
+ local rank,i,Id,rct,ct,C,B,t,R,tmp, k,n,T;
  C := returnList[1];
  B := returnList[2];
  t := returnList[4];
@@ -242,14 +277,67 @@ Step2 := function( f,returnList )
 
  for k in [1..n] do
   C[k][k] := R[k];
-  T := Concatenation( T,t[k] ); 
+  if not IsEmpty(t[k]) then
+   T := Concatenation( T,t[k] ); 
+  else
+   T := Concatenation( T,0*[1..ncols/n] );
+  fi;
  od;
  for k in [1..n] do
   C := BackClean( f,n-k+1,n,B,t[n-k+1],C );
  od;
  
- return [C,BuildPermutationMat( f,T )];
+
+ #Error( "Break Point - before rearrangement" );
+ ###
+ # We now rearrange the results so that we can return the gauss normal form
+ ### 
+ rank := 0;
+ for k in [1..Length(T)] do
+  if T[k] = 1 then rank := rank +1; fi;
+ od;
+ 
+ 
+ B := NullMat( rank,ncols,f );
+ Id := IdentityMat( rank, f );
+ ct := 1;
+ for k in [1..n] do
+  rct := ct;
+  for i in [k..n] do
+   tmp := InsertBlock( f,B,t,R,C,k,i,ct,n,rct );
+   B := tmp[1]; ct := tmp[2];
+  od;
+ od;
+ 
+ return [B,BuildPermutationMat( f,T )];
 end;
+
+GaussParallel := function( A )
+ local f,n,l,nrows,ncols;
+ f := DefaultFieldOfMatrix( A );
+ nrows := DimensionsMat(A)[1];
+ ncols := DimensionsMat(A)[2];
+ n := Gcd( nrows, ncols );
+ 
+ l := Step2( f,nrows,ncols, Step1( A,n ));
+ return [l[1],l[2]];
+end;
+
+TestGaussParallel := function( nr,nc,iter )
+ local test,A,bools;
+ 
+ bools:=[];
+ for i in [1..iter] do
+  A := RandomMat(nr,nc,GF(5));
+  test := GaussParallel( A )[1];
+  bools[i] := -test = EchelonMat(A).vectors;
+ od;
+ return bools;
+end;
+ 
+
+
+
 
 
 
