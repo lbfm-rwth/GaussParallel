@@ -167,18 +167,20 @@ UpdateRow := function( f, T, H, Bjk )
 end;
 
 Step1 := function( A,n )
- local C, f, tmp,   i, j, k, B, T, Rj, H, tj, V, W;
+ local C, f, tmp,   i, j, k, B,Q,Qj, T, Rj, H, tj, V, W;
  f := DefaultFieldOfMatrix( A );
  C := ChopMatrix( n, A );
- B := []; #Init B as nxn
+ B := []; Q:=[]; #Init B as nxn
  for i in [1..n] do
-  B[i] :=[];
+  B[i] :=[];Q[i]:=[];
   for j in [1..n] do
    B[i][j]:=[];
+   Q[i][j]:=[];
   od;
  od;
  Rj := [];
  tj := [];
+ Qj := [];
 
  for i in [1..n] do
   for j in [1..n] do
@@ -197,6 +199,7 @@ Step1 := function( A,n )
    for k in [j+1..n] do
     if i = 1 then
       B[j][k]:=[];
+      Q[k][j]:=[];
     fi; 
     
     tmp := UpdateRow( f, T, C[i][k], B[j][k] );
@@ -324,7 +327,7 @@ GaussParallel := function( A )
 end;
 
 TestGaussParallel := function( nr,nc,iter )
- local test,A,bools;
+ local i,test,A,bools;
  
  bools:=[];
  for i in [1..iter] do
