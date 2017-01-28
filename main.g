@@ -16,8 +16,9 @@
 #   t - ??
 #   T - ??
 ###############################
-ClearColumn := function( f, H, t, R )
-    local tmp, Chi, ct, HH, tt, RR, ttt, RRR, i, RRn, A, AA, T, M, K, E, s, u;
+ClearColumn := function( f, H, t, R, Q )
+    local tmp, Chi, ct, HH, QQ, Q1,Q2,Q3, tt, RR, ttt, RRR, i, RRn, A, AA, T, M, K, E, s, u;
+   
    # if not Length(t) = DimensionsMat(H)[2] then
    #     Error( "Length of bitlist t does not match dimensions of H!" );
    # fi;
@@ -33,14 +34,15 @@ ClearColumn := function( f, H, t, R )
         RR := [];
         tt := [];
         ttt := t;
+        QQ := A*Q;
         u := 0 * t;
         T:=[A, M, E, K, s, u];
-        return [RR, ttt, T];
+        return [RR, ttt, T, Q, QQ];
     fi;
 
     ## First step (i=1,  i block row) or all matrices above have rank 0
     if IsEmpty( t ) then
-        # A is empty iff this case happens
+        # A is empty iff this case happens, Q is empty then aswell
         A := [];
         HH := H;
     else
@@ -51,6 +53,14 @@ ClearColumn := function( f, H, t, R )
         # Mult Add
         HH := AA + A*R;
     fi;
+    if IsEmpty( A ) then
+        # A is empty iff this case happens, Q is empty then aswell
+        QQ := [];
+    else
+        QQ := A*Q;
+    fi;
+ 
+ 
     #### END INITIALIZATION ####
 
     # Echelonization
@@ -91,7 +101,7 @@ ClearColumn := function( f, H, t, R )
         ttt := t;
         u := 0 * t;
         T:=[A, M, E, K, s, u];
-        return [RR, ttt, T];
+        return [RR, ttt, T, Q, QQ];
     fi;
     # If RR is empty, but tt is not, then the bitstring tt, representing
     # the positions of the new pivot columns, is AllOne.
@@ -108,9 +118,13 @@ ClearColumn := function( f, H, t, R )
     T:=[A, M, E, K, s, u];
 
     ## Did column extraction return empty values?
-    if IsEmpty(E) then
-        return [RR, ttt, T];
+    if IsEmpty(E) then ## if the above was all zero but we got new pivots in the current iteration
+        
+        Q := M;
+        QQ := K;
+        return [RR, ttt, T, Q, QQ];
     fi;
+
     ## RRn is empty, iff. the new pivot columns completely
     ## annihilate the old residue.
     if IsEmpty(RRn) then
@@ -119,8 +133,18 @@ ClearColumn := function( f, H, t, R )
         RRR:=RRn+E*RR;
         RR := RRF( RRR, RR, u );
     fi;
+     
+    tmp := REX( f,BitstringToCharFct(s),QQ );
+    Q1:=tmp[1];Q2:=tmp[2];
 
-    return [RR, ttt, T];
+    Q3 := M* Q1;
+    Q := Q + E*Q3;
+    QQ := Concatenation(TransposedMat(K*Q1+Q2),TransposedMat(K) );
+    QQ := TransposedMat(QQ);
+
+    Q := RRF( TransposedMat(Concatenation(TransposedMat(Q),TransposedMat(E*M) )),TransposedMat(Concatenation(TransposedMat(Q3),TransposedMat(M) )),u );
+
+    return [RR, ttt, T, Q, QQ ];
 end;
 
 UpdateRow := function( f, T, H, Bjk )
@@ -167,15 +191,16 @@ UpdateRow := function( f, T, H, Bjk )
 end;
 
 Step1 := function( A,n )
- local C, f, tmp,   i, j, k, B,Q,Qj, T, Rj, H, tj, V, W;
+ local C, f, tmp,K,   i, j, k, B,Q,Qj, T, Rj, H, tj, V, W;
  f := DefaultFieldOfMatrix( A );
  C := ChopMatrix( n, A );
- B := []; Q:=[]; #Init B as nxn
+ B := []; K:=[]; Q:=[]; #Init B as nxn
  for i in [1..n] do
-  B[i] :=[];Q[i]:=[];
+  B[i] :=[]; K[i]:=[]; Q[i]:=[];
   for j in [1..n] do
    B[i][j]:=[];
    Q[i][j]:=[];
+   K[i][j]:=[];
   od;
  od;
  Rj := [];
@@ -188,36 +213,52 @@ Step1 := function( A,n )
 
    if i = 1 then
     tj[j] := [];
-    Rj[j] := []; 
+    Rj[j] := [];
+    Qj[j] := []; 
    fi;
   
-   tmp := ClearColumn( f, H, tj[j], Rj[j] );
+   tmp := ClearColumn( f, H, tj[j], Rj[j], Qj[j] );
    Rj[j] := tmp[1];
    tj[j] := tmp[2];
    T := tmp[3];
+   Qj[j] := tmp[4];
+   K[i][j] := tmp[5];
 
+   #Error( "Break Point - before CEX new residue" );
    for k in [j+1..n] do
     if i = 1 then
       B[j][k]:=[];
-      Q[k][j]:=[];
     fi; 
     
     tmp := UpdateRow( f, T, C[i][k], B[j][k] );
     C[i][k] := tmp[1];
     B[j][k] := tmp[2];
    od;
+   
+   for k in [1..j-1] do 
+    if i = 1 then
+      Q[j][k]:=[];
+    fi; 
+
+    tmp := UpdateRow( f, T, K[i][k], Q[j][k] );
+    K[i][k] := tmp[1];
+    Q[j][k] := tmp[2];
+   
+   # Error( "Break Point - before CEX new residue" );
+   od;
   od;
  od;
 
- return [ C, B, Rj, tj];
+ return [ C, B, Rj, tj, K, Qj, Q];
 end;
 
-BackClean := function( f,k,n,B,t,C )
+BackClean := function( f,k,n,B,t,C,M )
  local tmp,i,j,X,m;
  
  for i in [1..n] do
   for j in [1..n] do
    C[i][j] := MutableCopyMat(C[i][j]);
+   M[i][j] := MutableCopyMat(M[i][j]);
   od;
  od;
  for j in [1..k-1] do
@@ -228,9 +269,14 @@ BackClean := function( f,k,n,B,t,C )
     C[j][m] := C[j][m] + X*C[k][m];
    fi;
   od;
+  for m in [1..n] do
+   if not IsEmpty( M[k][m] ) then
+    M[j][m] := M[j][m] + X*M[k][m];
+   fi;
+  od;
  od; 
  
- return C;
+ return [C,M];
 end;
 
 InsertBlock := function( f,X,t,R,C,i,j,ct,n,rct )
@@ -270,24 +316,31 @@ end;
 
 
 Step2 := function( f,nrows,ncols,returnList )
- local rank,i,Id,rct,ct,C,B,t,R,tmp, k,n,T;
+ local M,Mj,MM,KK,K,rank,i,Id,rct,ct,C,B,t,R,tmp, k,n,T;
  C := returnList[1];
  B := returnList[2];
  t := returnList[4];
  R := returnList[3];
+ M := returnList[7];
+ Mj := returnList[6];
+ K := returnList[5];
  n := Length(t);
  T := [];
 
  for k in [1..n] do
   C[k][k] := R[k];
+  M[k][k] := Mj[k];
+
   if not IsEmpty(t[k]) then
    T := Concatenation( T,t[k] ); 
   else
    T := Concatenation( T,0*[1..ncols/n] );
   fi;
  od;
+
  for k in [1..n] do
-  C := BackClean( f,n-k+1,n,B,t[n-k+1],C );
+  tmp := BackClean( f,n-k+1,n,B,t[n-k+1],C,M );
+  C := tmp[1]; M:=tmp[2];
  od;
  
 
@@ -302,7 +355,10 @@ Step2 := function( f,nrows,ncols,returnList )
  
  
  B := NullMat( rank,ncols,f );
+ MM := [];
+ KK := [];
  Id := IdentityMat( rank, f );
+ 
  ct := 1;
  for k in [1..n] do
   rct := ct;
@@ -311,8 +367,9 @@ Step2 := function( f,nrows,ncols,returnList )
    B := tmp[1]; ct := tmp[2];
   od;
  od;
- 
- return [B,BuildPermutationMat( f,T )];
+
+
+ return [B,BuildPermutationMat( f,T ),M,K];
 end;
 
 GaussParallel := function( A )
@@ -323,7 +380,7 @@ GaussParallel := function( A )
  n := Gcd( nrows, ncols );
  
  l := Step2( f,nrows,ncols, Step1( A,n ));
- return [l[1],l[2]];
+ return [l[1],l[2],l[3],l[4]];
 end;
 
 TestGaussParallel := function( nr,nc,iter )
