@@ -182,21 +182,64 @@ UpdateRow := function( f, T, H, Bjk )
  ###
  if not IsEmpty(K) then
   # s is neither empty nor all-one at this point
-  H := RRF( K*V+W,Zero(f)*V,s );
+  H := K*V+W;
  else
-  H := Zero(f)*Z;
+  H := W;
+ fi;
+
+ return [H, B];
+end;
+
+UpdateTrafo := function( f, T, H, Bjk )
+ local A, E, M, K, s, u,  tmp, Z, V, X, W, S, B;
+ B := Bjk;
+ A:=T[1];M:=T[2];E:=T[3];K:=T[4];s:=T[5];u:=T[6];
+ 
+ ###
+ # If A is empty, there are no rowoperations form above to consider
+ ###
+ if IsEmpty(A) then
+  Z := H;
+ else 
+  Z := A*B+H;
+ fi;
+
+ tmp := REX( f, BitstringToCharFct(s), Z );
+ V:=tmp[1];W:=tmp[2];
+ ###
+ # If V is empty, then there where no operations exept from A
+ # in this case there is nothing more to update
+ ###
+ if IsEmpty(V) then
+  return [Z,B]; 
+ else 
+  X:=M*V;
+ fi;
+
+ S:= E*X+B;
+ B:=RRF( S, X, u );
+ 
+ ###
+ # if K is empty, then s is the all-one-bitstring and there are no non-pivot rows
+ # which would change according to K. So K should be empty and there is nothing more to update
+ ###
+ if not IsEmpty(K) then
+  # s is neither empty nor all-one at this point
+  H := K*V+W;
+ else
+  H := W;
  fi;
 
  return [H, B];
 end;
 
 Step1 := function( A,n )
- local C, f, tmp,K,   i, j, k, B,Q,Qj, T, Rj, H, tj, V, W;
+ local S,C, f, tmp,K,rct,   i, j, k, B,Q,Qj, T, Rj, H, tj, V, W;
  f := DefaultFieldOfMatrix( A );
  C := ChopMatrix( n, A );
- B := []; K:=[]; Q:=[]; #Init B as nxn
+ B := [];S:=[]; K:=[]; Q:=[]; #Init B as nxn
  for i in [1..n] do
-  B[i] :=[]; K[i]:=[]; Q[i]:=[];
+  B[i] :=[]; K[i]:=[]; Q[i]:=[]; S[i]:=[];
   for j in [1..n] do
    B[i][j]:=[];
    Q[i][j]:=[];
@@ -206,8 +249,10 @@ Step1 := function( A,n )
  Rj := [];
  tj := [];
  Qj := [];
+ rct := 1;
 
  for i in [1..n] do
+  
   for j in [1..n] do
    H := C[i][j];
 
@@ -217,14 +262,16 @@ Step1 := function( A,n )
     Qj[j] := []; 
    fi;
   
+   if IsEmpty(H) then continue; fi;
    tmp := ClearColumn( f, H, tj[j], Rj[j], Qj[j] );
    Rj[j] := tmp[1];
    tj[j] := tmp[2];
    T := tmp[3];
    Qj[j] := tmp[4];
    K[i][j] := tmp[5];
+   
 
-   #Error( "Break Point - before CEX new residue" );
+   #Error( "Break Point - after ClearCol new residue" );
    for k in [j+1..n] do
     if i = 1 then
       B[j][k]:=[];
@@ -240,11 +287,11 @@ Step1 := function( A,n )
       Q[j][k]:=[];
     fi; 
 
-    tmp := UpdateRow( f, T, K[i][k], Q[j][k] );
+    tmp := UpdateTrafo( f, T, K[i][k], Q[j][k] );
     K[i][k] := tmp[1];
     Q[j][k] := tmp[2];
    
-   # Error( "Break Point - before CEX new residue" );
+   #Error( "Break Point - before CEX new residue" );
    od;
   od;
  od;
@@ -283,6 +330,8 @@ InsertBlock := function( f,X,t,R,C,i,j,ct,n,rct )
  local k,l,newct,B,Rct;
  newct:=0; Rct:=1; B := MutableCopyMat(X);
  if i=j then
+  if IsEmpty(R[j]) then return [B,ct]; fi;
+ 
   for k in [1..Length(t[j])] do
    if t[j][k] = 1 then
     B[ct+newct][Length(t[j])*(j-1)+k] := -One(f);
@@ -313,10 +362,8 @@ InsertBlock := function( f,X,t,R,C,i,j,ct,n,rct )
  return [B,ct+newct];
 end;
 
-
-
-Step2 := function( f,nrows,ncols,returnList )
- local M,Mj,MM,KK,K,rank,i,Id,rct,ct,C,B,t,R,tmp, k,n,T;
+Step2 := function( f,n,nrows,ncols,returnList )
+ local M,Mj,MM,KK,K,rank,i,Id,rct,ct,C,B,t,R,tmp, k,T;
  C := returnList[1];
  B := returnList[2];
  t := returnList[4];
@@ -324,27 +371,29 @@ Step2 := function( f,nrows,ncols,returnList )
  M := returnList[7];
  Mj := returnList[6];
  K := returnList[5];
- n := Length(t);
  T := [];
 
  for k in [1..n] do
-  C[k][k] := R[k];
-  M[k][k] := Mj[k];
-
-  if not IsEmpty(t[k]) then
+  if not k>Length(t) then
    T := Concatenation( T,t[k] ); 
-  else
+  else #necessary?!
+   t[k] := 0*[1..ncols/n];
+   R[k] := [];
+   Mj[k] := [];
    T := Concatenation( T,0*[1..ncols/n] );
   fi;
+  C[k][k] := R[k];
+  M[k][k] := Mj[k];
  od;
 
  for k in [1..n] do
   tmp := BackClean( f,n-k+1,n,B,t[n-k+1],C,M );
   C := tmp[1]; M:=tmp[2];
+# Error( "Break Point - before backclean" );
  od;
  
 
- #Error( "Break Point - before rearrangement" );
+# Error( "Break Point - before rearrangement" );
  ###
  # We now rearrange the results so that we can return the gauss normal form
  ### 
@@ -354,22 +403,65 @@ Step2 := function( f,nrows,ncols,returnList )
  od;
  
  
- B := NullMat( rank,ncols,f );
- MM := [];
+ B := MutableCopyMat(NullMat( rank,ncols,f ));
+ MM := MutableCopyMat(IdentityMat( nrows, f ));
  KK := [];
  Id := IdentityMat( rank, f );
  
- ct := 1;
- for k in [1..n] do
-  rct := ct;
-  for i in [k..n] do
-   tmp := InsertBlock( f,B,t,R,C,k,i,ct,n,rct );
-   B := tmp[1]; ct := tmp[2];
+ B{[1..rank]}{[1..rank]}:=-Id;
+ rct:=1;
+ for i in [1..n] do
+  ct :=rank+1;
+  for k in [i..n] do
+   if IsEmpty(C[i][k]) then continue; fi;
+   B{[rct..rct+DimensionsMat(C[i][k])[1]-1]}{[ct..ct+DimensionsMat(C[i][k])[2]-1]} := C[i][k];
+  ct := ct + DimensionsMat(C[i][k])[2];
   od;
+  if not IsEmpty(C[i][n]) then 
+   rct := rct + DimensionsMat(C[i][n])[1];
+  fi;
  od;
+ 
+ 
+# ct := 1;
+# for k in [1..n] do
+#  rct := ct;
+#  for i in [k..n] do
+#   tmp := InsertBlock( f,B,t,R,C,k,i,ct,n,rct );
+#   B := tmp[1]; ct := tmp[2];
+#  od;
+# od;
 
+ ct :=1; rct:=1;
 
- return [B,BuildPermutationMat( f,T ),M,K];
+ ## Build M
+ for i in [1..n] do
+  ct :=1;
+  for k in [1..n] do
+   if IsEmpty(M[i][k]) then continue; fi;
+   MM{[rct..rct+DimensionsMat(M[i][k])[1]-1]}{[ct..ct+DimensionsMat(M[i][k])[2]-1]} := M[i][k];
+  ct := ct + DimensionsMat(M[i][k])[2];
+  od;
+  if not IsEmpty(M[i][1]) then 
+   rct := rct + DimensionsMat(M[i][1])[1];
+  fi;
+ od;
+ 
+ for i in [1..n] do
+  ct := 1;
+  for k in [1..n] do
+   if IsEmpty(K[i][k]) then continue; fi;
+   MM{[rct..rct+DimensionsMat(K[i][k])[1]-1]}{[ct..ct+DimensionsMat(K[i][k])[2]-1]} := K[i][k];
+   ct := ct + DimensionsMat(K[i][k])[2];
+  od;
+  if not IsEmpty(K[i][1]) then 
+   rct := rct + DimensionsMat(K[i][1])[1];
+  fi;
+  od;
+
+  
+
+ return [B,BuildPermutationMat( f,T ),MM];
 end;
 
 GaussParallel := function( A )
@@ -378,9 +470,11 @@ GaussParallel := function( A )
  nrows := DimensionsMat(A)[1];
  ncols := DimensionsMat(A)[2];
  n := Gcd( nrows, ncols );
+
  
- l := Step2( f,nrows,ncols, Step1( A,n ));
- return [l[1],l[2],l[3],l[4]];
+# Error( "Break Point - before Step1" );
+ l := Step2( f,n,nrows,ncols, Step1( A,n ));
+ return [l[1],l[2],l[3]];
 end;
 
 TestGaussParallel := function( nr,nc,iter )
@@ -389,6 +483,7 @@ TestGaussParallel := function( nr,nc,iter )
  bools:=[];
  for i in [1..iter] do
   A := RandomMat(nr,nc,GF(5));
+  XX := MutableCopyMat(A);
   test := GaussParallel( A )[1];
   bools[i] := -test = EchelonMat(A).vectors;
  od;

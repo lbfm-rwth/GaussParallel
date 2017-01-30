@@ -46,12 +46,12 @@ end;
 ComplementBitstring := function( bstring )
 end;
 
-REX := function( f,T,C )
+REX := function( f,TT,C )
  local ret;
  
  if C = [] then return [[],[]]; fi;
  
- ret := CEX( f,T,TransposedMat(C) );
+ ret := CEX( f,TT,TransposedMat(C) );
  return [TransposedMat(ret[1]),TransposedMat(ret[2])];
 end;
 
