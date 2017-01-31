@@ -198,7 +198,7 @@ UpdateTrafo := function( f, T, H, Bjk )
  ###
  # If A is empty, there are no rowoperations form above to consider
  ###
- if IsEmpty(A) then
+ if IsEmpty(B) then
   Z := H;
  else 
   Z := A*B+H;
@@ -262,13 +262,14 @@ Step1 := function( A,n )
     Qj[j] := []; 
    fi;
   
-   if IsEmpty(H) then continue; fi;
+   if IsEmpty(H) then Add(S[j],[]); continue; fi;
    tmp := ClearColumn( f, H, tj[j], Rj[j], Qj[j] );
    Rj[j] := tmp[1];
    tj[j] := tmp[2];
    T := tmp[3];
    Qj[j] := tmp[4];
    K[i][j] := tmp[5];
+   Add(S[j],T[5]);
    
 
    #Error( "Break Point - after ClearCol new residue" );
@@ -296,7 +297,7 @@ Step1 := function( A,n )
   od;
  od;
 
- return [ C, B, Rj, tj, K, Qj, Q];
+ return [ C, B, Rj, tj, K, Qj, Q,S ];
 end;
 
 BackClean := function( f,k,n,B,t,C,M )
@@ -330,7 +331,7 @@ InsertBlock := function( f,X,t,R,C,i,j,ct,n,rct )
  local k,l,newct,B,Rct;
  newct:=0; Rct:=1; B := MutableCopyMat(X);
  if i=j then
-  if IsEmpty(R[j]) then return [B,ct]; fi;
+  #if IsEmpty(R[j]) then return [B,ct]; fi;
  
   for k in [1..Length(t[j])] do
    if t[j][k] = 1 then
@@ -362,8 +363,19 @@ InsertBlock := function( f,X,t,R,C,i,j,ct,n,rct )
  return [B,ct+newct];
 end;
 
+BuildRowPerm := function( f,t )
+ local S,Id,i;
+ Id := IdentityMat(Length(t),f);
+ S:=[];
+ for i in [1..Length(t)] do
+  S[i]:=Id[t[i]];
+ od;
+ 
+ return S;
+end;
+
 Step2 := function( f,n,nrows,ncols,returnList )
- local M,Mj,MM,KK,K,rank,i,Id,rct,ct,C,B,t,R,tmp, k,T;
+ local M,Mj,MM,KK,K,list,rank,i,j,s,current,Id,rct,ct,C,B,t,R,tmp, k,T;
  C := returnList[1];
  B := returnList[2];
  t := returnList[4];
@@ -372,18 +384,36 @@ Step2 := function( f,n,nrows,ncols,returnList )
  Mj := returnList[6];
  K := returnList[5];
  T := [];
+ S := returnList[8];
 
  for k in [1..n] do
-  if not k>Length(t) then
+  if not IsEmpty(t[k]) then
    T := Concatenation( T,t[k] ); 
-  else #necessary?!
-   t[k] := 0*[1..ncols/n];
-   R[k] := [];
-   Mj[k] := [];
+  else 
    T := Concatenation( T,0*[1..ncols/n] );
   fi;
   C[k][k] := R[k];
   M[k][k] := Mj[k];
+ od;
+
+ #Build RowPermBitstring
+ s := []; current := 1;
+ list := [1..nrows];
+ for i in [1..n] do
+  current := 1;
+  for k in [1..Length(S[i])] do
+   if IsEmpty(S[i][k]) then current := current+nrows/n; continue; 
+   else
+    for j in [1..Length(S[i][k])] do
+     if S[i][k][j] = 1 then
+      Add(s,list[current]);
+      Remove( list,current );
+     else
+      current := current + 1;
+     fi; 
+    od;
+   fi;
+  od;
  od;
 
  for k in [1..n] do
@@ -404,33 +434,33 @@ Step2 := function( f,n,nrows,ncols,returnList )
  
  
  B := MutableCopyMat(NullMat( rank,ncols,f ));
- MM := MutableCopyMat(IdentityMat( nrows, f ));
- KK := [];
+ MM := MutableCopyMat(IdentityMat( rank, f ));
+ KK := MutableCopyMat(NullMat( nrows-rank,rank,f ));
  Id := IdentityMat( rank, f );
  
- B{[1..rank]}{[1..rank]}:=-Id;
- rct:=1;
- for i in [1..n] do
-  ct :=rank+1;
-  for k in [i..n] do
-   if IsEmpty(C[i][k]) then continue; fi;
-   B{[rct..rct+DimensionsMat(C[i][k])[1]-1]}{[ct..ct+DimensionsMat(C[i][k])[2]-1]} := C[i][k];
-  ct := ct + DimensionsMat(C[i][k])[2];
-  od;
-  if not IsEmpty(C[i][n]) then 
-   rct := rct + DimensionsMat(C[i][n])[1];
-  fi;
- od;
- 
- 
-# ct := 1;
-# for k in [1..n] do
-#  rct := ct;
-#  for i in [k..n] do
-#   tmp := InsertBlock( f,B,t,R,C,k,i,ct,n,rct );
-#   B := tmp[1]; ct := tmp[2];
+# B{[1..rank]}{[1..rank]}:=-Id;
+# rct:=1;
+# for i in [1..n] do
+#  ct :=rank+1;
+#  for k in [i..n] do
+#   if IsEmpty(C[i][k]) then continue; fi;
+#   B{[rct..rct+DimensionsMat(C[i][k])[1]-1]}{[ct..ct+DimensionsMat(C[i][k])[2]-1]} := C[i][k];
+#  ct := ct + DimensionsMat(C[i][k])[2];
 #  od;
+#  if not IsEmpty(C[i][n]) then 
+#   rct := rct + DimensionsMat(C[i][n])[1];
+#  fi;
 # od;
+ 
+ 
+ ct := 1;
+ for k in [1..n] do
+  rct := ct;
+  for i in [k..n] do
+   tmp := InsertBlock( f,B,t,R,C,k,i,ct,n,rct );
+   B := tmp[1]; ct := tmp[2];
+  od;
+ od;
 
  ct :=1; rct:=1;
 
@@ -447,21 +477,24 @@ Step2 := function( f,n,nrows,ncols,returnList )
   fi;
  od;
  
+ ## Build K 
+ 
+ ct :=1; rct:=1;
+
  for i in [1..n] do
-  ct := 1;
+  ct :=1;
   for k in [1..n] do
    if IsEmpty(K[i][k]) then continue; fi;
-   MM{[rct..rct+DimensionsMat(K[i][k])[1]-1]}{[ct..ct+DimensionsMat(K[i][k])[2]-1]} := K[i][k];
-   ct := ct + DimensionsMat(K[i][k])[2];
+   KK{[rct..rct+DimensionsMat(K[i][k])[1]-1]}{[ct..ct+DimensionsMat(K[i][k])[2]-1]} := K[i][k];
+  ct := ct + DimensionsMat(K[i][k])[2];
   od;
   if not IsEmpty(K[i][1]) then 
    rct := rct + DimensionsMat(K[i][1])[1];
   fi;
-  od;
+ od;
 
-  
+ return [B,BuildPermutationMat( f,T ),MM,KK,BuildRowPerm( f,s ),S];
 
- return [B,BuildPermutationMat( f,T ),MM];
 end;
 
 GaussParallel := function( A )
@@ -474,20 +507,23 @@ GaussParallel := function( A )
  
 # Error( "Break Point - before Step1" );
  l := Step2( f,n,nrows,ncols, Step1( A,n ));
- return [l[1],l[2],l[3]];
+ return [l[1],l[2],l[3],l[4],l[5],l[6]];
 end;
 
 TestGaussParallel := function( nr,nc,iter )
- local i,test,A,bools;
+ local i,test,A,bools,boolsTrafo;
  
- bools:=[];
+ bools:=[]; boolsTrafo:=[];
  for i in [1..iter] do
   A := RandomMat(nr,nc,GF(5));
-  XX := MutableCopyMat(A);
-  test := GaussParallel( A )[1];
-  bools[i] := -test = EchelonMat(A).vectors;
+  test := GaussParallel( A );
+  bools[i] := -test[1] = EchelonMat(A).vectors;
+  boolsTrafo[i] := EchelonMat(A).vectors=-test[3]*test[5]*A;
+  if boolsTrafo[i] = false then
+   Error( "Break Point - before Step1" ); 
+  fi;
  od;
- return bools;
+ return [bools,boolsTrafo];
 end;
  
 
