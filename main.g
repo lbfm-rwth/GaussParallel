@@ -144,6 +144,7 @@ ClearColumn := function( f, H, t, R, Q )
 
     Q := RRF( TransposedMat(Concatenation(TransposedMat(Q),TransposedMat(E*M) )),TransposedMat(Concatenation(TransposedMat(Q3),TransposedMat(M) )),u );
 
+   # Q := RRF( TransposedMat(RRF(TransposedMat(Q),TransposedMat(E*M) ,u)),TransposedMat(RRF(TransposedMat(Q3),TransposedMat(M),u )),u );
     return [RR, ttt, T, Q, QQ ];
 end;
 
@@ -186,6 +187,7 @@ UpdateRow := function( f, T, H, Bjk )
  else
   H := W;
  fi;
+ 
 
  return [H, B];
 end;
@@ -234,12 +236,13 @@ UpdateTrafo := function( f, T, H, Bjk )
 end;
 
 Step1 := function( A,n )
- local S,C, f, tmp,K,rct,   i, j, k, B,Q,Qj, T, Rj, H, tj, V, W;
+ local S,C, cur,f, nrr, Pivots, tmp,K,rct,   i, j, k, B,Q,Qj, T, Rj, H, tj, V, W;
  f := DefaultFieldOfMatrix( A );
  C := ChopMatrix( n, A );
- B := [];S:=[]; K:=[]; Q:=[]; #Init B as nxn
+ nrr := DimensionsMat(A)[1];
+ B := [];S:=0*[1..DimensionsMat(A)[1] ]; K:=[]; Q:=[]; #Init B as nxn; S remembers the extraction of pivotrows
  for i in [1..n] do
-  B[i] :=[]; K[i]:=[]; Q[i]:=[]; S[i]:=[];
+  B[i] :=[]; K[i]:=[]; Q[i]:=[]; 
   for j in [1..n] do
    B[i][j]:=[];
    Q[i][j]:=[];
@@ -252,8 +255,9 @@ Step1 := function( A,n )
  rct := 1;
 
  for i in [1..n] do
-  
+  Pivots := [1..nrr/n];
   for j in [1..n] do
+   cur := 1;
    H := C[i][j];
 
    if i = 1 then
@@ -262,14 +266,23 @@ Step1 := function( A,n )
     Qj[j] := []; 
    fi;
   
-   if IsEmpty(H) then Add(S[j],[]); continue; fi;
+   if IsEmpty(H) then continue; fi;
    tmp := ClearColumn( f, H, tj[j], Rj[j], Qj[j] );
    Rj[j] := tmp[1];
    tj[j] := tmp[2];
    T := tmp[3];
    Qj[j] := tmp[4];
    K[i][j] := tmp[5];
-   Add(S[j],T[5]);
+   
+   for k in [ 1 .. Length(T[5]) ] do
+  # Error( "Break Point - after ClearCol new residue" );
+       if  T[5][k]=1 then
+          S[ (i-1)*nrr/n + Pivots[cur]  ] := j;
+          Remove(Pivots,cur); 
+       else
+          cur := cur + 1;
+       fi;
+   od;
    
 
    #Error( "Break Point - after ClearCol new residue" );
@@ -292,7 +305,7 @@ Step1 := function( A,n )
     K[i][k] := tmp[1];
     Q[j][k] := tmp[2];
    
-   #Error( "Break Point - before CEX new residue" );
+    #Error( "Break Point - before CEX new residue" );
    od;
   od;
  od;
@@ -375,7 +388,7 @@ BuildRowPerm := function( f,t )
 end;
 
 Step2 := function( f,n,nrows,ncols,returnList )
- local M,Mj,MM,KK,K,list,rank,i,j,s,current,Id,rct,ct,C,B,t,R,tmp, k,T;
+ local M,Mj,MM,KK,shift,K,list,rank,i,j,S,s,current,Id,rct,ct,C,B,t,R,tmp, k,T;
  C := returnList[1];
  B := returnList[2];
  t := returnList[4];
@@ -395,26 +408,8 @@ Step2 := function( f,n,nrows,ncols,returnList )
   C[k][k] := R[k];
   M[k][k] := Mj[k];
  od;
+s:=[];
 
- #Build RowPermBitstring
- s := []; current := 1;
- list := [1..nrows];
- for i in [1..n] do
-  current := 1;
-  for k in [1..Length(S[i])] do
-   if IsEmpty(S[i][k]) then current := current+nrows/n; continue; 
-   else
-    for j in [1..Length(S[i][k])] do
-     if S[i][k][j] = 1 then
-      Add(s,list[current]);
-      Remove( list,current );
-     else
-      current := current + 1;
-     fi; 
-    od;
-   fi;
-  od;
- od;
 
  for k in [1..n] do
   tmp := BackClean( f,n-k+1,n,B,t[n-k+1],C,M );
@@ -422,8 +417,7 @@ Step2 := function( f,n,nrows,ncols,returnList )
 # Error( "Break Point - before backclean" );
  od;
  
-
-# Error( "Break Point - before rearrangement" );
+ Error( "After BackClean" );
  ###
  # We now rearrange the results so that we can return the gauss normal form
  ### 
@@ -434,7 +428,7 @@ Step2 := function( f,n,nrows,ncols,returnList )
  
  
  B := MutableCopyMat(NullMat( rank,ncols,f ));
- MM := MutableCopyMat(IdentityMat( rank, f ));
+ MM := MutableCopyMat(NullMat( rank,rank, f ));
  KK := MutableCopyMat(NullMat( nrows-rank,rank,f ));
  Id := IdentityMat( rank, f );
  
@@ -466,7 +460,7 @@ Step2 := function( f,n,nrows,ncols,returnList )
 
  ## Build M
  for i in [1..n] do
-  ct :=1;
+  ct := 1;
   for k in [1..n] do
    if IsEmpty(M[i][k]) then continue; fi;
    MM{[rct..rct+DimensionsMat(M[i][k])[1]-1]}{[ct..ct+DimensionsMat(M[i][k])[2]-1]} := M[i][k];
@@ -481,19 +475,30 @@ Step2 := function( f,n,nrows,ncols,returnList )
  
  ct :=1; rct:=1;
 
- for i in [1..n] do
-  ct :=1;
-  for k in [1..n] do
-   if IsEmpty(K[i][k]) then continue; fi;
-   KK{[rct..rct+DimensionsMat(K[i][k])[1]-1]}{[ct..ct+DimensionsMat(K[i][k])[2]-1]} := K[i][k];
-  ct := ct + DimensionsMat(K[i][k])[2];
-  od;
-  if not IsEmpty(K[i][1]) then 
-   rct := rct + DimensionsMat(K[i][1])[1];
-  fi;
+ #for i in [1..n] do
+ # ct :=1;
+ # for k in [1..n] do
+ #  if IsEmpty(K[i][k]) then continue; fi;
+ #  KK{[rct..rct+DimensionsMat(K[i][k])[1]-1]}{[ct..ct+DimensionsMat(K[i][k])[2]-1]} := K[i][k];
+ # ct := ct + DimensionsMat(K[i][k])[2];
+ # od;
+ # if not IsEmpty(K[i][1]) then 
+ #  rct := rct + DimensionsMat(K[i][1])[1];
+ # fi;
+ #od;
+
+ # Build RowPerm --- quite dumb right now
+
+ s := []; Id := IdentityMat(Length(S),f); current := 1;
+ for k in [ 1 .. n ] do
+    for i in [ 1 .. Length(S) ] do
+        if S[i]=k then
+            Add(s,Id[i]);
+        fi;
+    od;       
  od;
 
- return [B,BuildPermutationMat( f,T ),MM,KK,BuildRowPerm( f,s ),S];
+ return [B,BuildPermutationMat( f,T ),MM,KK,s,S,M];
 
 end;
 
@@ -518,10 +523,14 @@ TestGaussParallel := function( nr,nc,iter )
   A := RandomMat(nr,nc,GF(5));
   test := GaussParallel( A );
   bools[i] := -test[1] = EchelonMat(A).vectors;
-  boolsTrafo[i] := EchelonMat(A).vectors=-test[3]*test[5]*A;
-  if boolsTrafo[i] = false then
-   Error( "Break Point - before Step1" ); 
+  if  Rank(A)=nr then
+    boolsTrafo[i] := EchelonMat(A).vectors=-test[3]*test[5]*A;
+  else
+    boolsTrafo[i]:=0;
   fi;
+ if boolsTrafo[i] = false then
+   Error( "Break Point - before Step1" ); 
+ fi;
  od;
  return [bools,boolsTrafo];
 end;
