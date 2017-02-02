@@ -417,7 +417,7 @@ s:=[];
 # Error( "Break Point - before backclean" );
  od;
  
- Error( "After BackClean" );
+ #Error( "After BackClean" );
  ###
  # We now rearrange the results so that we can return the gauss normal form
  ### 
@@ -462,9 +462,12 @@ s:=[];
  for i in [1..n] do
   ct := 1;
   for k in [1..n] do
-   if IsEmpty(M[i][k]) then continue; fi;
+   if IsEmpty(M[i][k]) then
+    if not IsEmpty(M[k][k]) then
+        ct := ct + DimensionsMat(M[k][k])[2];
+    fi; continue; fi;
    MM{[rct..rct+DimensionsMat(M[i][k])[1]-1]}{[ct..ct+DimensionsMat(M[i][k])[2]-1]} := M[i][k];
-  ct := ct + DimensionsMat(M[i][k])[2];
+  ct := ct + DimensionsMat(M[k][k])[2];
   od;
   if not IsEmpty(M[i][1]) then 
    rct := rct + DimensionsMat(M[i][1])[1];
