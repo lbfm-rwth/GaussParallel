@@ -478,17 +478,20 @@ s:=[];
  
  ct :=1; rct:=1;
 
- #for i in [1..n] do
- # ct :=1;
- # for k in [1..n] do
- #  if IsEmpty(K[i][k]) then continue; fi;
- #  KK{[rct..rct+DimensionsMat(K[i][k])[1]-1]}{[ct..ct+DimensionsMat(K[i][k])[2]-1]} := K[i][k];
- # ct := ct + DimensionsMat(K[i][k])[2];
- # od;
- # if not IsEmpty(K[i][1]) then 
- #  rct := rct + DimensionsMat(K[i][1])[1];
- # fi;
- #od;
+ for i in [1..n] do
+  ct :=1;
+  for k in [1..n] do
+   if IsEmpty(K[i][k]) then 
+    if not IsEmpty(K[k][k]) then
+        ct := ct + DimensionsMat(K[k][k])[2];
+    fi; continue; fi;
+   KK{[rct..rct+DimensionsMat(K[i][k])[1]-1]}{[ct..ct+DimensionsMat(K[i][k])[2]-1]} := K[i][k];
+  ct := ct + DimensionsMat(K[i][k])[2];
+  od;
+  if not IsEmpty(K[i][1]) then 
+   rct := rct + DimensionsMat(K[i][1])[1];
+  fi;
+ od;
 
  # Build RowPerm --- quite dumb right now
 
@@ -501,21 +504,77 @@ s:=[];
     od;       
  od;
 
- return [B,BuildPermutationMat( f,T ),MM,KK,s,S,M];
+ if  not rank = nrows then
+    Id := IdentityMat( nrows-rank,f );
+    K := NullMat( nrows-rank,rank,f );
+    K := TransposedMat( Concatenation( TransposedMat(MM),K ) );
+    Id := TransposedMat( Concatenation( TransposedMat(KK),Id ) );
+    KK := Concatenation( K,Id );
+ else
+    KK := [];
+ fi;  
+ return [B,BuildPermutationMat( f,T ),MM,KK,s,S];
 
 end;
 
+CompletionOfRowPerm := function( P )
+ local Id, rank,f,nr,nc,i;
+ f := DefaultFieldOfMatrix( P );
+ rank := DimensionsMat( P );
+ nr := rank[1]; nc := rank[2];
+ rank := Rank( P );
+ Id := IdentityMat( nc,f );
+ for i in [ 1 .. nc] do
+    if TransposedMat(P)[i] = TransposedMat( P )[i]*Zero(f) then
+        Add(P,Id[i]);
+    fi;       
+ od;
+
+ return P;
+end;
+
 GaussParallel := function( A )
- local f,n,l,nrows,ncols;
+ local i,ct,k,f,n,l,rank,nrows,ncols, S,M,K,pivotsList;
  f := DefaultFieldOfMatrix( A );
  nrows := DimensionsMat(A)[1];
  ncols := DimensionsMat(A)[2];
  n := Gcd( nrows, ncols );
-
+ pivotsList := [];
+ for i in [ 1 .. n+1 ] do
+     pivotsList[i] := [];
+ od;
  
 # Error( "Break Point - before Step1" );
  l := Step2( f,n,nrows,ncols, Step1( A,n ));
- return [l[1],l[2],l[3],l[4],l[5],l[6]];
+ # It remains to reorder M and K according to S
+ for i in [ 1 .. nrows ] do
+     if l[6][i] = 0 then
+         Add(pivotsList[n+1],i);
+     else
+         Add(pivotsList[l[6][i]],i);
+     fi;
+ od;
+ ct := 1;
+ M := [];
+ rank := nrows - Length(pivotsList[n+1]);
+ for i in [ 1 .. n+1 ] do
+     for k in [ 1 .. Length(pivotsList[i]) ] do
+        M[pivotsList[i][k]] := TransposedMat(l[4])[ct];
+        ct := ct + 1;
+     od;
+ od;
+ Error ("look at results");
+ S := TransposedMat(M);
+ M := S{[1..rank]}{[1..nrows]};
+ if not rank = nrows then
+    K := S{[rank+1..nrows]}{[1..nrows]};
+ else
+    K := [];
+ fi;
+
+ S := CompletionOfRowPerm( l[5] );
+ return rec(vectors := -l[1],coeffs := -M,relations := K, rowPermutation :=  S,
+columnPermutation := l[2] );
 end;
 
 TestGaussParallel := function( nr,nc,iter )
@@ -526,11 +585,7 @@ TestGaussParallel := function( nr,nc,iter )
   A := RandomMat(nr,nc,GF(5));
   test := GaussParallel( A );
   bools[i] := -test[1] = EchelonMat(A).vectors;
-  if  Rank(A)=nr then
-    boolsTrafo[i] := EchelonMat(A).vectors=-test[3]*test[5]*A;
-  else
-    boolsTrafo[i]:=0;
-  fi;
+  boolsTrafo[i] := -test[3]*test[5]*A = EchelonMat(A).vectors;
  if boolsTrafo[i] = false then
    Error( "Break Point - before Step1" ); 
  fi;
@@ -538,7 +593,6 @@ TestGaussParallel := function( nr,nc,iter )
  return [bools,boolsTrafo];
 end;
  
-
 
 
 
