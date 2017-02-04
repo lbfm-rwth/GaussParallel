@@ -469,8 +469,8 @@ s:=[];
    MM{[rct..rct+DimensionsMat(M[i][k])[1]-1]}{[ct..ct+DimensionsMat(M[i][k])[2]-1]} := M[i][k];
   ct := ct + DimensionsMat(M[k][k])[2];
   od;
-  if not IsEmpty(M[i][1]) then 
-   rct := rct + DimensionsMat(M[i][1])[1];
+  if not IsEmpty(M[i][i]) then 
+   rct := rct + DimensionsMat(M[i][i])[1];
   fi;
  od;
  
@@ -481,9 +481,16 @@ s:=[];
  for i in [1..n] do
   ct :=1;
   for k in [1..n] do
+   if k=1 then
+     if IsEmpty(K[i][k]) then
+       while S[rct]=0 do 
+            rct := rct + 1;
+       od;
+     fi;
+   fi; 
    if IsEmpty(K[i][k]) then 
-    if not IsEmpty(K[k][k]) then
-        ct := ct + DimensionsMat(K[k][k])[2];
+    if not IsEmpty(M[k][k]) then
+        ct := ct + DimensionsMat(M[k][k])[2];
     fi; continue; fi;
    KK{[rct..rct+DimensionsMat(K[i][k])[1]-1]}{[ct..ct+DimensionsMat(K[i][k])[2]-1]} := K[i][k];
   ct := ct + DimensionsMat(K[i][k])[2];
@@ -492,6 +499,8 @@ s:=[];
    rct := rct + DimensionsMat(K[i][1])[1];
   fi;
  od;
+
+ #Error( "After building K---------" );
 
  # Build RowPerm --- quite dumb right now
 
@@ -511,7 +520,7 @@ s:=[];
     Id := TransposedMat( Concatenation( TransposedMat(KK),Id ) );
     KK := Concatenation( K,Id );
  else
-    KK := [];
+    KK := MM;
  fi;  
  return [B,BuildPermutationMat( f,T ),MM,KK,s,S];
 
@@ -563,7 +572,7 @@ GaussParallel := function( A )
         ct := ct + 1;
      od;
  od;
- Error ("look at results");
+ #Error ("look at results");
  S := TransposedMat(M);
  M := S{[1..rank]}{[1..nrows]};
  if not rank = nrows then
@@ -578,19 +587,25 @@ columnPermutation := l[2] );
 end;
 
 TestGaussParallel := function( nr,nc,iter )
- local i,test,A,bools,boolsTrafo;
+ local i,test,A,bools,gap;
  
- bools:=[]; boolsTrafo:=[];
+ bools:=[]; 
  for i in [1..iter] do
-  A := RandomMat(nr,nc,GF(5));
+  A := RandomMat(3*nr,nc,GF(5));
+  A[1] := Zero(GF(5))*A[1];
+  A := RandomMat(nc,2*nr,GF(5)) * A;
+  
   test := GaussParallel( A );
-  bools[i] := -test[1] = EchelonMat(A).vectors;
-  boolsTrafo[i] := -test[3]*test[5]*A = EchelonMat(A).vectors;
- if boolsTrafo[i] = false then
-   Error( "Break Point - before Step1" ); 
- fi;
+  gap := EchelonMatTransformation(A);
+
+  bools[i] := test.vectors = gap.vectors
+  and test.coeffs = gap.coeffs
+  and test.relations = gap.relations;
+  if bools[i] = false then
+    return A; 
+  fi;
  od;
- return [bools,boolsTrafo];
+ return true;
 end;
  
 
