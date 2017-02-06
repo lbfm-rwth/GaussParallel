@@ -410,11 +410,9 @@ Step2 := function( f,n,nrows,ncols,returnList )
  od;
 s:=[];
 
-
  for k in [1..n] do
   tmp := BackClean( f,n-k+1,n,B,t[n-k+1],C,M );
   C := tmp[1]; M:=tmp[2];
-# Error( "Break Point - before backclean" );
  od;
  
  #Error( "After BackClean" );
@@ -426,27 +424,12 @@ s:=[];
   if T[k] = 1 then rank := rank +1; fi;
  od;
  
- 
  B := MutableCopyMat(NullMat( rank,ncols,f ));
  MM := MutableCopyMat(NullMat( rank,rank, f ));
  KK := MutableCopyMat(NullMat( nrows-rank,rank,f ));
  Id := IdentityMat( rank, f );
- 
-# B{[1..rank]}{[1..rank]}:=-Id;
-# rct:=1;
-# for i in [1..n] do
-#  ct :=rank+1;
-#  for k in [i..n] do
-#   if IsEmpty(C[i][k]) then continue; fi;
-#   B{[rct..rct+DimensionsMat(C[i][k])[1]-1]}{[ct..ct+DimensionsMat(C[i][k])[2]-1]} := C[i][k];
-#  ct := ct + DimensionsMat(C[i][k])[2];
-#  od;
-#  if not IsEmpty(C[i][n]) then 
-#   rct := rct + DimensionsMat(C[i][n])[1];
-#  fi;
-# od;
- 
- 
+
+ ## Build echelonform
  ct := 1;
  for k in [1..n] do
   rct := ct;
@@ -456,9 +439,8 @@ s:=[];
   od;
  od;
 
- ct :=1; rct:=1;
-
  ## Build M
+ ct :=1; rct:=1;
  for i in [1..n] do
   ct := 1;
   for k in [1..n] do
@@ -475,15 +457,13 @@ s:=[];
  od;
  
  ## Build K 
- 
  ct :=1; rct:=1;
-
  for i in [1..n] do
   ct :=1;
   for k in [1..n] do
    if k=1 then
      if IsEmpty(K[i][k]) then
-       while S[rct]=0 do 
+       while S[rct]=0 and rct < Length(S) do 
             rct := rct + 1;
        od;
      fi;
@@ -498,19 +478,6 @@ s:=[];
   if not IsEmpty(K[i][1]) then 
    rct := rct + DimensionsMat(K[i][1])[1];
   fi;
- od;
-
- #Error( "After building K---------" );
-
- # Build RowPerm --- quite dumb right now
-
- s := []; Id := IdentityMat(Length(S),f); current := 1;
- for k in [ 1 .. n ] do
-    for i in [ 1 .. Length(S) ] do
-        if S[i]=k then
-            Add(s,Id[i]);
-        fi;
-    od;       
  od;
 
  if  not rank = nrows then
@@ -581,8 +548,8 @@ GaussParallel := function( A )
     K := [];
  fi;
 
- S := CompletionOfRowPerm( l[5] );
- return rec(vectors := -l[1],coeffs := -M,relations := K, rowPermutation :=  S,
+ #S := CompletionOfRowPerm( l[5] );
+ return rec(vectors := -l[1],coeffs := -M,relations := K,
 columnPermutation := l[2] );
 end;
 
