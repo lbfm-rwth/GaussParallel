@@ -455,17 +455,24 @@ s:=[];
    rct := rct + DimensionsMat(M[i][i])[1];
   fi;
  od;
- 
+ #Error("somethings wrong"); 
  ## Build K 
- ct :=1; rct:=1;
+ ct :=1; rct:=1; tmp := 0;
  for i in [1..n] do
-  ct :=1;
+  ct :=1; tmp := 0;
   for k in [1..n] do
    if k=1 then
      if IsEmpty(K[i][k]) then
-       while S[rct]=0 and rct < Length(S) do 
-            rct := rct + 1;
-       od;
+       if S[rct]=0 and rct < Length(S) then
+         tmp := 1;
+         if IsEmpty(M[i][k]) then
+           if not IsEmpty(M[i][i]) then
+            tmp := DimensionsMat(M[i][i])[1];
+           fi;
+         else
+            tmp := DimensionsMat(M[i][i])[1] - DimensionsMat(M[i][k])[1];
+         fi;
+       fi;
      fi;
    fi; 
    if IsEmpty(K[i][k]) then 
@@ -474,10 +481,9 @@ s:=[];
     fi; continue; fi;
    KK{[rct..rct+DimensionsMat(K[i][k])[1]-1]}{[ct..ct+DimensionsMat(K[i][k])[2]-1]} := K[i][k];
   ct := ct + DimensionsMat(K[i][k])[2];
+  tmp := DimensionsMat(K[i][k])[1];
   od;
-  if not IsEmpty(K[i][1]) then 
-   rct := rct + DimensionsMat(K[i][1])[1];
-  fi;
+  rct := rct +tmp;
  od;
 
  if  not rank = nrows then
