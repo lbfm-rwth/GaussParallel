@@ -1,7 +1,7 @@
 # Arbitrary 20 x 30 Matrix over GF(5), not having full rank, containing nullrows and collumns
 
 ExampleGaussParallel := function(  )
- local A,l;
+ local gap,A,l;
 
  A := RandomMat(10,30,GF(5));
  A := Concatenation( NullMat(5,30,GF(5)),A );
