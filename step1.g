@@ -1,5 +1,5 @@
 ###############################
-# function ClearColumn
+# function ClearDown
 # Input:
 #   f - Field
 #   H - Input matrix
@@ -12,7 +12,7 @@
 #   t - ??
 #   T - ??
 ###############################
-ClearColumn := function( f, H, t, R )
+ClearDown := function( f, H, t, R )
     local tmp, Chi, ct, HH, tt, RR, ttt, RRR, i, RRn, A, AA, T, M, K, E, s, u;
    
    # if not Length(t) = DimensionsMat(H)[2] then
@@ -192,7 +192,7 @@ Step1 := function( A,n )
    fi;
   
    if IsEmpty(H) then continue; fi;
-   tmp := ClearColumn( f, H, tj[j], Rj[j] );
+   tmp := ClearDown( f, H, tj[j], Rj[j] );
    Rj[j] := tmp[1];
    tj[j] := tmp[2];
    T := tmp[3];
