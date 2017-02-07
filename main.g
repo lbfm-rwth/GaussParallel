@@ -2,8 +2,6 @@
 ## rename variables, e.g.:
 ## t -> ListOfPivotColumns
 ### TODO ###
-
-
 GaussParallel := function( A )
  local i,ct,k,f,n,l,rank,nrows,ncols;
  f := DefaultFieldOfMatrix( A );
@@ -35,9 +33,3 @@ TestGaussParallel := function( nr,nc,iter )
  od;
  return true;
 end;
- 
-
-
-
-
-
