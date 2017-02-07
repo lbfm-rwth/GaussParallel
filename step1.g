@@ -2,9 +2,10 @@
 # function ClearDown
 # Input:
 #   f - Field
-#   H - Input matrix
-#   t - Bitlist of pivot columns positions
-#   R - Residue of above block after echolonization
+#   i,j - where to find the following:
+#       H - Input matrix
+#       t - Bitlist of pivot columns positions
+#       R - Residue of above block after echolonization
 #
 # Output:
 #   [ R, t, T ]
@@ -14,7 +15,11 @@
 ###############################
 ClearDown := function( f, H, t, R )
     local tmp, Chi, ct, HH, tt, RR, ttt, RRR, i, RRn, A, AA, T, M, K, E, s, u;
-   
+
+    H := ShallowCopy( H );
+    t := ShallowCopy( t );
+    R := ShallowCopy( R );
+
    # if not Length(t) = DimensionsMat(H)[2] then
    #     Error( "Length of bitlist t does not match dimensions of H!" );
    # fi;
@@ -125,7 +130,9 @@ end;
 
 UpdateRow := function( f, T, H, Bjk )
  local A, E, M, K, s, u,  tmp, Z, V, X, W, S, B;
- B := Bjk;
+ T := ShallowCopy(T);
+ H := ShallowCopy(H);
+ B := ShallowCopy(Bjk);
  A:=T[1];M:=T[2];E:=T[3];K:=T[4];s:=T[5];u:=T[6];
  
  ###
@@ -166,7 +173,168 @@ UpdateRow := function( f, T, H, Bjk )
  return [H, B];
 end;
 
-Step1 := function( A,n )
+Step1 := function( A, n )
+    local f, C, B, Rj, tj,
+        dummyTask, TaskListClearDown, TaskListUpdateRow,
+        i, j, k;
+    ## Chop A into an nxn matrix
+    f := DefaultFieldOfMatrix( A );
+    C := ChopMatrix( n, A );
+    # FIXME UNUSED CODE
+    ## Initialize B as an nxn list pointing to empty lists
+    B := List( [1..n], x -> List( [1..n], x -> [] ) );
+    Rj := [];
+    tj := [];
+    ########## Keep track of Tasks ##########
+    dummyTask := RunTask( function() return 0; end );
+    ## TODO Do we need to erase the TaskResults manually?
+    ## nxn many tasks
+    TaskListClearDown := List(
+        [1..n],
+        x -> List( [1..n], x -> dummyTask )
+    );
+    ## nxnxn many tasks
+    TaskListUpdateRow := List(
+        [1..n],
+        x -> List(
+            [1..n],
+            x -> List( [1..n], x -> dummyTask )
+        )
+    );
+    for i in [ 1 .. n ] do
+        for j in [ 1 .. n ] do
+            ########## Schedule ClearDown Tasks ##########
+            ## first row, first column: start computation
+            if i = 1 and j = 1 then
+                TaskListClearDown[i][j] := RunTask(
+                    function()
+                        local H, t, R;
+                        Print("Starting computation!");
+                        Error( "Break Point - First Task!" );
+                        H := C[i][j];
+                        t := [];
+                        R := [];
+                        return ClearDown( f, H, t, R );
+                    end
+                );
+            ## first row: wait for left-side `UpdateRow`s
+            elif i = 1 and j > 1 then
+                TaskListClearDown[i][j] := ScheduleTask(
+                    ## Condition
+                    TaskListUpdateRow[i][j-1][j],
+                    ## Function Call
+                    function()
+                        local H, t, R;
+                        H := TaskResult( TaskListUpdateRow[i][j-1][j] )[1];
+                        t := [];
+                        R := [];
+                        return ClearDown( f, H, t, R );
+                    end
+                );
+            ## first column: wait for upper `ClearDown`s
+            elif i > 1 and j = 1 then
+                TaskListClearDown[i][j] := ScheduleTask(
+                    ## Condition
+                    TaskListClearDown[i-1][j],
+                    ## Function Call
+                    function()
+                        local H, t, R;
+                        H := C[i][j];
+                        t := TaskResult( TaskListClearDown[i-1][j] )[2];
+                        R := TaskResult( TaskListClearDown[i-1][j] )[1];
+                        return ClearDown( f, H, t, R );
+                    end
+                );
+            else ## i > 1, j > 1: wait for "everything"
+                TaskListClearDown[i][j] := ScheduleTask(
+                    ## Condition: List of tasks to wait on
+                    [ TaskListClearDown[i-1][j],
+                      TaskListUpdateRow[i][j-1][j] ],
+                    ## Function Call
+                    function()
+                        local H, t, R;
+                        H := TaskResult( TaskListUpdateRow[i][j-1][j] )[1];
+                        t := TaskResult( TaskListClearDown[i-1][j] )[2];
+                        R := TaskResult( TaskListClearDown[i-1][j] )[1];
+                        return ClearDown( f, H, t, R );
+                    end
+                );
+            fi;
+            ########## Schedule UpdateRow Tasks ##########
+            for k in [ j+1 .. n ] do
+                ## first row: since j = 2 no previous UpdateRow was spawned
+                if i = 1 and j = 1 then
+                    TaskListUpdateRow[i][j][k] := ScheduleTask(
+                        ## Condition: List of tasks to wait on
+                        [ TaskListClearDown[i][j] ],
+                        ## Function Call
+                        function()
+                            local T, H, B;
+                            T := TaskResult( TaskListClearDown[i][j] )[3];
+                            H := C[i][k];
+                            B := [];
+                            return UpdateRow( f, T, H, B );
+                        end
+                    );
+                ## first row: wait
+                elif i = 1 and j > 1 then
+                    TaskListUpdateRow[i][j][k] := ScheduleTask(
+                        ## Condition: List of tasks to wait on
+                        [ TaskListClearDown[i][j],
+                          TaskListUpdateRow[i][j-1][k] ],
+                        ## Function Call
+                        function()
+                            local T, H, B;
+                            T := TaskResult( TaskListClearDown[i][j] )[3];
+                            H := TaskResult( TaskListUpdateRow[i][j-1][k] )[1];
+                            B := [];
+                            return UpdateRow( f, T, H, B );
+                        end
+                    );
+                elif i > 1 and j = 1 then
+                    TaskListUpdateRow[i][j][k] := ScheduleTask(
+                        ## Condition: List of tasks to wait on
+                        [ TaskListClearDown[i][j],
+                          TaskListUpdateRow[i-1][j][k] ],
+                        ## Function Call
+                        function()
+                            local T, H, B;
+                            T := TaskResult( TaskListClearDown[i][j] )[3];
+                            H := C[i][k];
+                            B := TaskResult( TaskListUpdateRow[i-1][j][k] )[2];
+                            return UpdateRow( f, T, H, B );
+                        end
+                    );
+                else ## i > 1 and j > 1
+                    TaskListUpdateRow[i][j][k] := ScheduleTask(
+                        ## Condition: List of tasks to wait on
+                        [ TaskListClearDown[i][j],
+                          TaskListUpdateRow[i][j-1][k],
+                          TaskListUpdateRow[i-1][j][k] ],
+                        ## Function Call
+                        function()
+                            local T, H, B;
+                            T := TaskResult( TaskListClearDown[i][j] )[3];
+                            H := TaskResult( TaskListUpdateRow[i][j-1][k] )[1];
+                            B := TaskResult( TaskListUpdateRow[i-1][j][k] )[2];
+                            return UpdateRow( f, T, H, B );
+                        end
+                    );
+                fi;
+            od;
+        od;
+    od;
+    ## TODO V is that so? V
+    ## This is implicitly waiting on all UpdateRow calls
+    WaitTask( Concatenation( TaskListClearDown ) );
+    WaitTask( Concatenation( List( TaskListUpdateRow, Concatenation ) ) );
+    tj := List( [ 1..n ], j -> TaskResult( TaskListClearDown[n][j] )[2] );
+    Rj := List( [ 1..n ], j -> TaskResult( TaskListClearDown[n][j] )[1] );
+    Error( "Break Point - END OF STEP1" );
+    return [ C, B, Rj, tj ];
+end;
+
+_DEPRECATED_Step1 := function( A,n )
  local C, cur,f, nrr, tmp,   i, j, k, B, T, Rj, H, tj, V, W;
  f := DefaultFieldOfMatrix( A );
  C := ChopMatrix( n, A );
