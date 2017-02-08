@@ -1,0 +1,7 @@
+probably HPCGAP's fault:
+    - Scheduling a 'big' number of tasks at once (12x12 many blocks)
+        `A := RandomMat( 12,24, GF(5)  ); l := GaussParallel(A);`
+    or consecutively calling (5x5 many blocks)
+        `A := RandomMat( 5,5, GF(5)  ); l := GaussParallel(A);`
+    four times leads to:
+        gap: gen/plist.c:500: KTNumHomPlist: Assertion `!IS_TESTING_PLIST(elm)' failed.
