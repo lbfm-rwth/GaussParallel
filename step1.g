@@ -16,6 +16,10 @@
 ClearDown := function( f, H, t, R )
     local tmp, Chi, ct, HH, tt, RR, ttt, RRR, i, RRn, A, AA, T, M, K, E, s, u;
 
+    if  IsEmpty(H) then
+        return [R,t, [ [],[],[],[],[],[] ] ];
+    fi;
+
     H := ShallowCopy( H );
     t := ShallowCopy( t );
     R := ShallowCopy( R );
@@ -186,7 +190,7 @@ Step1 := function( A, n )
     Rj := [];
     tj := [];
     ########## Keep track of Tasks ##########
-    dummyTask := RunTask( function() return 0; end );
+    dummyTask := RunTask( function() return [ [],[] ]; end );
     ## TODO Do we need to erase the TaskResults manually?
     ## nxn many tasks
     TaskListClearDown := List(
@@ -206,58 +210,45 @@ Step1 := function( A, n )
             ########## Schedule ClearDown Tasks ##########
             ## first row, first column: start computation
             if i = 1 and j = 1 then
-                TaskListClearDown[i][j] := RunTask(
-                    function()
-                        local H, t, R;
-                        Print("Starting computation!");
-                        Error( "Break Point - First Task!" );
-                        H := C[i][j];
-                        t := [];
-                        R := [];
-                        return ClearDown( f, H, t, R );
-                    end
-                );
+                TaskListClearDown[i][j] := RunTask( ClearDown ,f, C[i][j], [], [] );
+    
             ## first row: wait for left-side `UpdateRow`s
             elif i = 1 and j > 1 then
                 TaskListClearDown[i][j] := ScheduleTask(
                     ## Condition
                     TaskListUpdateRow[i][j-1][j],
                     ## Function Call
-                    function()
-                        local H, t, R;
-                        H := TaskResult( TaskListUpdateRow[i][j-1][j] )[1];
-                        t := [];
-                        R := [];
-                        return ClearDown( f, H, t, R );
-                    end
+                    ClearDown,
+                    f,
+                    TaskResult( TaskListUpdateRow[i][j-1][j] )[1],
+                    [],
+                    []
                 );
+
             ## first column: wait for upper `ClearDown`s
             elif i > 1 and j = 1 then
                 TaskListClearDown[i][j] := ScheduleTask(
                     ## Condition
                     TaskListClearDown[i-1][j],
                     ## Function Call
-                    function()
-                        local H, t, R;
-                        H := C[i][j];
-                        t := TaskResult( TaskListClearDown[i-1][j] )[2];
-                        R := TaskResult( TaskListClearDown[i-1][j] )[1];
-                        return ClearDown( f, H, t, R );
-                    end
+                    ClearDown,
+                    f,
+                    C[i][j],
+                    TaskResult( TaskListClearDown[i-1][j] )[2],
+                    TaskResult( TaskListClearDown[i-1][j] )[1]
                 );
+
             else ## i > 1, j > 1: wait for "everything"
                 TaskListClearDown[i][j] := ScheduleTask(
                     ## Condition: List of tasks to wait on
                     [ TaskListClearDown[i-1][j],
                       TaskListUpdateRow[i][j-1][j] ],
                     ## Function Call
-                    function()
-                        local H, t, R;
-                        H := TaskResult( TaskListUpdateRow[i][j-1][j] )[1];
-                        t := TaskResult( TaskListClearDown[i-1][j] )[2];
-                        R := TaskResult( TaskListClearDown[i-1][j] )[1];
-                        return ClearDown( f, H, t, R );
-                    end
+                    ClearDown,
+                    f,
+                    TaskResult( TaskListUpdateRow[i][j-1][j] )[1],
+                    TaskResult( TaskListClearDown[i-1][j] )[2],
+                    TaskResult( TaskListClearDown[i-1][j] )[1]
                 );
             fi;
             ########## Schedule UpdateRow Tasks ##########
@@ -268,14 +259,13 @@ Step1 := function( A, n )
                         ## Condition: List of tasks to wait on
                         [ TaskListClearDown[i][j] ],
                         ## Function Call
-                        function()
-                            local T, H, B;
-                            T := TaskResult( TaskListClearDown[i][j] )[3];
-                            H := C[i][k];
-                            B := [];
-                            return UpdateRow( f, T, H, B );
-                        end
+                        UpdateRow,
+                        f,
+                        TaskResult( TaskListClearDown[i][j] )[3],
+                        C[i][k],
+                        []
                     );
+                   
                 ## first row: wait
                 elif i = 1 and j > 1 then
                     TaskListUpdateRow[i][j][k] := ScheduleTask(
@@ -283,54 +273,62 @@ Step1 := function( A, n )
                         [ TaskListClearDown[i][j],
                           TaskListUpdateRow[i][j-1][k] ],
                         ## Function Call
-                        function()
-                            local T, H, B;
-                            T := TaskResult( TaskListClearDown[i][j] )[3];
-                            H := TaskResult( TaskListUpdateRow[i][j-1][k] )[1];
-                            B := [];
-                            return UpdateRow( f, T, H, B );
-                        end
+                        UpdateRow,
+                        f,
+                        TaskResult( TaskListClearDown[i][j] )[3],
+                        TaskResult( TaskListUpdateRow[i][j-1][k] )[1],
+                        []
                     );
+                    
                 elif i > 1 and j = 1 then
                     TaskListUpdateRow[i][j][k] := ScheduleTask(
                         ## Condition: List of tasks to wait on
                         [ TaskListClearDown[i][j],
                           TaskListUpdateRow[i-1][j][k] ],
                         ## Function Call
-                        function()
-                            local T, H, B;
-                            T := TaskResult( TaskListClearDown[i][j] )[3];
-                            H := C[i][k];
-                            B := TaskResult( TaskListUpdateRow[i-1][j][k] )[2];
-                            return UpdateRow( f, T, H, B );
-                        end
+                        UpdateRow,
+                        f,
+                        TaskResult( TaskListClearDown[i][j] )[3],
+                        C[i][k],
+                        TaskResult( TaskListUpdateRow[i-1][j][k] )[2] 
                     );
-                else ## i > 1 and j > 1
+                
+		else ## i > 1 and j > 1
                     TaskListUpdateRow[i][j][k] := ScheduleTask(
                         ## Condition: List of tasks to wait on
                         [ TaskListClearDown[i][j],
                           TaskListUpdateRow[i][j-1][k],
                           TaskListUpdateRow[i-1][j][k] ],
                         ## Function Call
-                        function()
-                            local T, H, B;
-                            T := TaskResult( TaskListClearDown[i][j] )[3];
-                            H := TaskResult( TaskListUpdateRow[i][j-1][k] )[1];
-                            B := TaskResult( TaskListUpdateRow[i-1][j][k] )[2];
-                            return UpdateRow( f, T, H, B );
-                        end
+                        UpdateRow,
+                        f,
+                        TaskResult( TaskListClearDown[i][j] )[3],
+                        TaskResult( TaskListUpdateRow[i][j-1][k] )[1],
+                        TaskResult( TaskListUpdateRow[i-1][j][k] )[2] 
                     );
                 fi;
             od;
         od;
     od;
+
+    ## DEBUG
+    Print( "Tasks succesfully scheduled" );
+
     ## TODO V is that so? V
     ## This is implicitly waiting on all UpdateRow calls
     WaitTask( Concatenation( TaskListClearDown ) );
     WaitTask( Concatenation( List( TaskListUpdateRow, Concatenation ) ) );
     tj := List( [ 1..n ], j -> TaskResult( TaskListClearDown[n][j] )[2] );
     Rj := List( [ 1..n ], j -> TaskResult( TaskListClearDown[n][j] )[1] );
-    Error( "Break Point - END OF STEP1" );
+   
+    B := List( [ 1..n ], j -> List( [ 1..n ], k -> TaskResult( TaskListUpdateRow[n][j][k] )[2] ) );
+    for i in [ 1 .. n ] do
+        for j in [ 2 .. n ] do
+            C[i][j] := TaskResult(TaskListUpdateRow[i][j-1][j])[1];
+        od;
+    od;
+
+    #Error( "Break Point - END OF STEP1" );
     return [ C, B, Rj, tj ];
 end;
 
