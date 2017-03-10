@@ -55,7 +55,11 @@ ClearDown := function( f, H, t, R )
         A := tmp[1]; AA := tmp[2];
         # Reduce H to (0|HH)
         # Mult Add
-        HH := AA + A*R;
+        if IsEmpty(A) then
+            HH := AA;
+        else
+            HH := AA + A*R;
+        fi;
     fi;
  
  
@@ -125,8 +129,12 @@ ClearDown := function( f, H, t, R )
     if IsEmpty(RRn) then
         RR := [];
     else
-        RRR:=RRn+E*RR;
-        RR := RRF( RRR, RR, u );
+        if IsEmpty(RR) then
+            RR := RRn;
+        else
+            RRR:=RRn+E*RR;
+            RR := RRF( RRR, RR, u );
+        fi;
     fi;
 
     return [RR, ttt, T];
@@ -142,9 +150,9 @@ UpdateRow := function( f, T, H, Bjk )
  ###
  # If A is empty, there are no rowoperations form above to consider
  ###
- if IsEmpty(A) then
+ if IsEmpty(A) or IsEmpty(B) then
   Z := H;
- else 
+ else
   Z := A*B+H;
  fi;
 
@@ -154,13 +162,17 @@ UpdateRow := function( f, T, H, Bjk )
  # If V is empty, then there where no operations exept from A
  # in this case there is nothing more to update
  ###
- if IsEmpty(V) then
+ if IsEmpty(V) or IsEmpty(M) then
   return [Z,B]; 
  else 
   X:=M*V;
  fi;
 
- S:= E*X+B;
+ if IsEmpty(E) then
+     S := B;
+ else
+     S:= E*X+B;
+ fi;
  B:=RRF( S, X, u );
  
  ###
