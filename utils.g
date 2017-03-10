@@ -75,6 +75,9 @@ RRF := function( R,RR,u )
 
  while (indR <= DimensionsMat(R)[1]) or (indRR <= DimensionsMat(RR)[1]) do
   ind := indR + indRR -1;
+  if Length(u) < ind then
+      break;
+  fi;
   if u[ind] = 0 then
    Rnew[ind] := R[indR];
    indR := indR + 1;

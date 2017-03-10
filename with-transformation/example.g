@@ -12,7 +12,8 @@ ExampleGaussParallel := function(  )
  A[17] := A[17]*Zero(GF(5));
  A[18] := A[17]*Zero(GF(5));
  A[19] := A[17]*Zero(GF(5));
- A := TransposedMat(A);
+ A := MutableCopyMat( TransposedMat(A) );
+ A[2] := A[6];
 
  Print("Echolonizing the following matrix over GF(5):");
  Print("\n");

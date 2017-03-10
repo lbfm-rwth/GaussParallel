@@ -255,6 +255,7 @@ Step1 := function( A,n )
  rct := 1;
 
  for i in [1..n] do
+ 
   Pivots := [1..nrr/n];
   for j in [1..n] do
    cur := 1;
@@ -410,6 +411,7 @@ Step2 := function( f,n,nrows,ncols,returnList )
  od;
 s:=[];
 
+
  for k in [1..n] do
   tmp := BackClean( f,n-k+1,n,B,t[n-k+1],C,M );
   C := tmp[1]; M:=tmp[2];
@@ -463,22 +465,17 @@ s:=[];
   for k in [1..n] do
    if k=1 then
      if IsEmpty(K[i][k]) then
-       if S[rct]=0 and rct < Length(S) then
-         tmp := 1;
-         if IsEmpty(M[i][k]) then
-           if not IsEmpty(M[i][i]) then
-            tmp := DimensionsMat(M[i][i])[1];
-           fi;
-         else
-            tmp := DimensionsMat(M[i][i])[1] - DimensionsMat(M[i][k])[1];
-         fi;
+       if  not IsEmpty(M[i][k]) then
+            tmp := DimensionsMat(M[i][i])[1] - DimensionsMat(M[i][1])[1];  #correct? we want rows_i_k - rank_i_k here..
        fi;
      fi;
    fi; 
    if IsEmpty(K[i][k]) then 
-    if not IsEmpty(M[k][k]) then
-        ct := ct + DimensionsMat(M[k][k])[2];
-    fi; continue; fi;
+        if not IsEmpty(M[k][k]) then
+            ct := ct + DimensionsMat(M[k][k])[2];
+        fi; 
+         continue; 
+   fi;
    KK{[rct..rct+DimensionsMat(K[i][k])[1]-1]}{[ct..ct+DimensionsMat(K[i][k])[2]-1]} := K[i][k];
   ct := ct + DimensionsMat(K[i][k])[2];
   tmp := DimensionsMat(K[i][k])[1];
