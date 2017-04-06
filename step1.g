@@ -324,7 +324,7 @@ Step1 := function( A, n )
     od;
 
     ## DEBUG
-    Print( "Tasks succesfully scheduled" );
+    Print( "Tasks succesfully scheduled\n" );
 
     ## TODO V is that so? V
     ## This is implicitly waiting on all UpdateRow calls

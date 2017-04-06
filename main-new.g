@@ -1,33 +1,19 @@
-### TODO ###
-## rename variables, e.g.:
-## t -> ListOfPivotColumns
-### TODO ###
-###############################
-# function ClearColumn
-# Input:
-#   f - Field
-#   H - Input matrix
-#   t - Bitlist of pivot columns positions
-#   R - Residue of above block after echolonization
-#
-# Output:
-#   [ R, t, T ]
-#   R - ??
-#   t - ??
-#   T - ??
-###############################
-ClearColumn := function( f, H, t, R )
+#####################################################################
+# INPUT:  f - a finite field,
+#         H - a Matrix over f,
+#         t - a bitstring containing the pivotal
+#             columns of the current block-column,
+#         R - a Matrix over f, containing the non-pivotal columns.
+# OUTPUT: the new remnant together with the updated bitstring 
+#         and the exput (see paper). 
+#####################################################################
+ClearDown := function( f, H, t, R )
     local tmp, Chi, ct, HH, QQ, Q1,Q2,Q3, tt, RR, ttt, RRR, i, RRn, A, AA, T, M, K, E, s, u;
-   
-   # if not Length(t) = DimensionsMat(H)[2] then
-   #     Error( "Length of bitlist t does not match dimensions of H!" );
-   # fi;
    
     if IsEmpty(H) then
         return [R,t,[[],[],[],[],[],[]]];
     fi; 
 
-    #### INITIALIZATION ####
     ## Residue R was empty. Thus matrix above has full column-rank.
     if not IsEmpty(t) and IsEmpty( R ) then
         A := H;
@@ -43,9 +29,9 @@ ClearColumn := function( f, H, t, R )
         return [RR, ttt, T];
     fi;
 
-    ## First step (i=1,  i block row) or all matrices above have rank 0
+    ## First step (first block row) or all matrices above have rank 0
     if IsEmpty( t ) then
-        # A is empty iff this case happens, Q is empty then aswell
+        # A is empty iff this case happens
         A := [];
         HH := H;
     else
@@ -53,18 +39,14 @@ ClearColumn := function( f, H, t, R )
         tmp := CEX( f, BitstringToCharFct(t), H );
         A := tmp[1]; AA := tmp[2];
         # Reduce H to (0|HH)
-        # Mult Add
         HH := AA + A*R;
     fi;
  
-    #### END INITIALIZATION ####
-
     # Echelonization
     tmp := ECH( f, HH );
     M:=tmp[1];K:=tmp[2];RR:=tmp[3];s:=tmp[4];tt:=tmp[5];
-    #Error( "Break Point - echel" );
 
-    # TODO complement then extend?
+    ## Producing a riffle -Chi- from old and new pivot columns
     if IsEmpty(t) then Chi := tt;
     else
      Chi := 0*[1..DimensionsMat(H)[2]];ct:=1;
@@ -100,19 +82,16 @@ ClearColumn := function( f, H, t, R )
         return [RR, ttt, T ];
     fi;
     # If RR is empty, but tt is not, then the bitstring tt, representing
-    # the positions of the new pivot columns, is AllOne.
+    # the positions of the new pivot columns, is 1 everywhere.
     # In this case, there is nothing to be done here.
 
-    #Error( "Break Point - before CEX new residue" );
     tmp := CEX( f, BitstringToCharFct(tt), R );
     E:=tmp[1];RRn:=tmp[2];
     ## Update the residue and the pivot column bitstring
     tmp := PVC( BitstringToCharFct(t), BitstringToCharFct(Chi) );
     ttt:=CharFctToBitstring(DimensionsMat(H)[2], tmp[1]); u:=tmp[2];
-    # Error( "Break Point - after CEX new residue" );
     
     T:=[A, M, E, K, s, u];
-
     if IsEmpty(E) then
         return [RR,ttt,T];
     fi;
@@ -130,6 +109,16 @@ ClearColumn := function( f, H, t, R )
     return [RR, ttt, T ];
 end;
 
+#####################################################################
+# INPUT:  f - a finite field,
+#         H - a matrix tracking the changes on the pivot rows 
+#             of the input-matrix
+#         T - the exput from previous ClearDowns,
+#         Bjk - a matrix tracking the changes on the non-pivot rows of 
+#               the input-matrix.
+# OUTPUT: the updated matrices H and Bjk according to new found pivot rows
+#         tracked by T.
+#####################################################################
 UpdateRow := function( f, T, H, Bjk )
  local A, E, M, K, s, u,  tmp, Z, V, X, W, S, B;
  B := Bjk;
@@ -195,6 +184,17 @@ RiffleIn := function( X,u,w,type,f )
   return TransposedMat( new );
 end;
 
+#####################################################################
+# INPUT:  f - a finite field,
+#         M - a matrix tracking the changes on the pivot rows 
+#             of the input-matrix
+#         T - the exput from previous ClearDowns,
+#         K - a matrix tracking the changes on the non-pivot rows of 
+#               the input-matrix.
+#         v,flag,w -?
+# OUTPUT: the updated matrices M and K according to new found pivot rows
+#         tracked by T.
+#####################################################################
 UpdateTrafo := function( f, T, K, M,v,flag,w )
  local A, E, MM, KK, s, u,  i,tmp, riffle, Z, V, X, W, Y,S;
  A:=T[1];MM:=T[2];E:=T[3];KK:=T[4];s:=T[5];u:=T[6];
@@ -387,7 +387,7 @@ GaussParallel := function( Inp,a,b ) #Chop inputmatrix Inp into (a)x(b) matrix
                E[i][1] := 0*[ 1 .. DimensionsMat(Inp[i][j])[1] ];
             fi;
 
-            tmp := ClearColumn( f,C[i][j],D[j].pivots,D[j].remnant );
+            tmp := ClearDown( f,C[i][j],D[j].pivots,D[j].remnant );
             A[i][j] := tmp[3];
             D[j].remnant := tmp[1]; 
             D[j].pivots := tmp[2];

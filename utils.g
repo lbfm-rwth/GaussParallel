@@ -1,12 +1,11 @@
 CEX := function( f,P,C )
- local i,L,R,col,dim,numr,numc,Lct,Rct;
+ local i,L,R,numc,col,Lct,Rct;
 
- if C = [] then return [[],[]]; fi;
+ if IsEmpty(C) then return [[],[]]; fi;
 
- dim := DimensionsMat( C );
- numr:=dim[1]; numc:=dim[2];
- Lct:=1;Rct:=1;
- L := NullMat(Size(P),numr,f); R:=NullMat(numc-Size(P),numr,f);
+ numc := DimensionsMat( C )[2];
+ Lct:=1; Rct:=1;
+ L := []; R := []; 
  for i in [1..numc] do
   col := TransposedMat(C)[i];
   if i in P then
@@ -31,19 +30,11 @@ end;
 
 CharFctToBitstring := function( l,P )
  local i,Chi;
- Chi:=[];
- for i in [1..l] do
-  if i in P then 
+ Chi:=0*[1..l];
+ for i in P do 
    Chi[i]:=1;
-  else
-   Chi[i]:=0;
-  fi;
  od;
  return Chi;
-end;
-
-# TODO
-ComplementBitstring := function( bstring )
 end;
 
 REX := function( f,TT,C )
