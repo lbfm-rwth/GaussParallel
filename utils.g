@@ -4,10 +4,11 @@ CEX := function( f,P,C )
  if IsEmpty(C) then return [[],[]]; fi;
 
  numc := DimensionsMat( C )[2];
+ C := TransposedMat(C);
  Lct:=1; Rct:=1;
  L := []; R := []; 
  for i in [1..numc] do
-  col := TransposedMat(C)[i];
+  col := C[i];
   if i in P then
    L[Lct] := col; Lct := Lct +1;
   else 
