@@ -177,10 +177,14 @@ end;
 Step1_timed:= function( A, n )
     local f, C, B, Rj, tj,TIMES_CLEARDOWN,TIMES_UPDATEROW,
         dummyTask, TaskListClearDown, TaskListUpdateRow,
-        i, j, k;
+        i, j, k, first;
+    first := IO_gettimeofday().tv_sec;
+    Print(0,"\n");
     ## Chop A into an nxn matrix
     f := DefaultFieldOfMatrix( A );
-    C := ChopMatrix( n, A );
+    Print(first - IO_gettimeofday().tv_sec,"\n");
+    C := ChoppedMatrix( A,n,n );
+    Print(first - IO_gettimeofday().tv_sec,"\n");
     # FIXME UNUSED CODE
     ## Initialize B as an nxn list pointing to empty lists
     B := List( [1..n], x -> List( [1..n], x -> [] ) );
@@ -216,6 +220,7 @@ Step1_timed:= function( A, n )
     for  i in [ 1 .. n ] do
         TIMES_CLEARDOWN[i][1] := 0;    
     od;
+    Print(first - IO_gettimeofday().tv_sec,"\n");
 
     for i in [ 1 .. n ] do
         for j in [ 1 .. n ] do
@@ -342,6 +347,7 @@ Step1_timed:= function( A, n )
         od;
     od;
 
+    Print(first - IO_gettimeofday().tv_sec,"\n");
     ## DEBUG
     Print( "Tasks succesfully scheduled\n" );
 
@@ -363,5 +369,6 @@ Step1_timed:= function( A, n )
     od;
 
     #Error( "Break Point - END OF STEP1" );
+    Print(first - IO_gettimeofday().tv_sec,"\n");
     return rec( result := [ C, B, Rj, tj ], times := [TIMES_UPDATEROW,TIMES_CLEARDOWN]);
 end;
