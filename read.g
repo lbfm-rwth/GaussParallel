@@ -8,5 +8,5 @@ Read("./utils.g");
 Read("./timing.g");
 Read("./main-seq.g");
 Read("./step1_timed.g");
-Read("./step2.g");
-Read("./main.g");
+#Read("./step2.g");
+#Read("./main.g");
