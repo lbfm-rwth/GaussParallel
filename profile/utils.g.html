@@ -1,0 +1,542 @@
+<!DOCTYPE html><script src="sorttable.js"></script><html><body>
+<style>
+table { border-collapse: collapse }
+tr .linenum { text-align: right; }
+tr:nth-child(odd)  { background-color: #EEE; }
+tr:nth-child(even)  { background-color: #FFF; }
+tr:nth-child(odd).exec  { background-color: #0F0; }
+tr:nth-child(even).exec  { background-color: #3F3; }
+tr:nth-child(odd).missed  { background-color: #F00; }
+tr:nth-child(even).missed  { background-color: #F33; }
+td, th {
+    border: 1px solid #98bf21;
+    padding: 3px 7px 2px 7px;
+}
+th {
+    font-size: 1.1em;
+    text-align: left;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    background-color: #A7C942;
+    color: #ffffff;
+}
+table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after {
+    content: " \25B4\25BE"
+}
+
+/* HSV gradient made using http://www.perbang.dk/rgbgradient/ */
+td.coverage00 { background-color: #FF0000; }
+td.coverage10 { background-color: #F83100; }
+td.coverage20 { background-color: #F25F00; }
+td.coverage30 { background-color: #EB8B00; }
+td.coverage40 { background-color: #E5B500; }
+td.coverage50 { background-color: #DFDC00; }
+td.coverage60 { background-color: #B0D800; }
+td.coverage70 { background-color: #81D200; }
+td.coverage80 { background-color: #55CB00; }
+td.coverage90 { background-color: #2CC500; }
+td.coverage100 { background-color: #04BF00; }
+</style><p>This file was read by GAP before profiling was actived, so lines which were not read but not executed are not marked.</p><table class="sortable">
+<thead><tr><th>Line</th><th>Execs</th><th>Time</th><th>Time+Childs</th><th>Code</th><th>Called Functions</th>
+</tr></thead>
+<tbody>
+<tr class='ignore'><td><a name="line1"></a><div class='linenum'>1</div></td><td></td><td></td><td></td><td><span><tt>CEX&nbsp;:=&nbsp;function(&nbsp;f,P,C&nbsp;)
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line2"></a><div class='linenum'>2</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;local&nbsp;i,L,R,numc,col,Lct,Rct;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line3"></a><div class='linenum'>3</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line4"></a><div class='linenum'>4</div></td><td>4836</td><td>143262</td><td>143262</td><td><span><tt>&nbsp;if&nbsp;IsEmpty(C)&nbsp;then&nbsp;return&nbsp;[[],[]];&nbsp;fi;
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_coll.gi.html#line105">/opt/gap/gap4r8p5/lib/coll.gi:105</a> </span></td></tr>
+<tr class='ignore'><td><a name="line5"></a><div class='linenum'>5</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line6"></a><div class='linenum'>6</div></td><td>4816</td><td>8011</td><td>15178</td><td><span><tt>&nbsp;numc&nbsp;:=&nbsp;DimensionsMat(&nbsp;C&nbsp;)[2];
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1556">/opt/gap/gap4r8p5/lib/matrix.gi:1556</a> </span></td></tr>
+<tr class='exec'><td><a name="line7"></a><div class='linenum'>7</div></td><td>4816</td><td>6747</td><td>194994</td><td><span><tt>&nbsp;C&nbsp;:=&nbsp;TransposedMat(C);
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1855">/opt/gap/gap4r8p5/lib/matrix.gi:1855</a> <a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1883">/opt/gap/gap4r8p5/lib/matrix.gi:1883</a> </span></td></tr>
+<tr class='exec'><td><a name="line8"></a><div class='linenum'>8</div></td><td>4816</td><td>2127</td><td>2127</td><td><span><tt>&nbsp;Lct:=1;&nbsp;Rct:=1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line9"></a><div class='linenum'>9</div></td><td>9632</td><td>3531</td><td>3531</td><td><span><tt>&nbsp;L&nbsp;:=&nbsp;[];&nbsp;R&nbsp;:=&nbsp;[];&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line10"></a><div class='linenum'>10</div></td><td>4816</td><td>1711</td><td>1711</td><td><span><tt>&nbsp;for&nbsp;i&nbsp;in&nbsp;[1..numc]&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line11"></a><div class='linenum'>11</div></td><td>236592</td><td>68490</td><td>68490</td><td><span><tt>&nbsp;&nbsp;col&nbsp;:=&nbsp;C[i];
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line12"></a><div class='linenum'>12</div></td><td>236592</td><td>60839</td><td>60839</td><td><span><tt>&nbsp;&nbsp;if&nbsp;i&nbsp;in&nbsp;P&nbsp;then
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line13"></a><div class='linenum'>13</div></td><td>40399</td><td>40498</td><td>40498</td><td><span><tt>&nbsp;&nbsp;&nbsp;L[Lct]&nbsp;:=&nbsp;col;&nbsp;Lct&nbsp;:=&nbsp;Lct&nbsp;+1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line14"></a><div class='linenum'>14</div></td><td>40399</td><td>10028</td><td>10028</td><td><span><tt>&nbsp;&nbsp;else&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line15"></a><div class='linenum'>15</div></td><td>196193</td><td>194861</td><td>194861</td><td><span><tt>&nbsp;&nbsp;&nbsp;R[Rct]&nbsp;:=&nbsp;col;&nbsp;Rct&nbsp;:=&nbsp;Rct&nbsp;+1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line16"></a><div class='linenum'>16</div></td><td>432785</td><td>108895</td><td>108895</td><td><span><tt>&nbsp;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line17"></a><div class='linenum'>17</div></td><td>4816</td><td>2159</td><td>2159</td><td><span><tt>&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line18"></a><div class='linenum'>18</div></td><td>9632</td><td>13487</td><td>157909</td><td><span><tt>return&nbsp;[TransposedMat(L),TransposedMat(R)];
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1855">/opt/gap/gap4r8p5/lib/matrix.gi:1855</a> <a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1883">/opt/gap/gap4r8p5/lib/matrix.gi:1883</a> </span></td></tr>
+<tr class='exec'><td><a name="line19"></a><div class='linenum'>19</div></td><td>4816</td><td>1547</td><td>1547</td><td><span><tt>end;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line20"></a><div class='linenum'>20</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line21"></a><div class='linenum'>21</div></td><td></td><td></td><td></td><td><span><tt>BitstringToCharFct&nbsp;:=&nbsp;function(&nbsp;P&nbsp;)
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line22"></a><div class='linenum'>22</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;local&nbsp;i,ct,Chi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line23"></a><div class='linenum'>23</div></td><td>7286</td><td>2515</td><td>2515</td><td><span><tt>&nbsp;ct:=1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line24"></a><div class='linenum'>24</div></td><td>7286</td><td>3554</td><td>3554</td><td><span><tt>&nbsp;Chi:=[];
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line25"></a><div class='linenum'>25</div></td><td>7286</td><td>4061</td><td>4061</td><td><span><tt>&nbsp;for&nbsp;i&nbsp;in&nbsp;[1..Length(P)]&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line26"></a><div class='linenum'>26</div></td><td>42649</td><td>14246</td><td>14246</td><td><span><tt>&nbsp;&nbsp;if&nbsp;P[i]&nbsp;=&nbsp;0&nbsp;then&nbsp;ct&nbsp;:=&nbsp;ct&nbsp;+1;&nbsp;continue;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line27"></a><div class='linenum'>27</div></td><td>42400</td><td>16593</td><td>16593</td><td><span><tt>&nbsp;&nbsp;ct&nbsp;:=&nbsp;ct&nbsp;+&nbsp;1;&nbsp;Add(Chi,i);
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line28"></a><div class='linenum'>28</div></td><td>7286</td><td>2580</td><td>2580</td><td><span><tt>&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line29"></a><div class='linenum'>29</div></td><td>7286</td><td>8542</td><td>8542</td><td><span><tt>&nbsp;return&nbsp;Chi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line30"></a><div class='linenum'>30</div></td><td></td><td></td><td></td><td><span><tt>end;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line31"></a><div class='linenum'>31</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line32"></a><div class='linenum'>32</div></td><td></td><td></td><td></td><td><span><tt>CharFctToBitstring&nbsp;:=&nbsp;function(&nbsp;l,P&nbsp;)
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line33"></a><div class='linenum'>33</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;local&nbsp;i,Chi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line34"></a><div class='linenum'>34</div></td><td>28</td><td>31</td><td>31</td><td><span><tt>&nbsp;Chi:=0*[1..l];
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line35"></a><div class='linenum'>35</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;for&nbsp;i&nbsp;in&nbsp;P&nbsp;do&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line36"></a><div class='linenum'>36</div></td><td>28</td><td>33</td><td>33</td><td><span><tt>&nbsp;&nbsp;&nbsp;Chi[i]:=1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line37"></a><div class='linenum'>37</div></td><td>28</td><td>10</td><td>10</td><td><span><tt>&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line38"></a><div class='linenum'>38</div></td><td>28</td><td>20</td><td>20</td><td><span><tt>&nbsp;return&nbsp;Chi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line39"></a><div class='linenum'>39</div></td><td></td><td></td><td></td><td><span><tt>end;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line40"></a><div class='linenum'>40</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line41"></a><div class='linenum'>41</div></td><td></td><td></td><td></td><td><span><tt>REX&nbsp;:=&nbsp;function(&nbsp;f,TT,C&nbsp;)
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line42"></a><div class='linenum'>42</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;local&nbsp;ret;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line43"></a><div class='linenum'>43</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line44"></a><div class='linenum'>44</div></td><td>6710</td><td>5178</td><td>5178</td><td><span><tt>&nbsp;if&nbsp;C&nbsp;=&nbsp;[]&nbsp;then&nbsp;return&nbsp;[[],[]];&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line45"></a><div class='linenum'>45</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line46"></a><div class='linenum'>46</div></td><td>4316</td><td>52540</td><td>1352831</td><td><span><tt>&nbsp;ret&nbsp;:=&nbsp;CEX(&nbsp;f,TT,TransposedMat(C)&nbsp;);
+</tt></span></td><td><span><a href="utils.g.html#line1">CEX</a> <a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1855">/opt/gap/gap4r8p5/lib/matrix.gi:1855</a> <a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1883">/opt/gap/gap4r8p5/lib/matrix.gi:1883</a> </span></td></tr>
+<tr class='exec'><td><a name="line47"></a><div class='linenum'>47</div></td><td>8632</td><td>142400</td><td>248472</td><td><span><tt>&nbsp;return&nbsp;[TransposedMat(ret[1]),TransposedMat(ret[2])];
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1855">/opt/gap/gap4r8p5/lib/matrix.gi:1855</a> <a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1883">/opt/gap/gap4r8p5/lib/matrix.gi:1883</a> </span></td></tr>
+<tr class='ignore'><td><a name="line48"></a><div class='linenum'>48</div></td><td></td><td></td><td></td><td><span><tt>end;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line49"></a><div class='linenum'>49</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line50"></a><div class='linenum'>50</div></td><td></td><td></td><td></td><td><span><tt>PVC&nbsp;:=&nbsp;function(&nbsp;s,t&nbsp;)
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line51"></a><div class='linenum'>51</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;local&nbsp;stOrdered,u,i;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line52"></a><div class='linenum'>52</div></td><td>56</td><td>100</td><td>242</td><td><span><tt>&nbsp;stOrdered&nbsp;:=&nbsp;Concatenation(s,t);&nbsp;u:=0*[1..Length(s)+Length(t)];
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_list.gi.html#line1897">Concatenation</a> </span></td></tr>
+<tr class='exec'><td><a name="line53"></a><div class='linenum'>53</div></td><td>28</td><td>96</td><td>96</td><td><span><tt>&nbsp;Sort(stOrdered);
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_init.g.html#line93">Ignore</a> </span></td></tr>
+<tr class='ignore'><td><a name="line54"></a><div class='linenum'>54</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;for&nbsp;i&nbsp;in&nbsp;t&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line55"></a><div class='linenum'>55</div></td><td>28</td><td>140</td><td>140</td><td><span><tt>&nbsp;&nbsp;u[Position(stOrdered,i)]:=1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line56"></a><div class='linenum'>56</div></td><td>28</td><td>14</td><td>14</td><td><span><tt>&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line57"></a><div class='linenum'>57</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line58"></a><div class='linenum'>58</div></td><td>28</td><td>25</td><td>25</td><td><span><tt>&nbsp;return&nbsp;[stOrdered,u];
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line59"></a><div class='linenum'>59</div></td><td></td><td></td><td></td><td><span><tt>end;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line60"></a><div class='linenum'>60</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line61"></a><div class='linenum'>61</div></td><td></td><td></td><td></td><td><span><tt>RRF&nbsp;:=&nbsp;function(&nbsp;R,RR,u&nbsp;)
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line62"></a><div class='linenum'>62</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;local&nbsp;ind,indR,indRR,Rnew;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line63"></a><div class='linenum'>63</div></td><td>1256</td><td>562</td><td>562</td><td><span><tt>&nbsp;indR:=1;&nbsp;indRR:=1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line64"></a><div class='linenum'>64</div></td><td>1256</td><td>715</td><td>715</td><td><span><tt>&nbsp;Rnew&nbsp;:=&nbsp;ShallowCopy(R);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line65"></a><div class='linenum'>65</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line66"></a><div class='linenum'>66</div></td><td>1256</td><td>13781</td><td>13781</td><td><span><tt>&nbsp;if&nbsp;R&nbsp;=&nbsp;[]&nbsp;then&nbsp;return&nbsp;RR;&nbsp;fi;&nbsp;if&nbsp;RR&nbsp;=&nbsp;[]&nbsp;then&nbsp;return&nbsp;R;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line67"></a><div class='linenum'>67</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line68"></a><div class='linenum'>68</div></td><td>16889</td><td>19214</td><td>36675</td><td><span><tt>&nbsp;while&nbsp;(indR&nbsp;&lt;=&nbsp;DimensionsMat(R)[1])&nbsp;or&nbsp;(indRR&nbsp;&lt;=&nbsp;DimensionsMat(RR)[1])&nbsp;do
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1556">/opt/gap/gap4r8p5/lib/matrix.gi:1556</a> </span></td></tr>
+<tr class='exec'><td><a name="line69"></a><div class='linenum'>69</div></td><td>12413</td><td>3678</td><td>3678</td><td><span><tt>&nbsp;&nbsp;ind&nbsp;:=&nbsp;indR&nbsp;+&nbsp;indRR&nbsp;-1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line70"></a><div class='linenum'>70</div></td><td>12413</td><td>3786</td><td>3786</td><td><span><tt>&nbsp;&nbsp;if&nbsp;Length(u)&nbsp;&lt;&nbsp;ind&nbsp;then
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line71"></a><div class='linenum'>71</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line72"></a><div class='linenum'>72</div></td><td>12413</td><td>3296</td><td>3296</td><td><span><tt>&nbsp;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line73"></a><div class='linenum'>73</div></td><td>12413</td><td>3413</td><td>3413</td><td><span><tt>&nbsp;&nbsp;if&nbsp;u[ind]&nbsp;=&nbsp;0&nbsp;then
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line74"></a><div class='linenum'>74</div></td><td>6185</td><td>1706</td><td>1706</td><td><span><tt>&nbsp;&nbsp;&nbsp;Rnew[ind]&nbsp;:=&nbsp;R[indR];
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line75"></a><div class='linenum'>75</div></td><td>6185</td><td>1666</td><td>1666</td><td><span><tt>&nbsp;&nbsp;&nbsp;indR&nbsp;:=&nbsp;indR&nbsp;+&nbsp;1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line76"></a><div class='linenum'>76</div></td><td>6185</td><td>1579</td><td>1579</td><td><span><tt>&nbsp;&nbsp;else
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line77"></a><div class='linenum'>77</div></td><td>6228</td><td>1845</td><td>1845</td><td><span><tt>&nbsp;&nbsp;&nbsp;Rnew[ind]&nbsp;:=&nbsp;RR[indRR];
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line78"></a><div class='linenum'>78</div></td><td>6228</td><td>1685</td><td>1685</td><td><span><tt>&nbsp;&nbsp;&nbsp;indRR&nbsp;:=&nbsp;indRR&nbsp;+&nbsp;1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line79"></a><div class='linenum'>79</div></td><td>18641</td><td>4775</td><td>4775</td><td><span><tt>&nbsp;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line80"></a><div class='linenum'>80</div></td><td>249</td><td>92</td><td>92</td><td><span><tt>&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line81"></a><div class='linenum'>81</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line82"></a><div class='linenum'>82</div></td><td>249</td><td>178</td><td>178</td><td><span><tt>&nbsp;return&nbsp;Rnew;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line83"></a><div class='linenum'>83</div></td><td></td><td></td><td></td><td><span><tt>end;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line84"></a><div class='linenum'>84</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line85"></a><div class='linenum'>85</div></td><td></td><td></td><td></td><td><span><tt>MCP&nbsp;:=&nbsp;function(&nbsp;X&nbsp;)
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line86"></a><div class='linenum'>86</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;return&nbsp;ShallowCopy(&nbsp;X&nbsp;);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line87"></a><div class='linenum'>87</div></td><td></td><td></td><td></td><td><span><tt>end;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line88"></a><div class='linenum'>88</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line89"></a><div class='linenum'>89</div></td><td></td><td></td><td></td><td><span><tt>ECH&nbsp;:=&nbsp;function(&nbsp;f,H&nbsp;)
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line90"></a><div class='linenum'>90</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;local&nbsp;EMT,m,k,M,K,R,S,N,r,s,t,i,ind,Id,one,zero,dims,dimId;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line91"></a><div class='linenum'>91</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line92"></a><div class='linenum'>92</div></td><td>28</td><td>95</td><td>95</td><td><span><tt>&nbsp;if&nbsp;H&nbsp;=&nbsp;[]&nbsp;then&nbsp;return&nbsp;[&nbsp;[],[],[],[],[]&nbsp;];&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line93"></a><div class='linenum'>93</div></td><td>28</td><td>258</td><td>85730</td><td><span><tt>&nbsp;if&nbsp;Rank(H)&nbsp;=&nbsp;0&nbsp;then&nbsp;return&nbsp;[&nbsp;[],[],[],[],[]&nbsp;];&nbsp;fi;
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line2176">/opt/gap/gap4r8p5/lib/matrix.gi:2176</a> </span></td></tr>
+<tr class='ignore'><td><a name="line94"></a><div class='linenum'>94</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line95"></a><div class='linenum'>95</div></td><td>28</td><td>170</td><td>563487</td><td><span><tt>&nbsp;EMT&nbsp;:=&nbsp;EchelonMatTransformation(&nbsp;H&nbsp;);
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_local_pkg_Gauss_gap_GaussDense.gi.html#line134">/opt/gap/gap4r8p5/local/pkg/Gauss/gap/GaussDense.gi:134</a> </span></td></tr>
+<tr class='exec'><td><a name="line96"></a><div class='linenum'>96</div></td><td>28</td><td>232</td><td>4883</td><td><span><tt>&nbsp;m&nbsp;:=&nbsp;TransposedMat(EMT.coeffs);
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1883">/opt/gap/gap4r8p5/lib/matrix.gi:1883</a> </span></td></tr>
+<tr class='exec'><td><a name="line97"></a><div class='linenum'>97</div></td><td>28</td><td>72</td><td>5937</td><td><span><tt>&nbsp;r&nbsp;:=&nbsp;TransposedMat(EMT.vectors);
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1883">/opt/gap/gap4r8p5/lib/matrix.gi:1883</a> </span></td></tr>
+<tr class='exec'><td><a name="line98"></a><div class='linenum'>98</div></td><td>28</td><td>61</td><td>1285</td><td><span><tt>&nbsp;k&nbsp;:=&nbsp;TransposedMat(EMT.relations);
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1883">/opt/gap/gap4r8p5/lib/matrix.gi:1883</a> </span></td></tr>
+<tr class='exec'><td><a name="line99"></a><div class='linenum'>99</div></td><td>28</td><td>10</td><td>10</td><td><span><tt>&nbsp;s&nbsp;:=&nbsp;[];
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line100"></a><div class='linenum'>100</div></td><td>28</td><td>9</td><td>9</td><td><span><tt>&nbsp;t&nbsp;:=&nbsp;[];
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line101"></a><div class='linenum'>101</div></td><td>28</td><td>12</td><td>12</td><td><span><tt>&nbsp;R&nbsp;:=&nbsp;[];
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line102"></a><div class='linenum'>102</div></td><td>28</td><td>9</td><td>9</td><td><span><tt>&nbsp;M&nbsp;:=&nbsp;[];
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line103"></a><div class='linenum'>103</div></td><td>28</td><td>13</td><td>13</td><td><span><tt>&nbsp;K&nbsp;:=&nbsp;[];
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line104"></a><div class='linenum'>104</div></td><td>28</td><td>46</td><td>46</td><td><span><tt>&nbsp;one&nbsp;:=&nbsp;One(f);
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line105"></a><div class='linenum'>105</div></td><td>28</td><td>14</td><td>14</td><td><span><tt>&nbsp;zero&nbsp;:=&nbsp;Zero(f);
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line106"></a><div class='linenum'>106</div></td><td>28</td><td>34</td><td>1854</td><td><span><tt>&nbsp;Id&nbsp;:=&nbsp;IdentityMat(&nbsp;Length(EMT.vectors),f&nbsp;);
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line3118">IdentityMat</a> </span></td></tr>
+<tr class='ignore'><td><a name="line107"></a><div class='linenum'>107</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line108"></a><div class='linenum'>108</div></td><td>28</td><td>12</td><td>12</td><td><span><tt>&nbsp;ind&nbsp;:=&nbsp;1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line109"></a><div class='linenum'>109</div></td><td>28</td><td>742</td><td>782</td><td><span><tt>&nbsp;dims&nbsp;:=&nbsp;DimensionsMat(m);
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1556">/opt/gap/gap4r8p5/lib/matrix.gi:1556</a> </span></td></tr>
+<tr class='exec'><td><a name="line110"></a><div class='linenum'>110</div></td><td>28</td><td>11</td><td>11</td><td><span><tt>&nbsp;for&nbsp;i&nbsp;in&nbsp;[1..dims[1]]&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line111"></a><div class='linenum'>111</div></td><td>1200</td><td>2131</td><td>2131</td><td><span><tt>&nbsp;&nbsp;if&nbsp;m[i]&nbsp;=&nbsp;zero*[1..dims[2]]&nbsp;then&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line112"></a><div class='linenum'>112</div></td><td>200</td><td>177</td><td>177</td><td><span><tt>&nbsp;&nbsp;&nbsp;Add(s,0);&nbsp;&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line113"></a><div class='linenum'>113</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;else
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line114"></a><div class='linenum'>114</div></td><td>1000</td><td>421</td><td>421</td><td><span><tt>&nbsp;&nbsp;&nbsp;Add(M,m[i]);
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line115"></a><div class='linenum'>115</div></td><td>1000</td><td>336</td><td>336</td><td><span><tt>&nbsp;&nbsp;&nbsp;if&nbsp;not&nbsp;k&nbsp;=&nbsp;[]&nbsp;then
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line116"></a><div class='linenum'>116</div></td><td>199</td><td>624</td><td>624</td><td><span><tt>&nbsp;&nbsp;&nbsp;&nbsp;Add(K,k[i]);
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line117"></a><div class='linenum'>117</div></td><td>1000</td><td>254</td><td>254</td><td><span><tt>&nbsp;&nbsp;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line118"></a><div class='linenum'>118</div></td><td>1000</td><td>322</td><td>322</td><td><span><tt>&nbsp;&nbsp;&nbsp;Add(s,1);
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line119"></a><div class='linenum'>119</div></td><td>2200</td><td>591</td><td>591</td><td><span><tt>&nbsp;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line120"></a><div class='linenum'>120</div></td><td>28</td><td>16</td><td>16</td><td><span><tt>&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line121"></a><div class='linenum'>121</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line122"></a><div class='linenum'>122</div></td><td>28</td><td>11</td><td>11</td><td><span><tt>&nbsp;ind&nbsp;:=&nbsp;1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line123"></a><div class='linenum'>123</div></td><td>28</td><td>69</td><td>174</td><td><span><tt>&nbsp;dimId&nbsp;:=&nbsp;DimensionsMat(Id);
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1556">/opt/gap/gap4r8p5/lib/matrix.gi:1556</a> </span></td></tr>
+<tr class='exec'><td><a name="line124"></a><div class='linenum'>124</div></td><td>28</td><td>635</td><td>659</td><td><span><tt>&nbsp;for&nbsp;i&nbsp;in&nbsp;[1..DimensionsMat(r)[1]]&nbsp;do
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1556">/opt/gap/gap4r8p5/lib/matrix.gi:1556</a> </span></td></tr>
+<tr class='exec'><td><a name="line125"></a><div class='linenum'>125</div></td><td>1200</td><td>321</td><td>321</td><td><span><tt>&nbsp;&nbsp;if&nbsp;ind&nbsp;>&nbsp;dimId[1]&nbsp;then
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line126"></a><div class='linenum'>126</div></td><td>197</td><td>93</td><td>93</td><td><span><tt>&nbsp;&nbsp;&nbsp;Add(t,0);
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line127"></a><div class='linenum'>127</div></td><td>197</td><td>76</td><td>76</td><td><span><tt>&nbsp;&nbsp;&nbsp;Add(R,r[i]);
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line128"></a><div class='linenum'>128</div></td><td>197</td><td>129</td><td>129</td><td><span><tt>&nbsp;&nbsp;&nbsp;continue;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line129"></a><div class='linenum'>129</div></td><td>1397</td><td>482</td><td>482</td><td><span><tt>&nbsp;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line130"></a><div class='linenum'>130</div></td><td>1003</td><td>1927</td><td>1927</td><td><span><tt>&nbsp;&nbsp;if&nbsp;r[i]&nbsp;=&nbsp;Id[ind]&nbsp;then
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line131"></a><div class='linenum'>131</div></td><td>1000</td><td>300</td><td>300</td><td><span><tt>&nbsp;&nbsp;&nbsp;Add(t,1);
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line132"></a><div class='linenum'>132</div></td><td>1000</td><td>277</td><td>277</td><td><span><tt>&nbsp;&nbsp;&nbsp;ind&nbsp;:=&nbsp;ind&nbsp;+&nbsp;1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line133"></a><div class='linenum'>133</div></td><td>1000</td><td>252</td><td>252</td><td><span><tt>&nbsp;&nbsp;else
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line134"></a><div class='linenum'>134</div></td><td>3</td><td>1</td><td>1</td><td><span><tt>&nbsp;&nbsp;&nbsp;Add(t,0);
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line135"></a><div class='linenum'>135</div></td><td>3</td><td>1</td><td>1</td><td><span><tt>&nbsp;&nbsp;&nbsp;Add(R,r[i]);
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line136"></a><div class='linenum'>136</div></td><td>1006</td><td>250</td><td>250</td><td><span><tt>&nbsp;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line137"></a><div class='linenum'>137</div></td><td>28</td><td>10</td><td>10</td><td><span><tt>&nbsp;od;&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line138"></a><div class='linenum'>138</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='exec'><td><a name="line139"></a><div class='linenum'>139</div></td><td>84</td><td>144</td><td>804</td><td><span><tt>&nbsp;return&nbsp;[-TransposedMat(M),TransposedMat(K),-TransposedMat(R),s,t];
+</tt></span></td><td><span><a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1855">/opt/gap/gap4r8p5/lib/matrix.gi:1855</a> <a href="_opt_gap_gap4r8p5_lib_matrix.gi.html#line1883">/opt/gap/gap4r8p5/lib/matrix.gi:1883</a> </span></td></tr>
+<tr class='exec'><td><a name="line140"></a><div class='linenum'>140</div></td><td>28</td><td>10</td><td>10</td><td><span><tt>end;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line141"></a><div class='linenum'>141</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line142"></a><div class='linenum'>142</div></td><td></td><td></td><td></td><td><span><tt>testECH&nbsp;:=&nbsp;function(&nbsp;A&nbsp;)
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line143"></a><div class='linenum'>143</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;local&nbsp;f,indS,i,L,R,indSS&nbsp;,Id,S,N,SS,NN;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line144"></a><div class='linenum'>144</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;f&nbsp;:=&nbsp;DefaultFieldOfMatrix(&nbsp;A&nbsp;);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line145"></a><div class='linenum'>145</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;L&nbsp;:=&nbsp;ECH(&nbsp;f,A&nbsp;);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line146"></a><div class='linenum'>146</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;R&nbsp;:=&nbsp;EchelonMatTransformation(&nbsp;A&nbsp;);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line147"></a><div class='linenum'>147</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line148"></a><div class='linenum'>148</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;Id&nbsp;:=&nbsp;IdentityMat(&nbsp;Length(R.vectors),f&nbsp;);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line149"></a><div class='linenum'>149</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;indS&nbsp;:=&nbsp;1;&nbsp;indSS&nbsp;:=&nbsp;1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line150"></a><div class='linenum'>150</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;S&nbsp;:=&nbsp;[];&nbsp;SS&nbsp;:=&nbsp;[];&nbsp;N:=[];&nbsp;NN:=[];
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line151"></a><div class='linenum'>151</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;#calculate&nbsp;S,N,S'N'&nbsp;from&nbsp;L
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line152"></a><div class='linenum'>152</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;for&nbsp;i&nbsp;in&nbsp;[1..Length(L[4])]&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line153"></a><div class='linenum'>153</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;if&nbsp;L[4][i]&nbsp;=&nbsp;1&nbsp;then
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line154"></a><div class='linenum'>154</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;Add(&nbsp;S,Id[indS]&nbsp;);&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line155"></a><div class='linenum'>155</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;indS&nbsp;:=&nbsp;indS&nbsp;+&nbsp;1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line156"></a><div class='linenum'>156</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;else
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line157"></a><div class='linenum'>157</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;Add(&nbsp;S,(0*Id[1][1])*Id[1]&nbsp;);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line158"></a><div class='linenum'>158</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line159"></a><div class='linenum'>159</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line160"></a><div class='linenum'>160</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;for&nbsp;i&nbsp;in&nbsp;[1..Length(L[5])]&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line161"></a><div class='linenum'>161</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;if&nbsp;L[5][i]&nbsp;=&nbsp;1&nbsp;then
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line162"></a><div class='linenum'>162</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;Add(&nbsp;SS,Id[indSS]&nbsp;);&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line163"></a><div class='linenum'>163</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;indSS&nbsp;:=&nbsp;indSS&nbsp;+&nbsp;1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line164"></a><div class='linenum'>164</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;else
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line165"></a><div class='linenum'>165</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;Add(&nbsp;SS,(0*Id[1][1])*Id[1]&nbsp;);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line166"></a><div class='linenum'>166</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line167"></a><div class='linenum'>167</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line168"></a><div class='linenum'>168</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line169"></a><div class='linenum'>169</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;indS&nbsp;:=&nbsp;1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line170"></a><div class='linenum'>170</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;indSS&nbsp;:=&nbsp;1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line171"></a><div class='linenum'>171</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;if&nbsp;not&nbsp;DimensionsMat(S)[2]&nbsp;=&nbsp;DimensionsMat(A)[1]&nbsp;then
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line172"></a><div class='linenum'>172</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;Id&nbsp;:=&nbsp;IdentityMat(&nbsp;DimensionsMat(A)[1]&nbsp;-&nbsp;DimensionsMat(S)[2],f&nbsp;);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line173"></a><div class='linenum'>173</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;for&nbsp;i&nbsp;in&nbsp;[1..Length(L[4])]&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line174"></a><div class='linenum'>174</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;if&nbsp;L[4][i]&nbsp;=&nbsp;0&nbsp;then
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line175"></a><div class='linenum'>175</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;&nbsp;Add(&nbsp;N,Id[indS]&nbsp;);&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line176"></a><div class='linenum'>176</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;&nbsp;indS&nbsp;:=&nbsp;indS&nbsp;+&nbsp;1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line177"></a><div class='linenum'>177</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;else
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line178"></a><div class='linenum'>178</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;&nbsp;Add(&nbsp;N,(0*Id[1][1])*Id[1]&nbsp;);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line179"></a><div class='linenum'>179</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line180"></a><div class='linenum'>180</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line181"></a><div class='linenum'>181</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line182"></a><div class='linenum'>182</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;if&nbsp;not&nbsp;DimensionsMat(SS)[2]&nbsp;=&nbsp;DimensionsMat(A)[2]&nbsp;then
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line183"></a><div class='linenum'>183</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;Id&nbsp;:=&nbsp;IdentityMat(&nbsp;DimensionsMat(A)[2]&nbsp;-&nbsp;DimensionsMat(SS)[2],f&nbsp;);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line184"></a><div class='linenum'>184</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;for&nbsp;i&nbsp;in&nbsp;[1..Length(L[5])]&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line185"></a><div class='linenum'>185</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;if&nbsp;L[5][i]&nbsp;=&nbsp;0&nbsp;then
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line186"></a><div class='linenum'>186</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;&nbsp;Add(&nbsp;NN,Id[indSS]&nbsp;);&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line187"></a><div class='linenum'>187</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;&nbsp;indSS&nbsp;:=&nbsp;indSS&nbsp;+&nbsp;1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line188"></a><div class='linenum'>188</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;else
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line189"></a><div class='linenum'>189</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;&nbsp;Add(&nbsp;NN,(0*Id[1][1])*Id[1]&nbsp;);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line190"></a><div class='linenum'>190</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line191"></a><div class='linenum'>191</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line192"></a><div class='linenum'>192</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line193"></a><div class='linenum'>193</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line194"></a><div class='linenum'>194</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;S&nbsp;:=&nbsp;TransposedMat(S);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line195"></a><div class='linenum'>195</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;SS&nbsp;:=&nbsp;(SS);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line196"></a><div class='linenum'>196</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;N&nbsp;:=&nbsp;TransposedMat(N);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line197"></a><div class='linenum'>197</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;NN&nbsp;:=&nbsp;(NN);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line198"></a><div class='linenum'>198</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;return&nbsp;[L[1]*S*A*SS,L[1]*S*A*NN,(L[2]*S+N)*A*SS,(L[2]*S+N)*A*NN,S,N,SS,NN];
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line199"></a><div class='linenum'>199</div></td><td></td><td></td><td></td><td><span><tt>end;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line200"></a><div class='linenum'>200</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line201"></a><div class='linenum'>201</div></td><td></td><td></td><td></td><td><span><tt>ChopMatrix&nbsp;:=&nbsp;function(&nbsp;n,C&nbsp;)
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line202"></a><div class='linenum'>202</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;local&nbsp;b,a,i,j,k,RowChop,CChop;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line203"></a><div class='linenum'>203</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;b&nbsp;:=&nbsp;DimensionsMat(&nbsp;C&nbsp;)[1]/n;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line204"></a><div class='linenum'>204</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;a&nbsp;:=&nbsp;DimensionsMat(&nbsp;C&nbsp;)[2]/n;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line205"></a><div class='linenum'>205</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;CChop&nbsp;:=&nbsp;[[]];
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line206"></a><div class='linenum'>206</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;RowChop&nbsp;:=&nbsp;[[]];
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line207"></a><div class='linenum'>207</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line208"></a><div class='linenum'>208</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;for&nbsp;i&nbsp;in&nbsp;[1..n]&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line209"></a><div class='linenum'>209</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;RowChop[i]&nbsp;:=&nbsp;[];
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line210"></a><div class='linenum'>210</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;for&nbsp;j&nbsp;in&nbsp;[1..b]&nbsp;do&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line211"></a><div class='linenum'>211</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;Add(RowChop[i],C[(i-1)*b+j]);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line212"></a><div class='linenum'>212</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line213"></a><div class='linenum'>213</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line214"></a><div class='linenum'>214</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line215"></a><div class='linenum'>215</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;for&nbsp;i&nbsp;in&nbsp;[1..n]&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line216"></a><div class='linenum'>216</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;CChop[i]:=[];
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line217"></a><div class='linenum'>217</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;for&nbsp;k&nbsp;in&nbsp;[1..n]&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line218"></a><div class='linenum'>218</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;CChop[i][k]&nbsp;:=&nbsp;[];
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line219"></a><div class='linenum'>219</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;for&nbsp;j&nbsp;in&nbsp;[1..a]&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line220"></a><div class='linenum'>220</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;&nbsp;Add(CChop[i][k],TransposedMat(RowChop[i])[(k-1)*a+j]);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line221"></a><div class='linenum'>221</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line222"></a><div class='linenum'>222</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;&nbsp;CChop[i][k]&nbsp;:=&nbsp;TransposedMat(CChop[i][k]);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line223"></a><div class='linenum'>223</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line224"></a><div class='linenum'>224</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line225"></a><div class='linenum'>225</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line226"></a><div class='linenum'>226</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;return&nbsp;CChop;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line227"></a><div class='linenum'>227</div></td><td></td><td></td><td></td><td><span><tt>end;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line228"></a><div class='linenum'>228</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line229"></a><div class='linenum'>229</div></td><td></td><td></td><td></td><td><span><tt>BuildPermutationMat&nbsp;:=&nbsp;function(&nbsp;f,t&nbsp;)
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line230"></a><div class='linenum'>230</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;local&nbsp;Id,P,i,ct1,ct0;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line231"></a><div class='linenum'>231</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line232"></a><div class='linenum'>232</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;Id&nbsp;:=&nbsp;IdentityMat(&nbsp;Length(t),f&nbsp;);
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line233"></a><div class='linenum'>233</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;P&nbsp;:=&nbsp;[];
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line234"></a><div class='linenum'>234</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;ct1&nbsp;:=&nbsp;1;&nbsp;ct0&nbsp;:=&nbsp;1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line235"></a><div class='linenum'>235</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;for&nbsp;i&nbsp;in&nbsp;[1..Length(t)]&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line236"></a><div class='linenum'>236</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;if&nbsp;t[i]&nbsp;=&nbsp;1&nbsp;then&nbsp;ct0&nbsp;:=&nbsp;ct0+1;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line237"></a><div class='linenum'>237</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;od;&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line238"></a><div class='linenum'>238</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;for&nbsp;i&nbsp;in&nbsp;[1..Length(t)]&nbsp;do
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line239"></a><div class='linenum'>239</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;if&nbsp;t[i]&nbsp;=&nbsp;1&nbsp;then&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line240"></a><div class='linenum'>240</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;P[i]&nbsp;:=&nbsp;Id[ct1];&nbsp;ct1&nbsp;:=&nbsp;ct1+1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line241"></a><div class='linenum'>241</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;else
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line242"></a><div class='linenum'>242</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;&nbsp;P[i]&nbsp;:=&nbsp;Id[ct0];&nbsp;ct0&nbsp;:=&nbsp;ct0+1;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line243"></a><div class='linenum'>243</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;fi;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line244"></a><div class='linenum'>244</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;od;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line245"></a><div class='linenum'>245</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line246"></a><div class='linenum'>246</div></td><td></td><td></td><td></td><td><span><tt>&nbsp;return&nbsp;TransposedMat(&nbsp;P&nbsp;);&nbsp;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line247"></a><div class='linenum'>247</div></td><td></td><td></td><td></td><td><span><tt>end;
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line248"></a><div class='linenum'>248</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+<tr class='ignore'><td><a name="line249"></a><div class='linenum'>249</div></td><td></td><td></td><td></td><td><span><tt>
+</tt></span></td><td><span></span></td></tr>
+</tbody>
+</table></body></html>

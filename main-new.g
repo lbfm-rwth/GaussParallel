@@ -39,12 +39,12 @@ ClearDown := function( f, H, t, R )
         tmp := CEX( f, BitstringToCharFct(t), H );
         A := tmp[1]; AA := tmp[2];
         # Reduce H to (0|HH)
-        HH := AA + A*R;
+        HH := ImmutableMatrix(f,AA) + ImmutableMatrix(f,A)*ImmutableMatrix(f,R);
     fi;
  
     # Echelonization
     tmp := ECH( f, HH );
-    M:=tmp[1];K:=tmp[2];RR:=tmp[3];s:=tmp[4];tt:=tmp[5];
+    M:=ImmutableMatrix(f,tmp[1]);K:=ImmutableMatrix(f,tmp[2]);RR:=ImmutableMatrix(f,tmp[3]);s:=tmp[4];tt:=tmp[5];
 
     ## Producing a riffle -Chi- from old and new pivot columns
     if IsEmpty(t) then Chi := tt;
@@ -78,7 +78,7 @@ ClearDown := function( f, H, t, R )
         RR := R; # Residue does not change
         ttt := t;
         u := 0 * t;
-        T:=[A, M, E, K, s, u];
+        T:=[ImmutableMatrix(f,A), ImmutableMatrix(f,M), ImmutableMatrix(f,E), ImmutableMatrix(f,K), s, u];
         return [RR, ttt, T ];
     fi;
     # If RR is empty, but tt is not, then the bitstring tt, representing
@@ -86,12 +86,12 @@ ClearDown := function( f, H, t, R )
     # In this case, there is nothing to be done here.
 
     tmp := CEX( f, BitstringToCharFct(tt), R );
-    E:=tmp[1];RRn:=tmp[2];
+    E:=ImmutableMatrix(f,tmp[1]); RRn:=ImmutableMatrix(f,tmp[2]);
     ## Update the residue and the pivot column bitstring
     tmp := PVC( BitstringToCharFct(t), BitstringToCharFct(Chi) );
     ttt:=CharFctToBitstring(DimensionsMat(H)[2], tmp[1]); u:=tmp[2];
     
-    T:=[A, M, E, K, s, u];
+    T:=[ImmutableMatrix(f,A), ImmutableMatrix(f,M), ImmutableMatrix(f,E), ImmutableMatrix(f,K), s, u];
     if IsEmpty(E) then
         return [RR,ttt,T];
     fi;
@@ -134,7 +134,7 @@ UpdateRow := function( f, T, H, Bjk )
  fi;
 
  tmp := REX( f, BitstringToCharFct(s), Z );
- V:=tmp[1];W:=tmp[2];
+ V:=ImmutableMatrix(f,tmp[1]);W:=ImmutableMatrix(f,tmp[2]);
  ###
  # If V is empty, then there where no operations exept from A
  # in this case there is nothing more to update
@@ -181,7 +181,7 @@ RiffleIn := function( X,u,w,type,f )
   F := TransposedMat( CEX( f,BitstringToCharFct(w),F )[1] );  
   new := RRF( F,TransposedMat(X),u );
 
-  return TransposedMat( new );
+  return ImmutableMatrix(f,TransposedMat( new ));
 end;
 
 #####################################################################
@@ -219,8 +219,8 @@ UpdateTrafo := function( f, T, K, M,v,flag,w )
      # fi; 
 
       tmp := REX( f,BitstringToCharFct(s),Y );
-      V := tmp[1];
-      W := tmp[2];
+      V := ImmutableMatrix(f,tmp[1]);
+      W := ImmutableMatrix(f,tmp[2]);
    else
       if not IsEmpty(A) then
          Z := Y + A*M;
@@ -229,8 +229,8 @@ UpdateTrafo := function( f, T, K, M,v,flag,w )
       fi;         
       
       tmp := REX( f,BitstringToCharFct(s),Z );
-      V := tmp[1];
-      W := tmp[2];
+      V := ImmutableMatrix(f,tmp[1]);
+      W := ImmutableMatrix(f,tmp[2]);
    fi;
 
    if not IsEmpty(V) then
@@ -267,27 +267,30 @@ ExtendPivotRows := function( old,new )
 end;
 
 ChoppedMatrix := function( A,nrows,ncols )
-    local i,j,rrem,crem,AA,a,b;
+    local i,j,rrem,crem,AA,a,b,f;
     rrem := DimensionsMat(A)[1] mod nrows;
     crem := DimensionsMat(A)[2] mod ncols;
     a := ( DimensionsMat(A)[1] - rrem ) / nrows; 
     b := ( DimensionsMat(A)[2] - crem ) / ncols; 
     AA := [];
+    f := DefaultFieldOfMatrix(A);
 
     for  i  in [ 1 .. nrows-1] do
         AA[i] := [];
         for j in [ 1 .. ncols-1 ] do
-            AA[i][j] := A{[(i-1)*a+1 .. i*a]}{[(j-1)*b+1 .. j*b]};
+            AA[i][j] := ImmutableMatrix(f,A{[(i-1)*a+1 .. i*a]}{[(j-1)*b+1 .. j*b]});
         od;
     od;
     AA[nrows] := [];
     for i in [ 1 .. nrows-1 ] do
-        AA[i][ncols] := A{[(i-1)*a+1 .. i*a]}{[(ncols-1)*b+1 .. DimensionsMat(A)[2]]};
+        AA[i][ncols] := ImmutableMatrix(f,A{[(i-1)*a+1 .. i*a]}{[(ncols-1)*b+1 .. DimensionsMat(A)[2]]});
     od;
     for j in [ 1 .. ncols-1 ] do
-        AA[nrows][j] := A{[(nrows-1)*a+1 .. DimensionsMat(A)[1]]}{[(j-1)*b+1 .. j*b]};
+        AA[nrows][j] := ImmutableMatrix(f,A{[(nrows-1)*a+1 .. DimensionsMat(A)[1]]}{[(j-1)*b+1 .. j*b]});
     od;
-    AA[nrows][ncols] := A{[(nrows-1)*a+1 .. DimensionsMat(A)[1]]}{[(ncols-1)*b+1 .. DimensionsMat(A)[2]]};    return AA;
+    AA[nrows][ncols] := ImmutableMatrix(f,A{[(nrows-1)*a+1 .. DimensionsMat(A)[1]]}{[(ncols-1)*b+1 .. DimensionsMat(A)[2]]});    
+    
+    return AA;
 end;
 
 MKR := function( interm,final )
@@ -320,7 +323,7 @@ MKw := function( old,new )
     return tmp;
 end;
 
-RowLenghten := function( M,F )
+RowLenghten := function( f,M,F )
    local new,i,current;
    if IsEmpty(M) then
       return M;
@@ -334,7 +337,7 @@ RowLenghten := function( M,F )
           current := current + 1;
        fi;
    od;
-   return TransposedMat(new);
+   return ImmutableMatrix(f,TransposedMat(new));
 end;
 
 GaussParallel := function( Inp,a,b ) #Chop inputmatrix Inp into (a)x(b) matrix
@@ -430,21 +433,21 @@ GaussParallel := function( Inp,a,b ) #Chop inputmatrix Inp into (a)x(b) matrix
     # Step2: Riffle missing collumns into the M_jh's
     for j in [ 1 .. b ] do
         for h in [ 1 .. a ] do
-            M[j][h] := RowLenghten( M[j][h],F[j][h] );
+            M[j][h] := RowLenghten( f,M[j][h],F[j][h] );
         od;
     od;
 
     # Step3: Upwards Cleaning
     for i in [ 1 .. b ] do #we use i for b-k+1 from now on
        k := b-i+1;
-       R[k][k] := ShallowCopy(D[k].remnant);
+       R[k][k] := ImmutableMatrix(f,ShallowCopy(D[k].remnant));
     od; 
     for i in [ 1 .. b ] do
         k := b-i+1;
         for j in [ 1 .. k-1 ] do
            tmp := CEX( f,BitstringToCharFct(D[k].pivots),B[j][k] );
-           X[j][k] := tmp[1];
-           R[j][k] := tmp[2];
+           X[j][k] := ImmutableMatrix(f,tmp[1]);
+           R[j][k] := ImmutableMatrix(f,tmp[2]);
            #Error("check X"); 
            for h in [ k .. b ] do
               if not IsEmpty(R[k][h]) then

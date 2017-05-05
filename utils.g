@@ -19,19 +19,24 @@ return [TransposedMat(L),TransposedMat(R)];
 end;
 
 BitstringToCharFct := function( P )
- local i,ct,Chi;
- ct:=1;
+ local i,Chi,l,insertCT;
+ insertCT := 1;
  Chi:=[];
- for i in [1..Length(P)] do
-  if P[i] = 0 then ct := ct +1; continue; fi;
-  ct := ct + 1; Add(Chi,i);
+ l := Length(P);
+ for i in [1..l] do
+  if P[i] = 0 then continue; fi; 
+  Chi[insertCT] := i;
+  insertCT := insertCT + 1;
  od;
  return Chi;
 end;
 
 CharFctToBitstring := function( l,P )
  local i,Chi;
- Chi:=0*[1..l];
+ Chi := [];
+ for i in [ 1 .. l ] do
+     Chi[i] := 0;
+ od;
  for i in P do 
    Chi[i]:=1;
  od;
@@ -41,15 +46,19 @@ end;
 REX := function( f,TT,C )
  local ret;
  
- if C = [] then return [[],[]]; fi;
- 
+ if IsEmpty(C) then return [[],[]]; fi;
  ret := CEX( f,TT,TransposedMat(C) );
  return [TransposedMat(ret[1]),TransposedMat(ret[2])];
 end;
 
 PVC := function( s,t )
- local stOrdered,u,i;
- stOrdered := Concatenation(s,t); u:=0*[1..Length(s)+Length(t)];
+ local stOrdered,u,i,l;
+ stOrdered := Concatenation(s,t); 
+ l := Length(s)+Length(t);
+ u := [];
+ for i in [ 1 .. l ] do
+     u[i] := 0;
+ od;
  Sort(stOrdered);
  for i in t do
   u[Position(stOrdered,i)]:=1;
@@ -59,15 +68,15 @@ PVC := function( s,t )
 end;
 
 RRF := function( R,RR,u )
- local ind,indR,indRR,Rnew;
+ local l,ind,indR,indRR,Rnew;
  indR:=1; indRR:=1;
- Rnew := ShallowCopy(R);
-
+ Rnew := [];
+ l := Length(u);
  if R = [] then return RR; fi; if RR = [] then return R; fi;
 
  while (indR <= DimensionsMat(R)[1]) or (indRR <= DimensionsMat(RR)[1]) do
   ind := indR + indRR -1;
-  if Length(u) < ind then
+  if l < ind then
       break;
   fi;
   if u[ind] = 0 then
@@ -82,12 +91,8 @@ RRF := function( R,RR,u )
  return Rnew;
 end;
 
-MCP := function( X )
- return ShallowCopy( X );
-end;
-
 ECH := function( f,H )
- local EMT,m,k,M,K,R,S,N,r,s,t,i,ind,Id,one,zero;
+ local sct,Mct,Kct,tct,Rct,EMT,m,k,M,K,R,S,N,r,s,t,i,ind,Id,one,zero,dims,dimId;
 
  if H = [] then return [ [],[],[],[],[] ]; fi;
  if Rank(H) = 0 then return [ [],[],[],[],[] ]; fi;
@@ -104,39 +109,59 @@ ECH := function( f,H )
  one := One(f);
  zero := Zero(f);
  Id := IdentityMat( Length(EMT.vectors),f );
- 
+ sct := 1;
+ Mct := 1;
+ Kct := 1;
+ Rct := 1;
+ tct := 1;
+
  ind := 1;
- for i in [1..DimensionsMat(m)[1]] do
-  if m[i] = zero*[1..DimensionsMat(m)[2]] then 
-   Add(s,0);  
+ dims := DimensionsMat(m);
+ for i in [1..dims[1]] do
+  if m[i] = zero*[1..dims[2]] then 
+   s[sct] := 0;
+   sct := sct + 1;
   else
-   Add(M,m[i]);
+   M[Mct] := m[i];
+   Mct := Mct + 1;
    if not k = [] then
-    Add(K,k[i]);
+    K[Kct] := k[i];
+    Kct := Kct + 1;
    fi;
-   Add(s,1);
+   s[sct] := 1;
+   sct := sct + 1;
   fi;
  od;
  
  ind := 1;
+ dimId := DimensionsMat(Id);
  for i in [1..DimensionsMat(r)[1]] do
-  if ind > DimensionsMat(Id)[1] then
-   Add(t,0);
-   Add(R,r[i]);
+  if ind > dimId[1] then
+   t[tct] := 0;
+   tct := tct + 1;
+   R[Rct] := r[i];
+   Rct := Rct + 1;
    continue;
   fi;
   if r[i] = Id[ind] then
-   Add(t,1);
+   t[tct] := 1;
+   tct := tct + 1;
    ind := ind + 1;
   else
-   Add(t,0);
-   Add(R,r[i]);
+   t[tct] := 0;
+   tct := tct + 1;
+   R[Rct] := r[i];
+   Rct := Rct + 1;
   fi;
  od; 
  
  return [-TransposedMat(M),TransposedMat(K),-TransposedMat(R),s,t];
 end;
 
+
+#####
+# The following functions are not in use in current versions - use careful
+#####
 testECH := function( A )
  local f,indS,i,L,R,indSS ,Id,S,N,SS,NN;
  f := DefaultFieldOfMatrix( A );
