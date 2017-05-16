@@ -5,14 +5,6 @@ ClearDown := function( f, H, t, R )
         return [R,t, [ [],[],[],[],[],[] ] ];
     fi;
 
-    H := ShallowCopy( H );
-    t := ShallowCopy( t );
-    R := ShallowCopy( R );
-
-   # if not Length(t) = DimensionsMat(H)[2] then
-   #     Error( "Length of bitlist t does not match dimensions of H!" );
-   # fi;
-
     #### INITIALIZATION ####
     ## Residue R was empty. Thus matrix above has full column-rank.
     if not IsEmpty(t) and IsEmpty( R ) then
@@ -37,7 +29,7 @@ ClearDown := function( f, H, t, R )
     else
         # Column Extraction
         tmp := CEX( f, BitstringToCharFct(t), H );
-        A := tmp[1]; AA := tmp[2];
+        A := ImmutableMatrix(f,tmp[1]); AA := ImmutableMatrix(f,tmp[2]);
         # Reduce H to (0|HH)
         # Mult Add
         if IsEmpty(A) then
@@ -52,7 +44,10 @@ ClearDown := function( f, H, t, R )
 
     # Echelonization
     tmp := ECH( f, HH );
-    M:=tmp[1];K:=tmp[2];RR:=tmp[3];s:=tmp[4];tt:=tmp[5];
+    M:=ImmutableMatrix(f,tmp[1]);
+    K:=ImmutableMatrix(f,tmp[2]);
+    RR:=ImmutableMatrix(f,tmp[3]);
+    s:=tmp[4];tt:=tmp[5];
     #Error( "Break Point - echel" );
 
     # TODO complement then extend?
@@ -87,7 +82,7 @@ ClearDown := function( f, H, t, R )
         RR := R; # Residue does not change
         ttt := t;
         u := 0 * t;
-        T:=[A, M, E, K, s, u];
+        T:=[ImmutableMatrix(f,A), M, E, K, s, u];
         return [RR, ttt, T];
     fi;
     # If RR is empty, but tt is not, then the bitstring tt, representing
@@ -96,13 +91,14 @@ ClearDown := function( f, H, t, R )
 
     #Error( "Break Point - before CEX new residue" );
     tmp := CEX( f, BitstringToCharFct(tt), R );
-    E:=tmp[1];RRn:=tmp[2];
+    E:=ImmutableMatrix(f,tmp[1]);
+    RRn:=ImmutableMatrix(f,tmp[2]);
     ## Update the residue and the pivot column bitstring
     tmp := PVC( BitstringToCharFct(t), BitstringToCharFct(Chi) );
     ttt:=CharFctToBitstring(DimensionsMat(H)[2], tmp[1]); u:=tmp[2];
     # Error( "Break Point - after CEX new residue" );
     
-    T:=[A, M, E, K, s, u];
+    T:=[ImmutableMatrix(f,A), ImmutableMatrix(f,M), ImmutableMatrix(f,E), ImmutableMatrix(f,K), s, u];
 
     ## Did column extraction return empty values?
     if IsEmpty(E) then ## if the above was all zero but we got new pivots in the current iteration
@@ -127,9 +123,8 @@ end;
 
 UpdateRow := function( f, T, H, Bjk )
  local A, E, M, K, s, u,  tmp, Z, V, X, W, S, B;
- T := ShallowCopy(T);
- H := ShallowCopy(H);
- B := ShallowCopy(Bjk);
+
+ B := Bjk;
  A:=T[1];M:=T[2];E:=T[3];K:=T[4];s:=T[5];u:=T[6];
  
  ###
@@ -142,7 +137,8 @@ UpdateRow := function( f, T, H, Bjk )
  fi;
 
  tmp := REX( f, BitstringToCharFct(s), Z );
- V:=tmp[1];W:=tmp[2];
+ V:=ImmutableMatrix(f,tmp[1]);
+ W:=ImmutableMatrix(f,tmp[2]);
  ###
  # If V is empty, then there where no operations exept from A
  # in this case there is nothing more to update
