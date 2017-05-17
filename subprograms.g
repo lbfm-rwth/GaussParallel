@@ -145,7 +145,11 @@ UpdateRow := function( f, T, H, Bjk )
   X:=M*V;
  fi;
 
- S:= E*X+B;
+ if IsEmpty(E) then
+  S:= [];
+ else
+  S:= E*X+B;
+ fi;
  B:=RRF( S, X, u );
  
  ###
@@ -235,12 +239,16 @@ UpdateTrafo := function( f, T, K, M,v,flag,w )
 
    if not IsEmpty(V) then
        X := MM*V;
-       S := M + E*X;     
+       if IsEmpty(E) then
+        S:= [];
+       else
+        S := M + E*X;     
+       fi;
        M := RRF( S,X,u );
    fi;
    
    #Error("ende");      
-   if not IsEmpty( V ) then
+   if not IsEmpty( V ) and not IsEmpty( KK ) then
       K := W + KK*V;
    else
       K := W;
