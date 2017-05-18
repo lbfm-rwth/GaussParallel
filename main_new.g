@@ -1,7 +1,7 @@
 GaussParallel := function( Inp,a,b ) #Chop inputmatrix Inp into (a)x(b) matrix
     local C,D,B,A,E,F,M,K,X,R, tmp,tmpR,tmpC,f,i,j,k,h,v,w,rank,rows,ncols;
-    C := ChoppedMatrix( Inp,a,b );w := []; v :=[];R := [];A := [];B := [];D := [];E := [];F := [];M := [];K := [];X := [];
     f := DefaultFieldOfMatrix( Inp );	
+    C := ChoppedMatrix( f,Inp,a,b );w := []; v :=[];R := [];A := [];B := [];D := [];E := [];F := [];M := [];K := [];X := [];
     ncols := DimensionsMat( Inp )[2];
     Inp := MutableCopyMat(C); 
     # Initialisation of data sets

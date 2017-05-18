@@ -39,7 +39,7 @@ ClearDown := function( f, H, t, R )
         tmp := CEX( f, BitstringToCharFct(t), H );
         A := tmp[1]; AA := tmp[2];
         # Reduce H to (0|HH)
-        HH := ImmutableMatrix(f,AA) + ImmutableMatrix(f,A)*ImmutableMatrix(f,R);
+        HH := ImmutableMatrix(f,AA) + ImmutableMatrix(f,A)*R;
     fi;
  
     # Echelonization
@@ -70,16 +70,17 @@ ClearDown := function( f, H, t, R )
     # M is empty
     #
     # This only happens when A*R + AA = 0
-    if ForAny( [ M, s, tt ], IsEmpty ) then
+    
+    if ForAny( [ M, s, tt ], IsEmpty ) then    
         M := [];
         E := [];
         K := [];
         s := [];
-        RR := R; # Residue does not change
-        ttt := t;
+        #  RR := R; # Residue does not change
+        #  ttt := t;
         u := 0 * t;
-        T:=[ImmutableMatrix(f,A), ImmutableMatrix(f,M), ImmutableMatrix(f,E), ImmutableMatrix(f,K), s, u];
-        return [RR, ttt, T ];
+        T:=[ImmutableMatrix(f,A), M, E, K, s, u];
+        return [R, t, T ];
     fi;
     # If RR is empty, but tt is not, then the bitstring tt, representing
     # the positions of the new pivot columns, is 1 everywhere.
@@ -91,7 +92,7 @@ ClearDown := function( f, H, t, R )
     tmp := PVC( BitstringToCharFct(t), BitstringToCharFct(Chi) );
     ttt:=CharFctToBitstring(DimensionsMat(H)[2], tmp[1]); u:=tmp[2];
     
-    T:=[ImmutableMatrix(f,A), ImmutableMatrix(f,M), ImmutableMatrix(f,E), ImmutableMatrix(f,K), s, u];
+    T:=[ImmutableMatrix(f,A), M, E, K, s, u];
     if IsEmpty(E) then
         return [RR,ttt,T];
     fi;
@@ -274,14 +275,13 @@ ExtendPivotRows := function( old,new )
     return old;
 end;
 
-ChoppedMatrix := function( A,nrows,ncols )
-    local i,j,rrem,crem,AA,a,b,f;
+ChoppedMatrix := function( f,A,nrows,ncols )
+    local i,j,rrem,crem,AA,a,b;
     rrem := DimensionsMat(A)[1] mod nrows;
     crem := DimensionsMat(A)[2] mod ncols;
     a := ( DimensionsMat(A)[1] - rrem ) / nrows; 
     b := ( DimensionsMat(A)[2] - crem ) / ncols; 
     AA := [];
-    f := DefaultFieldOfMatrix(A);
 
     for  i  in [ 1 .. nrows-1] do
         AA[i] := [];
@@ -338,7 +338,7 @@ RowLenghten := function( f,M,F )
    fi;
  
    current := 1; 
-   new := NullMat( Length(F),DimensionsMat(M)[1],DefaultFieldOfMatrix(M) );
+   new := NullMat( Length(F),DimensionsMat(M)[1],f );
    for i in [ 1 .. Length(F) ] do
        if F[i] = 1 then
           new[i] := TransposedMat(M)[current]; 
