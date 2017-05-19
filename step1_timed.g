@@ -98,7 +98,7 @@ ClearDown := function( f, H, t, R )
     ttt:=CharFctToBitstring(DimensionsMat(H)[2], tmp[1]); u:=tmp[2];
     # Error( "Break Point - after CEX new residue" );
     
-    T:=[ImmutableMatrix(f,A), ImmutableMatrix(f,M), ImmutableMatrix(f,E), ImmutableMatrix(f,K), s, u];
+    T:=[ImmutableMatrix(f,A), M,E, K, s, u];
 
     ## Did column extraction return empty values?
     if IsEmpty(E) then ## if the above was all zero but we got new pivots in the current iteration
