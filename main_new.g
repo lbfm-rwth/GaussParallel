@@ -1,9 +1,10 @@
-GaussParallel := function( Inp,a,b ) #Chop inputmatrix Inp into (a)x(b) matrix
-    local C,D,B,A,E,F,M,K,X,R, tmp,tmpR,tmpC,f,i,j,k,h,v,w,rank,rows,ncols;
-    f := DefaultFieldOfMatrix( Inp );	
+GaussParallel := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
+    local C,D,B,A,E,F,M,K,X,R, tmp,tmpR,tmpC,i,j,k,h,v,w,rank,rows,ncols;
     C := ChoppedMatrix( f,Inp,a,b );w := []; v :=[];R := [];A := [];B := [];D := [];E := [];F := [];M := [];K := [];X := [];
     ncols := DimensionsMat( Inp )[2];
-    Inp := MutableCopyMat(C); 
+    Inp := MutableCopyMat(C);   
+    
+    
     # Initialisation of data sets
     for i in [ 1 .. a ] do
         A[i] := [];
@@ -86,8 +87,7 @@ GaussParallel := function( Inp,a,b ) #Chop inputmatrix Inp into (a)x(b) matrix
             F[j][i] := MKR( E[i][j],E[i][b] );
         od;
     od;
-    #Error("DBUG----LOCATION2");
-    
+
     # Step2: Riffle missing collumns into the M_jh's
     for j in [ 1 .. b ] do
         for h in [ 1 .. a ] do
@@ -98,7 +98,7 @@ GaussParallel := function( Inp,a,b ) #Chop inputmatrix Inp into (a)x(b) matrix
     # Step3: Upwards Cleaning
     for i in [ 1 .. b ] do #we use i for b-k+1 from now on
        k := b-i+1;
-       R[k][k] := ImmutableMatrix(f,ShallowCopy(D[k].remnant));
+       R[k][k] := ImmutableMatrix(f,(D[k].remnant));
     od; 
     for i in [ 1 .. b ] do
         k := b-i+1;

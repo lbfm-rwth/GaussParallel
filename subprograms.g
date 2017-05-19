@@ -332,16 +332,17 @@ MKw := function( old,new )
 end;
 
 RowLenghten := function( f,M,F )
-   local new,i,current;
+   local new,i,current,MTr;
    if IsEmpty(M) then
       return M;
    fi;
  
+   MTr := TransposedMat(M);
    current := 1; 
    new := NullMat( Length(F),DimensionsMat(M)[1],f );
    for i in [ 1 .. Length(F) ] do
        if F[i] = 1 then
-          new[i] := TransposedMat(M)[current]; 
+          new[i] := MTr[current]; 
           current := current + 1;
        fi;
    od;
