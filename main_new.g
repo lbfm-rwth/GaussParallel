@@ -2,7 +2,7 @@ GaussParallel := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
     local C,D,B,A,E,F,M,K,X,R, tmp,tmpR,tmpC,i,j,k,h,v,w,rank,rows,ncols;
     C := ChoppedMatrix( f,Inp,a,b );w := []; v :=[];R := [];A := [];B := [];D := [];E := [];F := [];M := [];K := [];X := [];
     ncols := DimensionsMat( Inp )[2];
-    Inp := MutableCopyMat(C);   
+    Inp := C;   
     
     
     # Initialisation of data sets
@@ -95,18 +95,20 @@ GaussParallel := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
         od;
     od;
 
+return 0;
+
     # Step3: Upwards Cleaning
     for i in [ 1 .. b ] do #we use i for b-k+1 from now on
        k := b-i+1;
-       R[k][k] := ImmutableMatrix(f,(D[k].remnant));
+       R[k][k] := D[k].remnant;
     od; 
     for i in [ 1 .. b ] do
         k := b-i+1;
         for j in [ 1 .. k-1 ] do
            tmp := CEX( f,BitstringToCharFct(D[k].pivots),B[j][k] );
-           X[j][k] := ImmutableMatrix(f,tmp[1]);
-           R[j][k] := ImmutableMatrix(f,tmp[2]);
-           #Error("check X"); 
+           X[j][k] := tmp[1];
+           R[j][k] := tmp[2];
+         
            for h in [ k .. b ] do
               if not IsEmpty(R[k][h]) then
                  R[j][h] := R[j][h] + X[j][k]*R[k][h];

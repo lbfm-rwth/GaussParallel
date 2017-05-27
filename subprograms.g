@@ -39,7 +39,7 @@ ClearDown := function( f, H, t, R )
         tmp := CEX( f, BitstringToCharFct(t), H );
         A := tmp[1]; AA := tmp[2];
         # Reduce H to (0|HH)
-        HH := ImmutableMatrix(f,AA) + ImmutableMatrix(f,A)*R;
+        HH := AA + A*R;
     fi;
  
     # Echelonization
@@ -87,7 +87,7 @@ ClearDown := function( f, H, t, R )
     # In this case, there is nothing to be done here.
 
     tmp := CEX( f, BitstringToCharFct(tt), R );
-    E:=ImmutableMatrix(f,tmp[1]); RRn:=ImmutableMatrix(f,tmp[2]);
+    E:=tmp[1]; RRn:=tmp[2];
     ## Update the residue and the pivot column bitstring
     tmp := PVC( BitstringToCharFct(t), BitstringToCharFct(Chi) );
     ttt:=CharFctToBitstring(DimensionsMat(H)[2], tmp[1]); u:=tmp[2];
@@ -135,7 +135,7 @@ UpdateRow := function( f, T, H, Bjk )
  fi;
 
  tmp := REX( f, BitstringToCharFct(s), Z );
- V:=ImmutableMatrix(f,tmp[1]);W:=ImmutableMatrix(f,tmp[2]);
+ V:=tmp[1];W:=tmp[2];
  ###
  # If V is empty, then there where no operations exept from A
  # in this case there is nothing more to update
@@ -224,8 +224,8 @@ UpdateTrafo := function( f, T, K, M,v,flag,w )
      # fi; 
 
       tmp := REX( f,BitstringToCharFct(s),Y );
-      V := ImmutableMatrix(f,tmp[1]);
-      W := ImmutableMatrix(f,tmp[2]);
+      V := tmp[1];
+      W := tmp[2];
    else
       if not IsEmpty(A) then
          Z := Y + A*M;
@@ -234,8 +234,8 @@ UpdateTrafo := function( f, T, K, M,v,flag,w )
       fi;         
       
       tmp := REX( f,BitstringToCharFct(s),Z );
-      V := ImmutableMatrix(f,tmp[1]);
-      W := ImmutableMatrix(f,tmp[2]);
+      V := tmp[1];
+      W := tmp[2];
    fi;
 
    if not IsEmpty(V) then
