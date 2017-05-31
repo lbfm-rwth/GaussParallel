@@ -1,23 +1,3 @@
-CEX := function( f,P,C )
- local i,L,R,numc,col,Lct,Rct;
-
- if IsEmpty(C) then return [[],[]]; fi;
-
- numc := DimensionsMat( C )[2];
- C := TransposedMat(C);
- Lct:=1; Rct:=1;
- L := []; R := []; 
- for i in [1..numc] do
-  col := C[i];
-  if i in P then
-   L[Lct] := col; Lct := Lct +1;
-  else 
-   R[Rct] := col; Rct := Rct +1;
-  fi;
- od;
-return [TransposedMat(L),TransposedMat(R)];
-end;
-
 BitstringToCharFct := function( P )
  local i,Chi,l,insertCT;
  insertCT := 1;
@@ -44,11 +24,32 @@ CharFctToBitstring := function( l,P )
 end;
 
 REX := function( f,TT,C )
- local ret;
+    local i,U,D,Uct,Dct,numr,row;
  
- if IsEmpty(C) then return [[],[]]; fi;
- ret := CEX( f,TT,TransposedMat(C) );
- return [TransposedMat(ret[1]),TransposedMat(ret[2])];
+    if IsEmpty(C) then return [[],[]]; fi;
+    numr := DimensionsMat(C)[1];
+    Uct := 1; Dct := 1;
+    U:=[]; D:=[];
+    for i in [ 1 .. numr ] do
+        row := C[i];
+        if  i in TT then
+            U[Uct] := row; Uct := Uct + 1;
+        else
+            D[Dct] := row; Dct := Dct + 1;
+        fi;
+    od;
+    ConvertToMatrixRepNC( U,f );    
+    ConvertToMatrixRepNC( D,f );
+    return [U,D];
+end;
+
+CEX := function( f,P,C )
+    local CT;
+    CT := TransposedMat(C);
+    CT := REX(f,P,CT);
+    CT[1] := TransposedMat(CT[1]);
+    CT[2] := TransposedMat(CT[2]);
+    return CT;
 end;
 
 PVC := function( s,t )
@@ -67,7 +68,7 @@ PVC := function( s,t )
  return [stOrdered,u];
 end;
 
-RRF := function( R,RR,u )
+RRF := function( f,R,RR,u )
  local l,ind,indR,indRR,Rnew;
  indR:=1; indRR:=1;
  Rnew := [];
@@ -87,7 +88,8 @@ RRF := function( R,RR,u )
    indRR := indRR + 1;
   fi;
  od;
-  
+ 
+ ConvertToMatrixRepNC( Rnew,f );
  return Rnew;
 end;
 
@@ -95,7 +97,7 @@ ECH := function( f,H )
  local sct,Mct,Kct,tct,Rct,EMT,m,k,M,K,R,S,N,r,s,t,i,ind,Id,one,zero,dims,dimId;
 
  if H = [] then return [ [],[],[],[],[] ]; fi;
- if Rank(H) = 0 then return [ [],[],[],[],[] ]; fi;
+ if Rank(H) = 0 then return [ [],[],[],[],[] ]; fi;   #--noetig?
  
  EMT := EchelonMatTransformation( H );
  m := TransposedMat(EMT.coeffs);
@@ -154,119 +156,12 @@ ECH := function( f,H )
    Rct := Rct + 1;
   fi;
  od; 
- 
- return [-TransposedMat(M),TransposedMat(K),-TransposedMat(R),s,t];
+
+ M := -TransposedMat(M);
+ ConvertToMatrixRepNC( M,f );
+ K := TransposedMat(K);
+ ConvertToMatrixRepNC( K,f );
+ R := -TransposedMat(R);
+ ConvertToMatrixRepNC( R,f );
+ return [M,K,R,s,t];
 end;
-
-
-#####
-# The following functions are not in use in current versions - use careful
-#####
-testECH := function( A )
- local f,indS,i,L,R,indSS ,Id,S,N,SS,NN;
- f := DefaultFieldOfMatrix( A );
- L := ECH( f,A );
- R := EchelonMatTransformation( A );
- 
- Id := IdentityMat( Length(R.vectors),f );
- indS := 1; indSS := 1;
- S := []; SS := []; N:=[]; NN:=[];
- #calculate S,N,S'N' from L
- for i in [1..Length(L[4])] do
-  if L[4][i] = 1 then
-   Add( S,Id[indS] ); 
-   indS := indS + 1;
-  else
-   Add( S,(0*Id[1][1])*Id[1] );
-  fi;
- od;
- for i in [1..Length(L[5])] do
-  if L[5][i] = 1 then
-   Add( SS,Id[indSS] ); 
-   indSS := indSS + 1;
-  else
-   Add( SS,(0*Id[1][1])*Id[1] );
-  fi;
- od;
- 
- indS := 1;
- indSS := 1;
- if not DimensionsMat(S)[2] = DimensionsMat(A)[1] then
-  Id := IdentityMat( DimensionsMat(A)[1] - DimensionsMat(S)[2],f );
-  for i in [1..Length(L[4])] do
-   if L[4][i] = 0 then
-    Add( N,Id[indS] ); 
-    indS := indS + 1;
-   else
-    Add( N,(0*Id[1][1])*Id[1] );
-   fi;
-  od;
- fi;
- if not DimensionsMat(SS)[2] = DimensionsMat(A)[2] then
-  Id := IdentityMat( DimensionsMat(A)[2] - DimensionsMat(SS)[2],f );
-  for i in [1..Length(L[5])] do
-   if L[5][i] = 0 then
-    Add( NN,Id[indSS] ); 
-    indSS := indSS + 1;
-   else
-    Add( NN,(0*Id[1][1])*Id[1] );
-   fi;
-  od;
- fi;
- 
- S := TransposedMat(S);
- SS := (SS);
- N := TransposedMat(N);
- NN := (NN);
- return [L[1]*S*A*SS,L[1]*S*A*NN,(L[2]*S+N)*A*SS,(L[2]*S+N)*A*NN,S,N,SS,NN];
-end;
-
-ChopMatrix := function( n,C )
- local b,a,i,j,k,RowChop,CChop;
- b := DimensionsMat( C )[1]/n;
- a := DimensionsMat( C )[2]/n;
- CChop := [[]];
- RowChop := [[]];
- 
- for i in [1..n] do
-  RowChop[i] := [];
-  for j in [1..b] do 
-   Add(RowChop[i],C[(i-1)*b+j]);
-  od;
- od;
- 
- for i in [1..n] do
-  CChop[i]:=[];
-  for k in [1..n] do
-   CChop[i][k] := [];
-   for j in [1..a] do
-    Add(CChop[i][k],TransposedMat(RowChop[i])[(k-1)*a+j]);
-   od;
-    CChop[i][k] := TransposedMat(CChop[i][k]);
-  od;
- od;
- 
- return CChop;
-end;
-
-BuildPermutationMat := function( f,t )
- local Id,P,i,ct1,ct0;
-
- Id := IdentityMat( Length(t),f );
- P := [];
- ct1 := 1; ct0 := 1;
- for i in [1..Length(t)] do
-  if t[i] = 1 then ct0 := ct0+1; fi;
- od; 
- for i in [1..Length(t)] do
-  if t[i] = 1 then 
-   P[i] := Id[ct1]; ct1 := ct1+1;
-  else
-   P[i] := Id[ct0]; ct0 := ct0+1;
-  fi;
- od;
-  
- return TransposedMat( P ); 
-end;
-
-

@@ -28,7 +28,7 @@ profileGauss := function( matrixFile, chopSize  )
     Exec( Concatenation( "rm -f ", profileName, ".gz" ) );
     Print("Computing...\c");
     ProfileLineByLine( Concatenation( profileName, ".gz" ) );
-    res := GaussParallel( A, chopSize, chopSize );;
+    res := GaussParallel( A, chopSize, chopSize,DefaultFieldOfMatrix(A) );;
     UnprofileLineByLine();
     Print("OK\n");
     Print("Reading profile...\c");

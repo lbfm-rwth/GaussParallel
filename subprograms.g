@@ -15,7 +15,7 @@ ClearDown := function( f, H, t, R )
     fi; 
 
     ## Residue R was empty. Thus matrix above has full column-rank.
-    if not IsEmpty(t) and IsEmpty( R ) then
+    if not IsEmpty(t) and IsEmpty(R) then
         A := H;
         M := [];
         E := [];
@@ -44,7 +44,7 @@ ClearDown := function( f, H, t, R )
  
     # Echelonization
     tmp := ECH( f, HH );
-    M:=ImmutableMatrix(f,tmp[1]);K:=ImmutableMatrix(f,tmp[2]);RR:=ImmutableMatrix(f,tmp[3]);s:=tmp[4];tt:=tmp[5];
+    M:=tmp[1];K:=tmp[2];RR:=tmp[3];s:=tmp[4];tt:=tmp[5];
 
     ## Producing a riffle -Chi- from old and new pivot columns
     if IsEmpty(t) then Chi := tt;
@@ -71,7 +71,7 @@ ClearDown := function( f, H, t, R )
     #
     # This only happens when A*R + AA = 0
     
-    if ForAny( [ M, s, tt ], IsEmpty ) then    
+    if IsEmpty(s) or IsEmpty(tt) or IsEmpty(M) then    
         M := [];
         E := [];
         K := [];
@@ -79,7 +79,7 @@ ClearDown := function( f, H, t, R )
         #  RR := R; # Residue does not change
         #  ttt := t;
         u := 0 * t;
-        T:=[ImmutableMatrix(f,A), M, E, K, s, u];
+        T:=[A, M, E, K, s, u];
         return [R, t, T ];
     fi;
     # If RR is empty, but tt is not, then the bitstring tt, representing
@@ -92,7 +92,7 @@ ClearDown := function( f, H, t, R )
     tmp := PVC( BitstringToCharFct(t), BitstringToCharFct(Chi) );
     ttt:=CharFctToBitstring(DimensionsMat(H)[2], tmp[1]); u:=tmp[2];
     
-    T:=[ImmutableMatrix(f,A), M, E, K, s, u];
+    T:=[A, M, E, K, s, u];
     if IsEmpty(E) then
         return [RR,ttt,T];
     fi;
@@ -104,7 +104,7 @@ ClearDown := function( f, H, t, R )
         RR := [];
     else
         RRR:=RRn+E*RR;
-        RR := RRF( RRR, RR, u );
+        RR := RRF( f,RRR, RR, u );
     fi;
      
     return [RR, ttt, T ];
@@ -151,7 +151,7 @@ UpdateRow := function( f, T, H, Bjk )
  else
   S:= E*X+B;
  fi;
- B:=RRF( S, X, u );
+ B:=RRF( f,S, X, u );
  
  ###
  # if K is empty, then s is the all-one-bitstring and there are no non-pivot rows
@@ -183,10 +183,12 @@ RiffleIn := function( X,u,w,type,f )
   if type = 0 then
       F := Zero(f) * F;
   fi;
-  F := TransposedMat( CEX( f,BitstringToCharFct(w),F )[1] );  
-  new := RRF( F,TransposedMat(X),u );
-
-  return ImmutableMatrix(f,TransposedMat( new ));
+  #F := TransposedMat( CEX( f,BitstringToCharFct(w),F )[1] );  
+  F := REX( f,BitstringToCharFct(w),F )[1];  
+  new := RRF( f,F,TransposedMat(X),u );
+  new := TransposedMat(new);
+  return new;
+  #return ImmutableMatrix(f,TransposedMat( new ));
 end;
 
 #####################################################################
@@ -245,11 +247,11 @@ UpdateTrafo := function( f, T, K, M,v,flag,w )
        else
         S := M + E*X;     
        fi;
-       M := RRF( S,X,u );
+       M := RRF( f,S,X,u );
    fi;
    
    #Error("ende");      
-   if not IsEmpty( V ) and not IsEmpty( KK ) then
+   if not V=IsEmpty(V) and not IsEmpty(KK) then
       K := W + KK*V;
    else
       K := W;
@@ -346,5 +348,7 @@ RowLenghten := function( f,M,F )
           current := current + 1;
        fi;
    od;
-   return ImmutableMatrix(f,TransposedMat(new));
+   new := TransposedMat(new);
+   ConvertToMatrixRepNC( new,f );
+   return new;
 end;
