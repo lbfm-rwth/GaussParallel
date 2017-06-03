@@ -251,7 +251,7 @@ UpdateTrafo := function( f, T, K, M,v,flag,w )
    fi;
    
    #Error("ende");      
-   if not V=IsEmpty(V) and not IsEmpty(KK) then
+   if not IsEmpty(V) and not IsEmpty(KK) then
       K := W + KK*V;
    else
       K := W;
