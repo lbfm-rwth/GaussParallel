@@ -19,10 +19,18 @@ HandlePivots := function( j,n,p,Eold )
 
     return [E,v,w];
 end;
+
+MAD := function( X,Y,Z )
+    if IsEmpty(Z) then
+        return [];
+    fi;
+    return X + Y*Z;
+end;
+
 GaussParallelTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
     local C,D,B,A,E,F,M,K,X,R, tmp,tmpR,tmpC,i,j,k,h,v,w,rank,rows,
     dummyTask, TaskListClearDown,TaskListUpdateRow,TaskListPivots,
-    TaskListUpdateTrafo,ncols;
+    TaskListUpdateTrafo,TaskListClearUp,TaskListClearUpTrafo ,ncols;
     C := ChoppedMatrix( f,Inp,a,b );w := []; v :=[];R := [];A := [];B := [];D := [];E := [];F := [];M := [];K := [];X := [];
     ncols := DimensionsMat( Inp )[2];
     Inp := MutableCopyMat(C);   
@@ -33,6 +41,21 @@ GaussParallelTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) m
         [1..a],
         x -> List( [1..b], x -> dummyTask )
     );
+    TaskListClearUpTrafo := List(
+        [1..b],
+        x -> List(
+            [1..a],
+            x -> List( [1..b], x -> dummyTask )
+        )
+    );
+    TaskListClearUp := List(
+        [1..b],
+        x -> List(
+            [1..b],
+            x -> List( [1..b], x -> dummyTask )
+        )
+    );
+
     TaskListPivots := List(
         [1..a],
         x -> List( [1..b], x -> dummyTask )
@@ -298,7 +321,6 @@ GaussParallelTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) m
             );
         od;
     od;
-
     Print( "tasks succesfully scheduled\n" );
     WaitTask( Concatenation( TaskListClearDown ) );
     WaitTask( Concatenation( F ) );
@@ -333,40 +355,122 @@ GaussParallelTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) m
         od;
     od;
 
-
+    Print("Upwards Cleaning...");
 
     # Step3: Upwards Cleaning
     for i in [ 1 .. b ] do #we use i for b-k+1 from now on
        k := b-i+1;
        R[k][k] := D[k].remnant;
+    od;
+
+    for i in [ 1 .. b ] do
+        k := b-i+1;
+
+        for j in [ 1 .. k-1 ] do
+            tmp := CEX( f,BitstringToCharFct(D[k].pivots),B[j][k] );
+            # ConvertToMatrixRepNC( tmp[1],f );
+            # ConvertToMatrixRepNC( tmp[2],f );
+         
+            X[j][k] := tmp[1];
+            R[j][k] := tmp[2];
+        od;
     od; 
+    
     for i in [ 1 .. b ] do
         k := b-i+1;
         for j in [ 1 .. k-1 ] do
-           tmp := CEX( f,BitstringToCharFct(D[k].pivots),B[j][k] );
-          # ConvertToMatrixRepNC( tmp[1],f );
-          # ConvertToMatrixRepNC( tmp[2],f );
-           
-           X[j][k] := tmp[1];
-           R[j][k] := tmp[2];
-         
-           for h in [ k .. b ] do
-              if not IsEmpty(R[k][h]) then
-                 
-                 ConvertToMatrixRepNC( R[j][h],f );
-                 ConvertToMatrixRepNC( R[k][h],f );
-                 R[j][h] := R[j][h] + X[j][k]*R[k][h];
-              fi;
-           od;
-           for h in [ 1 .. a ] do
-              if not IsEmpty(M[k][h]) then
-                 ConvertToMatrixRepNC( M[j][h],f );
-                 ConvertToMatrixRepNC( M[k][h],f );
-                 M[j][h] := M[j][h] + X[j][k]*M[k][h];
-              fi;
-           od;
+            for h in [ k .. b ] do
+                if h-k=0 then
+                    TaskListClearUp[j][h][h-k+1] := ScheduleTask(
+                        [],
+                        MAD,
+                        R[j][h],
+                        X[j][k],
+                        R[k][h]
+                    );
+                else
+                    TaskListClearUp[j][h][h-k+1] := ScheduleTask(
+                        [TaskListClearUp[k][h][h-k],
+                        TaskListClearUp[j][h][h-k]],
+                        MAD,
+                        TaskResult(TaskListClearUp[j][h][h-k]),
+                        X[j][k],
+                        TaskResult(TaskListClearUp[k][h][h-k])
+                    );
+                fi;
+            od;
+            for h in [ 1 .. a ] do
+                if i=1 then
+                    
+                    TaskListClearUpTrafo[j][h][i] := ScheduleTask(
+                        [],
+                        MAD,
+                        M[j][h],
+                        X[j][k],
+                        M[k][h]
+                    ); 
+                else
+                    TaskListClearUpTrafo[j][h][i] := ScheduleTask(
+                        [TaskListClearUpTrafo[k][h][i-1],
+                        TaskListClearUpTrafo[j][h][i-1]],
+                        MAD,
+                        TaskResult(TaskListClearUpTrafo[j][h][i-1]),
+                        X[j][k],
+                        TaskResult(TaskListClearUpTrafo[k][h][i-1])
+                    );
+                fi;
+            od;
         od;
     od;
+
+    Print( "tasks succesfully scheduled\n" );
+
+    WaitTask( Concatenation( List(TaskListClearUp,Concatenation) ) );
+    WaitTask( Concatenation( List(TaskListClearUpTrafo,Concatenation) ) );
+
+    for i in [ 1 .. b ] do
+        k := b-i+1;
+        for j in [ 1 .. k-1 ] do
+            for h in [ k .. b ] do
+                #if not h-k=0 then
+                    R[j][h] := TaskResult(TaskListClearUp[j][h][h-k+1]);
+                #fi;
+            od;
+            for h in [ 1 .. a ] do
+                #if not i=1 then
+                    M[j][h] := TaskResult(TaskListClearUpTrafo[j][h][i]);
+                #fi;
+            od;
+        od;
+    od;
+
+
+       # for j in [ 1 .. k-1 ] do
+       #    tmp := CEX( f,BitstringToCharFct(D[k].pivots),B[j][k] );
+       #   # ConvertToMatrixRepNC( tmp[1],f );
+       #   # ConvertToMatrixRepNC( tmp[2],f );
+       #    
+       #    X[j][k] := tmp[1];
+       #    R[j][k] := tmp[2];
+       # od; 
+
+        #   for h in [ k .. b ] do
+        #      if not IsEmpty(R[k][h]) then
+        #       
+        #         ConvertToMatrixRepNC( R[j][h],f );
+        #         ConvertToMatrixRepNC( R[k][h],f );
+        #         R[j][h] := R[j][h] + X[j][k]*R[k][h];
+        #      fi;
+        #   od;
+        #   for h in [ 1 .. a ] do
+        #      if not IsEmpty(M[k][h]) then
+        #         ConvertToMatrixRepNC( M[j][h],f );
+        #         ConvertToMatrixRepNC( M[k][h],f );
+        #         M[j][h] := M[j][h] + X[j][k]*M[k][h];
+        #      fi;
+        #   od;
+        #od;
+
 
     ## Write output
 
@@ -461,5 +565,3 @@ GaussParallelTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) m
 
      return [v,w,C,B,D];
 end;
-
-

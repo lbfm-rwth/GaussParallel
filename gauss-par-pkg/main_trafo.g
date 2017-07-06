@@ -95,7 +95,7 @@ GaussParallel := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
         od;
     od;
 
-
+    return 0;
 
     # Step3: Upwards Cleaning
     for i in [ 1 .. b ] do #we use i for b-k+1 from now on
