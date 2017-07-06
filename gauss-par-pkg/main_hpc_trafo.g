@@ -381,8 +381,7 @@ GaussParallelTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) m
         for j in [ 1 .. k-1 ] do
             for h in [ k .. b ] do
                 if h-k=0 then
-                    TaskListClearUp[j][h][h-k+1] := ScheduleTask(
-                        [],
+                    TaskListClearUp[j][h][h-k+1] := RunTask(
                         MAD,
                         R[j][h],
                         X[j][k],
@@ -402,8 +401,7 @@ GaussParallelTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) m
             for h in [ 1 .. a ] do
                 if i=1 then
                     
-                    TaskListClearUpTrafo[j][h][i] := ScheduleTask(
-                        [],
+                    TaskListClearUpTrafo[j][h][i] := RunTask(
                         MAD,
                         M[j][h],
                         X[j][k],
