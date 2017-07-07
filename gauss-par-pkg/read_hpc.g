@@ -8,3 +8,4 @@ Read("./utils.g");
 Read("./subprograms.g");
 Read("./main_trafo.g");
 Read("./main_hpc_trafo.g");
+Read("./main_semi_hpc.g");
