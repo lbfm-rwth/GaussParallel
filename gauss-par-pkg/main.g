@@ -255,7 +255,7 @@ MKw := function( old,new )
     return tmp;
 end;
 
-GaussSequential := function( Inp,a,b ) #Chop inputmatrix Inp into (a)x(b) matrix
+GaussTrafo := function( Inp,a,b ) #Chop inputmatrix Inp into (a)x(b) matrix
     local C,D,B,A,E,F,M,K,X,R, tmp,tmpR,tmpC,f,i,j,k,h,v,w,rank,rows,ncols;
     C := ChoppedMatrix( Inp,a,b );w := []; v :=[];R := [];A := [];B := [];D := [];E := [];F := [];M := [];K := [];X := [];
     f := DefaultFieldOfMatrix( Inp );	
@@ -401,7 +401,7 @@ GaussSequential := function( Inp,a,b ) #Chop inputmatrix Inp into (a)x(b) matrix
      # SLOW - only for testing 
      C := TransposedMat( RRF( TransposedMat(C), -IdentityMat( rank,f ),w  ) );
 
-     return [v,C];
+     return rec( pivots := v,vectors :=C );
 end;
 
 

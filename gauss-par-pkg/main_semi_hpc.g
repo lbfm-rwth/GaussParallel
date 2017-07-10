@@ -27,7 +27,7 @@ MAD := function( X,Y,Z )
     return X + Y*Z;
 end;
 
-GaussSemiHPCTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
+GaussTrafoSemiHPC := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
     local C,D,B,A,E,F,M,K,X,R, tmp,tmpR,tmpC,i,j,k,h,v,w,rank,rows,
     dummyTask, TaskListClearDown,TaskListUpdateRow,TaskListPivots,
     TaskListUpdateTrafo,TaskListClearUp,TaskListClearUpTrafo ,ncols;
@@ -355,7 +355,7 @@ GaussSemiHPCTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) ma
         od;
     od;
 
-    Print("Upwards Cleaning...");
+    Print("Upwards Cleaning...","\n");
 
     # Step3: Upwards Cleaning
     for i in [ 1 .. b ] do #we use i for b-k+1 from now on
@@ -364,7 +364,7 @@ GaussSemiHPCTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) ma
     od;
 
     for i in [ 1 .. b ] do
-
+        k := b-i+1;
         for j in [ 1 .. k-1 ] do
            tmp := CEX( f,BitstringToCharFct(D[k].pivots),B[j][k] );
           # ConvertToMatrixRepNC( tmp[1],f );
@@ -390,6 +390,7 @@ GaussSemiHPCTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) ma
            od;
         od;
     od;
+
 
     ## Write output
 
@@ -482,5 +483,5 @@ GaussSemiHPCTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) ma
      # SLOW - only for testing 
      C := TransposedMat( RRF( f,TransposedMat(C), -IdentityMat( rank,f ),w  ) );
 
-     return [v,w,C,B,D];
+     return rec( pivots := v, vectors := C, coeffs := B );
 end;

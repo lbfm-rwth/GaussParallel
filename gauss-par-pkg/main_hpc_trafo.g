@@ -29,7 +29,7 @@ MAD := function( X,Y,Z )
     return X + Y*Z;
 end;
 
-GaussParallelTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
+GaussTrafoHPC := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
     local C,D,B,A,E,F,M,K,X,R, tmp,tmpR,tmpC,i,j,k,h,v,w,rank,rows,
     dummyTask, TaskListClearDown,TaskListUpdateRow,TaskListPivots,
     TaskListUpdateTrafo,TaskListClearUp,TaskListClearUpTrafo ,ncols;
@@ -444,7 +444,6 @@ GaussParallelTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) m
         od;
     od;
 
-
        # for j in [ 1 .. k-1 ] do
        #    tmp := CEX( f,BitstringToCharFct(D[k].pivots),B[j][k] );
        #   # ConvertToMatrixRepNC( tmp[1],f );
@@ -563,5 +562,5 @@ GaussParallelTrafo := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) m
      # SLOW - only for testing 
      C := TransposedMat( RRF( f,TransposedMat(C), -IdentityMat( rank,f ),w  ) );
 
-     return [v,w,C,B,D];
+     return rec( pivots := v, vectors := C,coeffs := B);
 end;
