@@ -1,20 +1,46 @@
 GaussParallel := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
-    local C,D,B,A,E,F,M,K,X,R, tmp,tmpR,tmpC,i,j,k,h,v,w,rank,rows,ncols;
-    C := ChoppedMatrix( f,Inp,a,b );w := []; v :=[];R := [];A := [];B := [];D := [];E := [];F := [];M := [];K := [];X := [];
+    local   C,
+            D,
+            B,
+            A,
+            E,
+            F,
+            M,
+            K,
+            X,
+            R, 
+            tmp,
+            tmpR,
+            tmpC,
+            nr,
+            i,
+            j,
+            k,
+            h,
+            v,
+            w,
+            rank,
+            rows,
+            ncols;
+            
+    ### Preparation: Init and chopping
+    C := ChoppedMatrix( f,Inp,a,b );
+    w := []; v := []; R := []; A := []; 
+    B := []; D := []; E := []; F := [];
+    M := []; K := []; X := [];nr := [];
     ncols := DimensionsMat( Inp )[2];
     Inp := MutableCopyMat(C);   
-    
-    
-    # Initialisation of data sets
     for i in [ 1 .. a ] do
         A[i] := [];
         E[i] := [];
+        nr[i] := [];
 	K[i] := [];
         v[i] := [];
         w[i] := [];
         for k in [ 1 .. b ] do
             A[i][k] := [];
             E[i][k] := [];
+            nr[i][k] := [];
             v[i][k] := [];
             w[i][k] := [];
         od;
@@ -42,19 +68,26 @@ GaussParallel := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
         od;
     od;
   
-    # Step1: ClearDown
+    ### Step1: ClearDown
     for i in [ 1 .. a ] do
         for j in [ 1 .. b ] do
             if j = 1 then       
                E[i][1] := 0*[ 1 .. DimensionsMat(Inp[i][j])[1] ];
+               nr[i][1] := 0;
             fi;
 
+            if i=5 and j = 3 then
+                Error( "before CD" );;
+            fi;
             tmp := ClearDown( f,C[i][j],D[j].pivots,D[j].remnant );
             A[i][j] := tmp[3];
             D[j].remnant := tmp[1]; 
             D[j].pivots := tmp[2];
+
+            #Error("----------------");
            
             if not j = 1 then 
+                nr[i][j] := Sum(E[i][j-1]);
                 E[i][j] := ExtendPivotRows( E[i][j-1],tmp[3][5] );
                 v[i][j] := MKR( E[i][j-1],E[i][j] );
                 w[i][j] := MKw( E[i][j-1],E[i][j] );
@@ -72,17 +105,17 @@ GaussParallel := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
             od;
         
             for h in [ 1 .. i-1 ] do 
-                tmp := UpdateTrafo( f,A[i][j],K[i][h],M[j][h],v[h][j],0,w[h][j] );
+                tmp := UpdateTrafo( f,A[i][j],K[i][h],M[j][h],v[h][j],0,w[h][j],nr[i][j] );
                 K[i][h] := tmp[1];
                 M[j][h] := tmp[2];
             od;
-            tmp := UpdateTrafo( f,A[i][j],K[i][i],M[j][i],v[i][j],1,w[i][j] );
+            tmp := UpdateTrafo( f,A[i][j],K[i][i],M[j][i],v[i][j],1,w[i][j],nr[i][j] );
             K[i][i] := tmp[1];
             M[j][i] := tmp[2];
-            #Error( "DBUG----LOCATION1");
+           
+            #Error( "Check K" );
         od;
         
-        # F
         for j in [ 1 .. b ] do
             F[j][i] := MKR( E[i][j],E[i][b] );
         od;
@@ -174,7 +207,6 @@ GaussParallel := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
     od;
 
     # Glueing the blocks of R
-    #Error("BREAKPOINT - Checking remnant"); 
     C := NullMat( rank,ncols-rank,f );
     rows := [];
     w := [];
@@ -220,7 +252,49 @@ GaussParallel := function( Inp,a,b,f ) #Chop inputmatrix Inp into (a)x(b) matrix
      # SLOW - only for testing 
      C := TransposedMat( RRF( f,TransposedMat(C), -IdentityMat( rank,f ),w  ) );
 
-     return [v,w,C,B,D];
+    ## Glueing the blocks of K
+    D := NullMat( Length(v)-rank,Length(v),f );
+    tmp := IdentityMat( Length(v)-rank,f );
+    rows := [];
+
+    for j in [ 1 .. a ] do
+        rows[j] := 0;
+        for i in [ 1 .. a ] do
+             rows[j] := Length(E[j][b]) - Sum(E[j][b]);
+        od;
+    od;
+   
+   # Error( "---1----" );
+
+    tmpR := 1;
+    for j in [ 1 .. a ] do
+
+    #Error( "---2----" );
+        if rows[j]=0 then
+            continue;
+        fi;
+        tmpC := 1;
+        for i in [ 1 .. a ] do
+            if IsEmpty(K[j][i]) then
+                K[j][i] := NullMat( rows[j],Length(E[i][b]),f );
+            else
+                K[j][i] := TransposedMat( RRF( f,NullMat( Length(E[i][b])-DimensionsMat(K[j][i])[2],DimensionsMat(K[j][i])[1],f ),TransposedMat(K[j][i]),E[i][b] ) );
+            fi;
+
+            D{[tmpR .. tmpR + DimensionsMat(K[j][i])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(K[j][i])[2]-1 ]}
+            := K[j][i];
+            tmpC := tmpC + DimensionsMat(K[j][i])[2];
+        od;
+        #Error( "---3----" );
+        tmpR := tmpR + rows[j];
+    od;
+
+     # SLOW - only for testing 
+     D := TransposedMat( RRF( f,tmp,
+        TransposedMat( CEX( f,BitstringToCharFct(v),D )[1] )
+        ,v ) );
+
+     return rec( vectors := C,coeffs := B,relations := D );
 end;
 
 

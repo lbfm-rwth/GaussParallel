@@ -168,7 +168,7 @@ UpdateRow := function( f, T, H, Bjk )
  return [H, B];
 end;
 
-RiffleIn := function( X,u,w,type,f )
+RiffleIn := function( X,u,w,type,nr,f )
   local i,F,new;
   
   if 1-u = 0*[1..Length(u)] then
@@ -176,7 +176,7 @@ RiffleIn := function( X,u,w,type,f )
   fi;
 
   if IsEmpty(X) then
-      F := IdentityMat( Length(w),f );
+      F := IdentityMat( nr,f );
   else    
       F := IdentityMat( DimensionsMat(X)[1],f );
   fi;
@@ -202,15 +202,19 @@ end;
 # OUTPUT: the updated matrices M and K according to new found pivot rows
 #         tracked by T.
 #####################################################################
-UpdateTrafo := function( f, T, K, M,v,flag,w )
- local A, E, MM, KK, s, u,  i,tmp, riffle, Z, V, X, W, Y,S;
+UpdateTrafo := function( f, T, K, M,v,flag,w,__unused__ )
+ local A, E, MM, KK, s, u,  i,tmp, riffle, Z, V, X, W,nr, Y,S;
  A:=T[1];MM:=T[2];E:=T[3];KK:=T[4];s:=T[5];u:=T[6];
-   #Error("anfang"); 
-   Y := RiffleIn( K,v,w,flag,f ); 
  
    if IsEmpty(A) and IsEmpty(MM) then
        return [K,M];
    fi;
+   if IsEmpty(A) then
+       nr := Length(s)-Sum(s);
+   else
+       nr := DimensionsMat(A)[1];
+   fi;
+   Y := RiffleIn( K,v,w,flag,nr,f ); 
 
    if IsEmpty(M) then
 
@@ -232,7 +236,8 @@ UpdateTrafo := function( f, T, K, M,v,flag,w )
       if not IsEmpty(A) then
          Z := Y + A*M;
       else
-         Z := Y + M;
+         Z := Y;
+         ##  Z := Y + M;
       fi;         
       
       tmp := REX( f,BitstringToCharFct(s),Z );

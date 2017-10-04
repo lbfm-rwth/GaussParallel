@@ -60,9 +60,10 @@ ClearDown := function( galoisField,C,D,i )
             H,
             tmp,
             ech;
+
     if IsEmpty(C) then
         return rec( A := rec(A:=[],M:=[],E:=[],K:=[],
-                    rho:=[],lambda:=0*[1..Sum(D.bitstring)] ), D:=D );
+                    rho:=[],lambda:=[] ), D:=D );
     fi;
     if i = 1 then
         ech :=  ECH( galoisField,C );
@@ -87,7 +88,7 @@ ClearDown := function( galoisField,C,D,i )
     E := tmp[1];
     remnant_ := tmp[2];
     if not IsEmpty(ech[3]) and not IsEmpty(E) then
-        tmp := tmp + E*ech[3];
+        remnant_ := remnant_ + E*ech[3];
     fi;
     tmp := PVC( D.bitstring,ech[5] );
     bitstring := tmp[1];
@@ -157,6 +158,9 @@ UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
             X,
             Z;
 
+    if (IsEmpty(A.A) and IsEmpty(A.M)) or IsEmpty(E.delta) then
+        return rec( K:=K,M:=M );
+    fi;  #### for the or delta empty part, cf. paper: want to know if beta' in the descr of UpdateRowTrafo is 0..
     if j > 1 then
         K_ := CRZ( galoisField,K,E.delta,E.nr );
     fi;
@@ -169,7 +173,7 @@ UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
         fi;
     elif ( not h=i  ) then
         if IsEmpty(M) then
-            Z := []; 
+            Z := Zero(galoisField)*A.A; 
         else
             Z := A.A*M;
         fi;
@@ -188,7 +192,11 @@ UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
     fi;
 
     if not (j = 1 and h = i) then
-        X := A.M*V;
+        if IsEmpty(V) then
+            X := A.M;
+        else
+            X := A.M*V;
+        fi;
     else
         X := A.M;
     fi;
@@ -206,7 +214,11 @@ UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
     fi;
     
     if  not ( h = i and j = 1 ) then
-        K_ := W + A.K*V;
+        if IsEmpty(V) then
+            K_ := W;
+        else
+            K_ := W + A.K*V;
+        fi;
     else
         K_ := A.K;
     fi;
