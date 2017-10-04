@@ -1,5 +1,3 @@
-Read("read_new.g");
-Read("main_new.g");
 LoadPackage( "profil" );
 
 createMatrixFile := function( n, q, rank )
