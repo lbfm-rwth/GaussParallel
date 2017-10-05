@@ -8,6 +8,7 @@ REX := function( galoisField,positionsBitstring,mat )
             row;
     if IsEmpty ( mat ) then return [ [],[] ]; fi;
     if IsEmpty ( positionsBitstring ) then
+        ConvertToMatrixRepNC( mat,galoisField );
         return [ [],mat ];
     fi;
     numrows := Length( positionsBitstring );
@@ -87,9 +88,15 @@ RRF := function( galoisField,rows0,rows1,u )
             index0,
             index1,
             new;
-    if IsEmpty(rows0) then return rows1; fi;
-    if IsEmpty(rows1) then return rows0; fi;
-    dim := [ DimensionsMat(rows0)[1],DimensionsMat(rows1)[1] ];
+    if IsEmpty(rows0) then 
+        ConvertToMatrixRepNC( rows1,galoisField );
+        return rows1; 
+    fi;
+    if IsEmpty(rows1) then 
+        ConvertToMatrixRepNC( rows0,galoisField );
+        return rows0; 
+    fi;
+        #dim := [ DimensionsMat(rows0)[1],DimensionsMat(rows1)[1] ];
     l := Length(u);
     index0 := 1;
     index1 := 1;
@@ -119,17 +126,17 @@ CRZ := function( galoisField,mat,u,nr )
             tmp,
             sum;
     if IsEmpty(u) then return mat; fi;
+    sum := Sum(u);
     if IsEmpty(mat) then
-        sum := Sum(u);
         if sum = 0 then
             return [];
         else
             return NullMat( nr,sum,galoisField ); 
         fi;
     fi;
-    numZero := Sum(u);
+    #numZero := Sum(u);
     ## or is it Length-Sum ? -> order of args in RRF !!
-    nullMat := NullMat( numZero,DimensionsMat(mat)[1],galoisField );
+    nullMat := NullMat( sum,DimensionsMat(mat)[1],galoisField );
     return TransposedMat( RRF( galoisField,TransposedMat( mat ),nullMat,u ) );
 end;
 

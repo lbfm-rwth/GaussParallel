@@ -15,17 +15,21 @@ ChopMatrix := function( f,A,nrows,ncols )
     for  i  in [ 1 .. nrows-1] do
         AA[i] := [];
         for j in [ 1 .. ncols-1 ] do
-            AA[i][j] := ImmutableMatrix(f,A{[(i-1)*a+1 .. i*a]}{[(j-1)*b+1 .. j*b]});
+            AA[i][j] := A{[(i-1)*a+1 .. i*a]}{[(j-1)*b+1 .. j*b]};
+        ConvertToMatrixRepNC(AA[i][j],f);
         od;
     od;
     AA[nrows] := [];
     for i in [ 1 .. nrows-1 ] do
-        AA[i][ncols] := ImmutableMatrix(f,A{[(i-1)*a+1 .. i*a]}{[(ncols-1)*b+1 .. DimensionsMat(A)[2]]});
+        AA[i][ncols] := A{[(i-1)*a+1 .. i*a]}{[(ncols-1)*b+1 .. DimensionsMat(A)[2]]};
+        ConvertToMatrixRepNC(AA[i][ncols],f);
     od;
     for j in [ 1 .. ncols-1 ] do
-        AA[nrows][j] := ImmutableMatrix(f,A{[(nrows-1)*a+1 .. DimensionsMat(A)[1]]}{[(j-1)*b+1 .. j*b]});
+        AA[nrows][j] := A{[(nrows-1)*a+1 .. DimensionsMat(A)[1]]}{[(j-1)*b+1 .. j*b]};
+        ConvertToMatrixRepNC(AA[nrows][j],f);
     od;
-    AA[nrows][ncols] := ImmutableMatrix(f,A{[(nrows-1)*a+1 .. DimensionsMat(A)[1]]}{[(ncols-1)*b+1 .. DimensionsMat(A)[2]]});    
+    AA[nrows][ncols] := A{[(nrows-1)*a+1 .. DimensionsMat(A)[1]]}{[(ncols-1)*b+1 .. DimensionsMat(A)[2]]};    
+    ConvertToMatrixRepNC(AA[nrows][ncols],f);
     return AA;
 end;
 
@@ -39,7 +43,8 @@ Extend := function( A,E,flag )
     else
         tmp := PVC( E.rho,A.rho );
     fi;
-    return rec( rho := tmp[1],delta := tmp[2],nr := (Length(E.rho-Sum(E.rho))) );
+    return rec( rho := tmp[1],delta := tmp[2],
+    nr := (Length(E.rho-Sum(E.rho))) );
 end;
 
 RowLengthen := function( galoisField,mat,Einter,Efin )
@@ -94,7 +99,6 @@ ClearDown := function( galoisField,C,D,i )
     bitstring := tmp[1];
     riffle := tmp[2];
     remnant := RRF( galoisField,remnant_,ech[3],riffle );
- #   return rec( A := [ A,ech[1],ech[2],ech[4],E,ech[5] ], D:= [ bitstring,remnant ] );
 
     return rec( A := rec( A:=A,M:=ech[1],K:=ech[2],rho:=ech[4],E:=E,lambda:=riffle )
         ,D:= rec(bitstring := bitstring,remnant := remnant ) );
@@ -166,7 +170,7 @@ UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
     fi;
 
     if ( not h=i ) and j > 1 then
-        if IsEmpty(M) then
+        if IsEmpty(M) or IsEmpty(A.A) then
             Z := K_;
         else
             Z := K_ + A.A*M;
@@ -192,7 +196,7 @@ UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
     fi;
 
     if not (j = 1 and h = i) then
-        if IsEmpty(V) then
+        if IsEmpty(V) or IsEmpty(A.M) then
             X := A.M;
         else
             X := A.M*V;
@@ -202,9 +206,17 @@ UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
     fi;
 
     if not h=i then
-        S := M+A.E*X;
+        if IsEmpty(X) or IsEmpty(A.E) then
+            S := M;
+        else
+            S := M+A.E*X;
+        fi;
     elif not i=1 then
-        S := A.E*X;
+        if IsEmpty(X) or IsEmpty(A.E) then
+            S := [];
+        else
+            S := A.E*X;
+        fi;
     fi;
 
     if  not ( h = i and i = 1 ) then
@@ -214,7 +226,7 @@ UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
     fi;
     
     if  not ( h = i and j = 1 ) then
-        if IsEmpty(V) then
+        if IsEmpty(V) or IsEmpty(A.K) then
             K_ := W;
         else
             K_ := W + A.K*V;

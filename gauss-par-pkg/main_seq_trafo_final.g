@@ -67,7 +67,6 @@ Chief := function( galoisField,mat,a,b )
             X[k][j] := [];;
         od;
     od;
-    Print("0\n");
     ###############################
     ###############################
 
@@ -98,8 +97,6 @@ Chief := function( galoisField,mat,a,b )
             od;
         od;    
     od;
-    
-    Print("1\n");
 
     ## Step 2 ##
     for j in [ 1 .. b ] do
@@ -107,8 +104,7 @@ Chief := function( galoisField,mat,a,b )
             M[j][h] := RowLengthen( galoisField,M[j][h],E[h][j],E[h][b] );            
         od;
     od;
-    Print("2\n");
-    
+
     ## Step3 ##
     for k in [ 1 .. b ] do
         R[k][k] := D[k].remnant;
@@ -117,23 +113,32 @@ Chief := function( galoisField,mat,a,b )
         k := b-k_+1;
         for j in [ 1 .. (k - 1) ] do
             tmp := CEX( galoisField,D[k].bitstring,B[j][k] );
-            X[j][k] := tmp[1];
+            X := tmp[1];
             R[j][k] := tmp[2];
-            if IsEmpty(X[j][k]) then continue; fi;
+            if IsEmpty(X) then continue; fi;
             for l in [ k .. b ] do
                 if not IsEmpty(R[k][l]) then
-                    R[j][l] := R[j][l] + X[j][k]*R[k][l];
+                    if IsEmpty(R[j][l]) then
+                        R[j][l] :=X*R[k][l];
+                    else
+                        R[j][l] := R[j][l] + X*R[k][l];
+                    fi;
                 fi;
             od;
             for h in [ 1 .. a ] do
                 if not IsEmpty(M[k][h]) then
-                    M[j][h] := M[j][h] + X[j][k]*M[k][h];
+                    if IsEmpty(M[j][h]) then
+                        M[j][h] := X*M[k][h];
+                    else
+                        M[j][h] := M[j][h] + X*M[k][h];
+                    fi;
                 fi;
             od;
         od;
     od;
     Print("3\n");
-
+    ###############################
+    ###############################
 
     ## Write output
     # Begin with row-select bitstring named v
@@ -178,7 +183,11 @@ Chief := function( galoisField,mat,a,b )
                 fi;
                 M[j][i] := NullMat( rows[j],tmp,galoisField );
             else
-                M[j][i] := TransposedMat( RRF( f,NullMat( Length(E[i][b].rho)-DimensionsMat(M[j][i])[2],DimensionsMat(M[j][i])[1],galoisField ),TransposedMat(M[j][i]),E[i][b].rho ) );
+                M[j][i] := TransposedMat( RRF( galoisField,
+                NullMat( Length(E[i][b].rho)-
+                DimensionsMat(M[j][i])[2],
+                DimensionsMat(M[j][i])[1],galoisField ),
+                TransposedMat(M[j][i]),E[i][b].rho ) );
             fi;
 
             B{[tmpR .. tmpR + DimensionsMat(M[j][i])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(M[j][i])[2]-1 ]}
@@ -207,8 +216,6 @@ Chief := function( galoisField,mat,a,b )
              fi;
          od;
      od;
-#    Error("before out");
- 
      tmpR := 1;
      for i in [ 1 .. b ] do
          if rows[i]=0 then
@@ -234,14 +241,10 @@ Chief := function( galoisField,mat,a,b )
 
      C := TransposedMat( RRF( galoisField,TransposedMat(C), -IdentityMat( rank,galoisField ),w  ) );
 
-    ## WORKS UNTIL HERE return rec( remnant := C,transformation := B );
-
-
     ## Glueing the blocks of K
     D := NullMat( Length(v)-rank,Length(v),galoisField );
     X := IdentityMat( Length(v)-rank,galoisField );
     rows := [];
-
     for j in [ 1 .. a ] do
         rows[j] := 0;
         for i in [ 1 .. a ] do
@@ -253,13 +256,8 @@ Chief := function( galoisField,mat,a,b )
             fi;
         od;
     od;
-   
-    #Error( "Out: K" );
-
     tmpR := 1;
     for j in [ 1 .. a ] do
-
-    #Error( "---2----" );
         if rows[j]=0 then
             continue;
         fi;
@@ -285,15 +283,14 @@ Chief := function( galoisField,mat,a,b )
             := K[j][i];
             tmpC := tmpC + DimensionsMat(K[j][i])[2];
         od;
-        #Error( "---3----" );
         tmpR := tmpR + rows[j];
     od;
 
-     # SLOW - only for testing 
      D := TransposedMat( RRF( galoisField,X,
-        TransposedMat( CEX( f,v,D )[1] ),v ) );
+        TransposedMat( CEX( galoisField,v,D )[1] ),v ) );
 
-    return rec( transformation:=B,remnant:=C,relations:=D );
+    return rec( transformation:=B,remnant:=C,relations:=D,
+                pivotrows:=v,pivotcols:=w,rank:=rank);
 
 end;
 
