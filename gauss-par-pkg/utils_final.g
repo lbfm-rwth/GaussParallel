@@ -220,10 +220,11 @@ ECH := function( f,H )
             dimId;
 
     if H = [] then return [ [],[],[],[],[] ]; fi;
-    if Rank(H) = 0 then return [ [],[],[],[],[] ]; fi;   #--noetig?
+    #if Rank(H) = 0 then return [ [],[],[],[],[] ]; fi;   #--noetig?
  
     EMT := EchelonMatTransformation( H );
     m := TransposedMat(EMT.coeffs);
+    if IsEmpty(m) then return [ [],[],[],[],[] ]; fi;
     r := TransposedMat(EMT.vectors);
     k := TransposedMat(EMT.relations);
     s := [];

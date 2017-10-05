@@ -144,9 +144,10 @@ Chief := function( galoisField,mat,a,b )
     # Begin with row-select bitstring named v
     v := [];
     rank := 0;
+    w := 0*[1..(DimensionsMat(mat)[1]/a) ];
     for i in [ 1 .. a ] do
         if IsEmpty(E[i][b].rho) then
-            tmp := 0*[1..(DimensionsMat(mat)[1]/a) ];
+            tmp := w; 
         else
             tmp := E[i][b].rho;
         fi;
@@ -174,14 +175,16 @@ Chief := function( galoisField,mat,a,b )
             continue;
         fi;
         tmpC := 1;
+        w := DimensionsMat(mat)[1]/a;
         for i in [ 1 .. a ] do
             if IsEmpty(M[j][i]) then
                 if IsEmpty(E[i][b].rho) then
-                    tmp := (DimensionsMat(mat)[1]/a);
+                    tmp := w;
                 else
                     tmp := Length( E[i][b].rho );
                 fi;
-                M[j][i] := NullMat( rows[j],tmp,galoisField );
+                tmpC := tmpC + tmp; continue;
+                #M[j][i] := NullMat( rows[j],tmp,galoisField );
             else
                 M[j][i] := TransposedMat( RRF( galoisField,
                 NullMat( Length(E[i][b].rho)-
@@ -201,7 +204,6 @@ Chief := function( galoisField,mat,a,b )
     C := NullMat( rank,ncols-rank,galoisField );
     rows := [];
     w := [];
-
     for i in [ 1 .. b ] do
          rows[i] := 0;
          if IsEmpty(D[i].bitstring) then
@@ -265,11 +267,13 @@ Chief := function( galoisField,mat,a,b )
         for i in [ 1 .. a ] do
             if IsEmpty(K[j][i]) then
                 if IsEmpty(E[i][b].rho) then
-                    tmp := b;
+                    #tmp := b;
+                    tmp := DimensionsMat(mat)[1]/a;
                 else
                     tmp := Length( E[i][b].rho );
                 fi;
-                K[j][i] := NullMat( rows[j],tmp,galoisField );
+                tmpC := tmpC + tmp; continue;
+                #K[j][i] := NullMat( rows[j],tmp,galoisField );
             else
                 K[j][i] := TransposedMat( RRF( galoisField,
                     NullMat( Length(E[i][b].rho)-
