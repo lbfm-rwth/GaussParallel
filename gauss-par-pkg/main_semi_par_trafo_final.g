@@ -8,10 +8,16 @@ ClearUp := function( R,X,R_ )
 end;
 
 ChiefParallelClearUp := function( galoisField,mat,a,b )
-    local   dummyTask,
+    local   TaskListPreClearUp,
             TaskListClearUpM,
             TaskListClearUpR,
-            TaskListPreClearUp,
+            dummyTask,
+            nrows,
+            ncols,
+            rows,
+            rank,
+            tmpC,
+            tmpR,
             tmp,
             bs,
             A,
@@ -25,12 +31,6 @@ ChiefParallelClearUp := function( galoisField,mat,a,b )
             X,
             v,
             w,
-            rank,
-            nrows,
-            ncols,
-            rows,
-            tmpC,
-            tmpR,
             i,
             j,
             k,
@@ -151,11 +151,6 @@ ChiefParallelClearUp := function( galoisField,mat,a,b )
                 D[k].bitstring,
                 B[j][k]
             );
-            #tmp := CEX( galoisField,D[k].bitstring,B[j][k] );
-            #X := tmp[1];
-            #R[j][k] := tmp[2];
-
-            #if IsEmpty(X) then continue; fi;
             for l in [ k .. b ] do
                 if l-k = 0 then
                     TaskListClearUpR[j][l][1] := ScheduleTask(
@@ -276,8 +271,8 @@ ChiefParallelClearUp := function( galoisField,mat,a,b )
                 DimensionsMat(M[j][i])[1],galoisField ),
                 TransposedMat(M[j][i]),E[i][b].rho ) );
             fi;
-
-            B{[tmpR .. tmpR + DimensionsMat(M[j][i])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(M[j][i])[2]-1 ]}
+            B{[tmpR .. tmpR + DimensionsMat(M[j][i])[1]-1 ]}
+            {[tmpC .. tmpC + DimensionsMat(M[j][i])[2]-1 ]}
             := M[j][i];
             tmpC := tmpC + DimensionsMat(M[j][i])[2];
         od;
@@ -301,31 +296,34 @@ ChiefParallelClearUp := function( galoisField,mat,a,b )
                  break;
              fi;
          od;
-     od;
-     tmpR := 1;
-     for i in [ 1 .. b ] do
-         if rows[i]=0 then
+    od;
+    tmpR := 1;
+    for i in [ 1 .. b ] do
+        if rows[i]=0 then
              continue;
-         fi;
-         tmpC := 1;
-         for j in [ 1 .. b ] do
-             if IsEmpty(R[i][j]) then
-                 if not IsEmpty(D[j].bitstring) then
-                     tmpC := tmpC + Sum( 1 - D[j].bitstring );
-                 elif  not IsEmpty(R[1][j]) then
-                     tmpC := tmpC + DimensionsMat(R[1][j])[2];
-                 fi;
-                 continue;            
-             fi;
- 
-             C{[tmpR .. tmpR + DimensionsMat(R[i][j])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(R[i][j])[2]-1 ]}
+        fi;
+        tmpC := 1;
+        for j in [ 1 .. b ] do
+            if IsEmpty(R[i][j]) then
+                if not IsEmpty(D[j].bitstring) then
+                    tmpC := tmpC + Sum( 1 - D[j].bitstring );
+                elif  not IsEmpty(R[1][j]) then
+                    tmpC := tmpC + DimensionsMat(R[1][j])[2];
+                fi;
+                continue;            
+            fi;
+
+            C{[tmpR .. tmpR + DimensionsMat(R[i][j])[1]-1 ]}
+             {[tmpC .. tmpC + DimensionsMat(R[i][j])[2]-1 ]}
              := R[i][j];
              tmpC := tmpC + DimensionsMat(R[i][j])[2];
-         od;
-         tmpR := tmpR + rows[i];
-     od;    
-
-     C := TransposedMat( RRF( galoisField,TransposedMat(C), -IdentityMat( rank,galoisField ),w  ) );
+        od;
+        tmpR := tmpR + rows[i];
+    od;    
+    C := TransposedMat( 
+        RRF( galoisField,TransposedMat(C), 
+        -IdentityMat( rank,galoisField ),w  ) 
+    );
 
     ## Glueing the blocks of K
     D := NullMat( Length(v)-rank,Length(v),galoisField );

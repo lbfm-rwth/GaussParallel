@@ -1,5 +1,11 @@
 Chief := function( galoisField,mat,a,b )
-    local   tmp,
+    local   nrows,
+            ncols,
+            rows,
+            rank,
+            tmpC,
+            tmpR,
+            tmp,
             bs,
             A,
             B,
@@ -12,22 +18,16 @@ Chief := function( galoisField,mat,a,b )
             X,
             v,
             w,
-            rank,
-            nrows,
-            ncols,
-            rows,
-            tmpC,
-            tmpR,
             i,
             j,
             k,
             k_,
             l,
             h;
-    ncols := DimensionsMat( mat )[2];
 
     ##Preparation: Init and chopping the matrix mat
     C := ChopMatrix( galoisField,mat,a,b );
+    ncols := DimensionsMat( mat )[2];
     A := [];
     B := [];
     D := [];

@@ -6,5 +6,6 @@ Read("./hpc/gauss-upwards.gi");
 Read("./utils_final.g");
 Read("./subprograms_final.g");
 Read("./main_seq_trafo_final.g");
+Read("./main_par_trafo_final.g");
 Read("./main_semi_par_trafo_final.g");
 Read("./timing.g");
