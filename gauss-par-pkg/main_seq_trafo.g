@@ -1,18 +1,6 @@
-ClearUp := function( R,X,R_ )
-    if IsEmpty(R_) or IsEmpty(X) then return R; fi;
-    if IsEmpty(R) then
-        return X*R_;
-    else
-        return R + X*R_;
-    fi;
-end;
-
-ChiefParallelClearUp := function( galoisField,mat,a,b )
-    local   TaskListPreClearUp,
-            TaskListClearUpM,
-            TaskListClearUpR,
-            dummyTask,
-            nrows,
+Chief := function( galoisField,mat,a,b )
+    ## inputs: a finite field, a matrix, natural nr. a,b to treat mat as axb matirx
+    local   nrows,
             ncols,
             rows,
             rank,
@@ -37,30 +25,10 @@ ChiefParallelClearUp := function( galoisField,mat,a,b )
             k_,
             l,
             h;
-    
-    ##Preparation: Init and chopping the matrix mat
-    dummyTask := RunTask( function() return []; end );
-    TaskListPreClearUp := List(
-        [ 1..b ],
-        x -> List( [ 1..b ], x -> dummyTask )
-    );
-    TaskListClearUpR := List(
-        [ 1..b ],
-        x -> List( 
-            [ 1..b ], 
-            x -> List( [ 1..b ], x -> dummyTask )
-        )
-    );
-    TaskListClearUpM := List(
-        [ 1..b ],
-        x -> List( 
-            [ 1..a ], 
-            x -> List( [ 1..b ], x -> dummyTask )
-        )
-    );
 
-    ncols := DimensionsMat( mat )[2];
+    ##Preparation: Init and chopping the matrix mat
     C := ChopMatrix( galoisField,mat,a,b );
+    ncols := DimensionsMat( mat )[2];
     A := [];
     B := [];
     D := [];
@@ -138,84 +106,38 @@ ChiefParallelClearUp := function( galoisField,mat,a,b )
         od;
     od;
 
-    ## Step3 // parallel version ##
+    ## Step3 ##
     for k in [ 1 .. b ] do
         R[k][k] := D[k].remnant;
     od;
     for k_ in [ 1 .. b ] do
         k := b-k_+1;
         for j in [ 1 .. (k - 1) ] do
-            TaskListPreClearUp[j][k] := RunTask(
-                CEX,
-                galoisField,
-                D[k].bitstring,
-                B[j][k]
-            );
+            tmp := CEX( galoisField,D[k].bitstring,B[j][k] );
+            X := tmp[1];
+            R[j][k] := tmp[2];
+            if IsEmpty(X) then continue; fi;
             for l in [ k .. b ] do
-                if l-k = 0 then
-                    TaskListClearUpR[j][l][1] := ScheduleTask(
-                        [   TaskListPreClearUp[j][l],
-                            TaskListPreClearUp[j][k]
-                        ],
-                        ClearUp,
-                        TaskResult( TaskListPreClearUp[j][l] )[2],
-                        TaskResult( TaskListPreClearUp[j][k] )[1],
-                        R[k][l]
-                    ); 
-                else
-                    TaskListClearUpR[j][l][l-k+1] := ScheduleTask(
-                        [   TaskListClearUpR[j][l][l-k],
-                            TaskListClearUpR[k][l][l-k],
-                            TaskListPreClearUp[j][k]
-                        ],
-                        ClearUp,
-                        TaskResult( TaskListClearUpR[j][l][l-k] ),
-                        TaskResult( TaskListPreClearUp[j][k] )[1],
-                        TaskResult( TaskListClearUpR[k][l][l-k] )
-                    );
+                if not IsEmpty(R[k][l]) then
+                    if IsEmpty(R[j][l]) then
+                        R[j][l] :=X*R[k][l];
+                    else
+                        R[j][l] := R[j][l] + X*R[k][l];
+                    fi;
                 fi;
             od;
             for h in [ 1 .. a ] do
-                if k_ = 1 then
-                    TaskListClearUpM[j][h][1] := ScheduleTask(
-                        [
-                            TaskListPreClearUp[j][k]
-                        ],
-                        ClearUp,
-                        M[j][h],
-                        TaskResult( TaskListPreClearUp[j][k] )[1],
-                        M[k][h]
-                    ); 
-                else
-                    TaskListClearUpM[j][h][k_] := ScheduleTask(
-                        [   TaskListClearUpM[j][h][k_-1],
-                            TaskListClearUpM[k][h][k_-1],
-                            TaskListPreClearUp[j][k]
-                        ],
-                        ClearUp,
-                        TaskResult( TaskListClearUpM[j][h][k_-1] ),
-                        TaskResult( TaskListPreClearUp[j][k] )[1],
-                        TaskResult( TaskListClearUpM[k][h][k_-1] )
-                    );
+                if not IsEmpty(M[k][h]) then
+                    if IsEmpty(M[j][h]) then
+                        M[j][h] := X*M[k][h];
+                    else
+                        M[j][h] := M[j][h] + X*M[k][h];
+                    fi;
                 fi;
             od;
         od;
     od;
-    WaitTask( Concatenation( TaskListPreClearUp ) );
-    WaitTask( Concatenation( List( TaskListClearUpR,Concatenation ) ) );
-    WaitTask( Concatenation( List( TaskListClearUpM,Concatenation ) ) );
-    for i in [ 1 .. b ] do
-        k := b - i + 1;
-        for j in [ 1 .. k-1 ] do
-            for h in [ k .. b ] do
-                R[j][h] := TaskResult( TaskListClearUpR[j][h][h-k+1] );
-            od;
-            for h in [ 1 .. a ] do
-                M[j][h] := TaskResult( TaskListClearUpM[j][h][i] );
-            od;
-        od;
-    od;
-
+    Print("3\n");
     ###############################
     ###############################
 
@@ -271,8 +193,8 @@ ChiefParallelClearUp := function( galoisField,mat,a,b )
                 DimensionsMat(M[j][i])[1],galoisField ),
                 TransposedMat(M[j][i]),E[i][b].rho ) );
             fi;
-            B{[tmpR .. tmpR + DimensionsMat(M[j][i])[1]-1 ]}
-            {[tmpC .. tmpC + DimensionsMat(M[j][i])[2]-1 ]}
+
+            B{[tmpR .. tmpR + DimensionsMat(M[j][i])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(M[j][i])[2]-1 ]}
             := M[j][i];
             tmpC := tmpC + DimensionsMat(M[j][i])[2];
         od;
@@ -296,34 +218,31 @@ ChiefParallelClearUp := function( galoisField,mat,a,b )
                  break;
              fi;
          od;
-    od;
-    tmpR := 1;
-    for i in [ 1 .. b ] do
-        if rows[i]=0 then
+     od;
+     tmpR := 1;
+     for i in [ 1 .. b ] do
+         if rows[i]=0 then
              continue;
-        fi;
-        tmpC := 1;
-        for j in [ 1 .. b ] do
-            if IsEmpty(R[i][j]) then
-                if not IsEmpty(D[j].bitstring) then
-                    tmpC := tmpC + Sum( 1 - D[j].bitstring );
-                elif  not IsEmpty(R[1][j]) then
-                    tmpC := tmpC + DimensionsMat(R[1][j])[2];
-                fi;
-                continue;            
-            fi;
-
-            C{[tmpR .. tmpR + DimensionsMat(R[i][j])[1]-1 ]}
-             {[tmpC .. tmpC + DimensionsMat(R[i][j])[2]-1 ]}
+         fi;
+         tmpC := 1;
+         for j in [ 1 .. b ] do
+             if IsEmpty(R[i][j]) then
+                 if not IsEmpty(D[j].bitstring) then
+                     tmpC := tmpC + Sum( 1 - D[j].bitstring );
+                 elif  not IsEmpty(R[1][j]) then
+                     tmpC := tmpC + DimensionsMat(R[1][j])[2];
+                 fi;
+                 continue;            
+             fi;
+ 
+             C{[tmpR .. tmpR + DimensionsMat(R[i][j])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(R[i][j])[2]-1 ]}
              := R[i][j];
              tmpC := tmpC + DimensionsMat(R[i][j])[2];
-        od;
-        tmpR := tmpR + rows[i];
-    od;    
-    C := TransposedMat( 
-        RRF( galoisField,TransposedMat(C), 
-        -IdentityMat( rank,galoisField ),w  ) 
-    );
+         od;
+         tmpR := tmpR + rows[i];
+     od;    
+
+     C := TransposedMat( RRF( galoisField,TransposedMat(C), -IdentityMat( rank,galoisField ),w  ) );
 
     ## Glueing the blocks of K
     D := NullMat( Length(v)-rank,Length(v),galoisField );
@@ -377,5 +296,99 @@ ChiefParallelClearUp := function( galoisField,mat,a,b )
 
     return rec( transformation:=B,remnant:=C,relations:=D,
                 pivotrows:=v,pivotcols:=w,rank:=rank);
+
+end;
+
+Chief_debug := function( galoisField,mat,a,b )
+    local   tmp,
+            bs,
+            A,
+            B,
+            C,
+            D,
+            E,
+            K,
+            M,
+            R,
+            X,
+            i,
+            j,
+            k,
+            h;
+    ##Preparation: Init and chopping the matrix mat
+    C := ChopMatrix( galoisField,mat,a,b );
+    A := [];
+    B := [];
+    D := [];
+    E := [];
+    K := [];
+    M := [];
+    R := [];
+    X := [];
+    for i in [ 1 .. a ] do
+        A[i] := [];
+        E[i] := [];
+        K[i] := [];
+        for k in [ 1 .. b ] do
+            A[i][k] := rec( A:=[],M:=[],K:=[],rho:=[],E:=[],lambda:=[] );
+            E[i][k] := rec( rho:=[],delta:=[],nr:=0 );
+        od;
+        for h in [ 1 .. a ] do
+            K[i][h] := [];
+        od;
+    od;
+    for i in [ 1 .. b ] do
+        M[i] := [];
+        for k in [ 1 .. a ] do
+            M[i][k] := [];
+        od;
+    od;
+    for k in [ 1 .. b ] do
+        D[k] := rec( remnant:=[],bitstring:=[] );
+        B[k] := [];
+        R[k] := [];
+        X[k] := [];
+        for j in [ 1 .. b ] do
+            B[k][j] := [];
+            R[k][j] := [];
+            X[k][j] := [];;
+        od;
+    od;
+    ###############################
+    ###############################
+
+    ## Step 1 ##
+    for i in [ 1 .. a ] do
+        for j in [ 1 .. b ] do
+            Error( "BEFORE CLEARDOWN" );
+
+            tmp := ClearDown( galoisField,C[i][j],D[j],i );
+            D[j] := tmp.D;
+            A[i][j] := tmp.A;
+            if j=1 then
+                bs := rec( rho:=[],delta:=[],nr:=0 );
+            else
+                bs := E[i][j-1];
+            fi;
+            E[i][j] := Extend( A[i][j],bs,j );
+            Error( "AFTER CLEARDOWN" );
+            for k in [ j+1 .. b ] do
+                tmp := UpdateRow(  galoisField,A[i][j],C[i][k],
+                                    B[j][k],i );
+                C[i][k] := tmp.C;
+                B[j][k] := tmp.B;
+            od;
+            Error( "AFTER UPDATEROW" );
+            for h in [ 1 .. i ] do
+                tmp := UpdateRowTrafo(  galoisField,A[i][j],K[i][h],
+                                    M[j][h],E[h][j],i,h,j );
+                K[i][h] := tmp.K;
+                M[j][h] := tmp.M;
+            od;
+            Error( "AFTER UPDATETRAFO" );
+        od;    
+    od;
+
+    return true;
 
 end;

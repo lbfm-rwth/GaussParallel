@@ -8,6 +8,7 @@ ClearUp := function( R,X,R_ )
 end;
 
 ChiefParallel := function( galoisField,mat,a,b )
+    ## inputs: a finite field, a matrix, natural nr. a,b to treat mat as axb matirx
     local   TaskListPreClearUp,
             TaskListClearDown,
             TaskListClearUpR,

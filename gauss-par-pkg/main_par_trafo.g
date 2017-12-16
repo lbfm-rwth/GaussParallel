@@ -1,4 +1,5 @@
 ChiefParallelClearDown := function( galoisField,mat,a,b )
+    ## inputs: a finite field, a matrix, natural nr. a,b to treat mat as axb matirx
     local   TaskListClearDown,
             TaskListUpdateR,
             TaskListUpdateM,
