@@ -16,11 +16,7 @@ GET_REAL_TIME_OF_FUNCTION_CALL := function ( method, args, options... )
   firstSeconds := first_time.tv_sec;
   firstMicroSeconds := first_time.tv_usec;
 
-  if options.passResult then
-    result := CallFuncList( method, args );
-  else
-    CallFuncList( method, args );
-  fi;
+  result := CallFuncList( method, args );
 
   second_time := IO_gettimeofday(  );
   secondSeconds := second_time.tv_sec;
@@ -29,9 +25,5 @@ GET_REAL_TIME_OF_FUNCTION_CALL := function ( method, args, options... )
   seconds := (secondSeconds - firstSeconds);
   microSeconds := secondMicroSeconds - firstMicroSeconds;
   total := seconds * 10^6 + microSeconds;
-  if options.passResult then
-    return rec( result := result, time := total );
-  else
-    return total;
-  fi;
+  return rec( result := result, time := total );
 end;
