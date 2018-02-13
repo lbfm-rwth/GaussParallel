@@ -13,6 +13,7 @@ To get some benchmark data on
 - how the algorithm performs in relation to the `Gauss` pkg
 - wall and CPU time
 - lock contention
+
 do `Read("measure_contention.g");`. The file will tell you how to proceed.
 
 
