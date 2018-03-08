@@ -10,8 +10,11 @@ ChopMatrix := function( f,A,nrows,ncols )
     crem := DimensionsMat(A)[2] mod ncols;
     a := ( DimensionsMat(A)[1] - rrem ) / nrows; 
     b := ( DimensionsMat(A)[2] - crem ) / ncols; 
+    ## the alogirthm tries to chop the matrix A in equally sized submatrices
+    ## create a matrix AA of size 'nrows x ncols' which stores all submatrices
     AA := [];
-
+ 
+    ## these submatrices in AA have all equal dimensions 'a x b'
     for  i  in [ 1 .. nrows-1] do
         AA[i] := [];
         for j in [ 1 .. ncols-1 ] do
@@ -19,6 +22,7 @@ ChopMatrix := function( f,A,nrows,ncols )
         ConvertToMatrixRepNC(AA[i][j],f);
         od;
     od;
+    ## to add the remaining submatrices we need to cut the submatrix dimensions if necessary
     AA[nrows] := [];
     for i in [ 1 .. nrows-1 ] do
         AA[i][ncols] := A{[(i-1)*a+1 .. i*a]}{[(ncols-1)*b+1 .. DimensionsMat(A)[2]]};
