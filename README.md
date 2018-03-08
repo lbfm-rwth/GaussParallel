@@ -16,14 +16,6 @@ To get some benchmark data on
 
 do `Read("measure_contention.g");`. The file will tell you how to proceed.
 
-
-## Output
-At the moment the output looks different from what the `Gauss` pkg returns.
-The correspondence of record component names is
-(`Gauss` name = `GaussPar` name)
-- vectors = remnant
-- coeffs = transformation
-
 ---
 # Old info
 The following information need to be updated and should go - in the form of comments - into the files
