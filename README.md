@@ -6,7 +6,7 @@ Read("read_hpc.g");
 Read("main_full_par_trafo.g");
 n := 4000;; chopSize := 8;; q := 5;;
 A := RandomMat(n, n, GF(q));;
-ChiefParallel(GF(q), A, chopSize, chopSize);
+ChiefParallel(GF(q), A, chopSize, chopSize);;
 ```
 
 To get some benchmark data on
