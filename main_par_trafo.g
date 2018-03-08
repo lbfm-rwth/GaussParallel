@@ -1,3 +1,9 @@
+# Contains a version of the elimination alg. for HPCGAP computing RREF and a 
+# transformation, where the first step of the
+#                 algorithm runs in parallel ( using HPCGAP's task arch. )
+
+
+
 ChiefParallelClearDown := function( galoisField,mat,a,b )
     ## inputs: a finite field, a matrix, natural nr. a,b to treat mat as axb matirx
     local   TaskListClearDown,

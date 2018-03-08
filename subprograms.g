@@ -1,3 +1,5 @@
+# Collection of larger subfunctions used in the Gaussian elimination alg.
+
 ChopMatrix := function( f,A,nrows,ncols )
     local   i,
             j,
