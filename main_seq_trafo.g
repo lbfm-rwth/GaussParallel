@@ -1,3 +1,6 @@
+# Contains a version of the elimination alg. for standard GAP computing 
+# RREF and a transformation
+
 Chief := function( galoisField,mat,a,b )
     ## inputs: a finite field, a matrix, natural nr. a,b to treat mat as axb matirx
     local   nrows,

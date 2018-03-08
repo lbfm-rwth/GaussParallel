@@ -1,3 +1,7 @@
+# Loads all necessary functions into standard GAP, assuming access to 
+# packages "IO" and "GAUSS".
+
+
 LoadPackage("GAUSS");
 LoadPackage("IO");
 Read("./utils.g");

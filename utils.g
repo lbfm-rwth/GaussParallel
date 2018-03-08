@@ -1,3 +1,6 @@
+# Collection of small basic functions used in subfunctions of the algorithm
+
+
 REX := function( galoisField,positionsBitstring,mat )
     local   i,
             up,

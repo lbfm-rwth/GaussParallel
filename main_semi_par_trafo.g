@@ -1,3 +1,8 @@
+# Contains a version of the elimination alg. for HPCGAP computing RREF and 
+# a transformation, where the second step of the
+#                    algorithm runs in parallel ( using HPCGAP's task arch. )
+
+
 ClearUp := function( R,X,R_ )
     if IsEmpty(R_) or IsEmpty(X) then return R; fi;
     if IsEmpty(R) then
