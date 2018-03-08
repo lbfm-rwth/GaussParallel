@@ -52,8 +52,8 @@ evaluate := function()
     Print("CPU  time  parallel execution: ", CPUTimeCompute*1000, "\n");
     benchStd := GET_REAL_TIME_OF_FUNCTION_CALL(EchelonMatTransformation, [A]);
     resStd := benchStd.result;
-    correct := -1 * resStd.vectors = resPar.remnant
-           and -1 * resStd.coeffs = resPar.transformation;
+    correct := -1 * resStd.vectors = resPar.vectors
+           and -1 * resStd.coeffs = resPar.coeffs;
     if not correct then
         ErrorNoReturn("GaussPar: Result incorrect!");
     fi;

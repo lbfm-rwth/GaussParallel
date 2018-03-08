@@ -61,7 +61,7 @@ Chief := function( galoisField,mat,a,b )
         od;
     od;
     for k in [ 1 .. b ] do
-        D[k] := rec( remnant:=[],bitstring:=[] );
+        D[k] := rec( vectors:=[],bitstring:=[] );
         B[k] := [];
         R[k] := [];
         X[k] := [];
@@ -111,7 +111,7 @@ Chief := function( galoisField,mat,a,b )
 
     ## Step3 ##
     for k in [ 1 .. b ] do
-        R[k][k] := D[k].remnant;
+        R[k][k] := D[k].vectors;
     od;
     for k_ in [ 1 .. b ] do
         k := b-k_+1;
@@ -297,7 +297,7 @@ Chief := function( galoisField,mat,a,b )
      D := TransposedMat( RRF( galoisField,X,
         TransposedMat( CEX( galoisField,v,D )[1] ),v ) );
 
-    return rec( transformation:=B,remnant:=C,relations:=D,
+    return rec( coeffs:=B,vectors:=C,relations:=D,
                 pivotrows:=v,pivotcols:=w,rank:=rank);
 
 end;
@@ -347,7 +347,7 @@ Chief_debug := function( galoisField,mat,a,b )
         od;
     od;
     for k in [ 1 .. b ] do
-        D[k] := rec( remnant:=[],bitstring:=[] );
+        D[k] := rec( vectors:=[],bitstring:=[] );
         B[k] := [];
         R[k] := [];
         X[k] := [];

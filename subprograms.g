@@ -62,8 +62,8 @@ ClearDown := function( galoisField,C,D,i )
             bitstring,
             E,
             riffle,
-            remnant_,
-            remnant,
+            vectors_,
+            vectors,
             H,
             tmp,
             ech;
@@ -76,34 +76,34 @@ ClearDown := function( galoisField,C,D,i )
         ech :=  ECH( galoisField,C );
         tmp := PVC( [],ech[5] );
         return rec( A := rec( A:=[],M:=ech[1],K:=ech[2],rho:=ech[4],E:=[],lambda:=tmp[2] )
-        ,D:= rec(bitstring := ech[5],remnant := ech[3] ) );
+        ,D:= rec(bitstring := ech[5],vectors := ech[3] ) );
     fi;
     tmp := CEX( galoisField,D.bitstring,C );
     A := tmp[1];
     tmp := tmp[2];
     
-    if IsEmpty(A) or IsEmpty(D.remnant) then
+    if IsEmpty(A) or IsEmpty(D.vectors) then
         H := tmp;
     elif IsEmpty(tmp) then
-        H := A*D.remnant;
+        H := A*D.vectors;
     else
-        H := tmp + A*D.remnant;
+        H := tmp + A*D.vectors;
     fi;
     ech := ECH( galoisField,H );
     
-    tmp := CEX( galoisField,ech[5],D.remnant );
+    tmp := CEX( galoisField,ech[5],D.vectors );
     E := tmp[1];
-    remnant_ := tmp[2];
+    vectors_ := tmp[2];
     if not IsEmpty(ech[3]) and not IsEmpty(E) then
-        remnant_ := remnant_ + E*ech[3];
+        vectors_ := vectors_ + E*ech[3];
     fi;
     tmp := PVC( D.bitstring,ech[5] );
     bitstring := tmp[1];
     riffle := tmp[2];
-    remnant := RRF( galoisField,remnant_,ech[3],riffle );
+    vectors := RRF( galoisField,vectors_,ech[3],riffle );
 
     return rec( A := rec( A:=A,M:=ech[1],K:=ech[2],rho:=ech[4],E:=E,lambda:=riffle )
-        ,D:= rec(bitstring := bitstring,remnant := remnant ) );
+        ,D:= rec(bitstring := bitstring,vectors := vectors ) );
 end;
 
 UpdateRow := function( galoisField,A,C,B,i )
