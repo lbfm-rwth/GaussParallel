@@ -45,13 +45,13 @@ ChiefParallel := function( galoisField,mat,a,b )
 
     ##Preparation: Init and chopping the matrix mat
 
-		##Not supported yet
-		if ( DimensionsMat(mat)[1] mod a <> 0) then
-			ErrorNoReturn("Variable: 'a' must divide number of rows" );
-		fi;
-		if ( DimensionsMat(mat)[2] mod b <> 0) then
-			ErrorNoReturn("Variable: 'b' must divide number of columns" );
-		fi;
+        ##Not supported yet
+        if ( DimensionsMat(mat)[1] mod a <> 0) then
+            ErrorNoReturn("Variable: 'a' must divide number of rows" );
+        fi;
+        if ( DimensionsMat(mat)[2] mod b <> 0) then
+            ErrorNoReturn("Variable: 'b' must divide number of columns" );
+        fi;
 
     C := ChopMatrix( galoisField,mat,a,b );
     ncols := DimensionsMat( mat )[2];
