@@ -1,14 +1,14 @@
 Read("read_hpc.g");
 Read("main_full_par_trafo.g");
 nrAvailableThreads := GAPInfo.KernelInfo.NUM_CPUS;
-chopSize := 0; n := 0; q := 0;
+numberChops := 0; n := 0; q := 0;
 A := "";
 bench := "";
 Print("-----------------------------------------------------\n");
 Print("Make sure you called GAP with sufficient\n");
 Print("preallocated memory via `-m`\n");
 Print("Call:\n");
-Print("n := 4000;; chopSize := 8;; q := 5;;\n");
+Print("n := 4000;; numberChops := 8;; q := 5;;\n");
 Print("A := RandomMat(n, n, GF(q));;\n");
 Print("prepare();; compute();; evaluate();;\n");
 Print("-----------------------------------------------------\n");
@@ -40,7 +40,7 @@ end;
 
 compute := function()
     bench := GET_REAL_TIME_OF_FUNCTION_CALL(ChiefParallel,
-                                            [GF(q), A, chopSize, chopSize]);
+                                            [GF(q), A, numberChops, numberChops]);
 end;
 
 evaluate := function()
