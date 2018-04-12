@@ -19,6 +19,8 @@ matrix:
       compiler: clang
     - env: CFLAGS="-O2"
       compiler: gcc
+    - env: CFLAGS="-O2" HPCGAP=yes GAP_PKGS_TO_BUILD="io"
+      compiler: gcc
 
 branches:
   except:
