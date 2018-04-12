@@ -4,9 +4,9 @@ Do something like this to run an example.
 ```
 Read("read_hpc.g");
 Read("main_full_par_trafo.g");
-n := 4000;; chopSize := 8;; q := 5;;
+n := 4000;; numberChops := 8;; q := 5;;
 A := RandomMat(n, n, GF(q));;
-ChiefParallel(GF(q), A, chopSize, chopSize);;
+ChiefParallel(GF(q), A, numberChops, numberChops);;
 ```
 
 To get some benchmark data on
