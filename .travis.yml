@@ -35,3 +35,7 @@ after_script:
   - bash scripts/gather-coverage.sh
   - bash <(curl -s https://codecov.io/bash)
 
+ 
+notifications:
+  slack: lbfm:Ed9IneWr1EgUpjuskzKZELDU 
+ 
