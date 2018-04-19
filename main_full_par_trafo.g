@@ -45,7 +45,9 @@ ChiefParallel := function( galoisField,mat,a,b )
             k,
             k_,
             l,
-            h;
+            h,
+			ClearDownInput,
+			ExtendInput;
 
     ##Preparation: Init and chopping the matrix mat
 
@@ -145,89 +147,25 @@ ChiefParallel := function( galoisField,mat,a,b )
     ## Step 1 ##
     for i in [ 1 .. a ] do
         for j in [ 1 .. b ] do
-            if i=1 and j=1 then
-                TaskListClearDown[1][1] := RunTask(
-                    ClearDown,
-                    galoisField,
-                    C[1][1],
-                    rec( vectors:=[],bitstring:=[] ),
-                    1
-                );
-                TaskListE[i][j] := ScheduleTask(
-                    [
-                        TaskListClearDown[i][j]
-                    ],
-                    Extend,
-                    TaskResult( TaskListClearDown[i][j] ).A,
-                    rec( rho:=[],delta:=[],nr:=0 ),
-                    j
-                );
-            elif i=1 and j>1 then
-                TaskListClearDown[1][j] := ScheduleTask(
-                    [
-                        TaskListUpdateR[1][j-1][j]
-                    ],
-                    ClearDown,
-                    galoisField,
-                    TaskResult( TaskListUpdateR[1][j-1][j] ).C,
-                    rec( vectors:=[],bitstring:=[] ),
-                    1
-                );
-                TaskListE[i][j] := ScheduleTask(
-                    [
-                        TaskListClearDown[i][j],
-                        TaskListE[i][j-1],
+			ClearDownInput := ClearDownParameters(i, j, C, TaskListClearDown, TaskListUpdateR, galoisField, dummyTask);
+			TaskListClearDown[i][j] := ScheduleTask(
+				ClearDownInput[1],
+				ClearDown,
+				ClearDownInput[2],
+				ClearDownInput[3],
+				ClearDownInput[4],
+				ClearDownInput[5]
+			);
 
-                    ],
-                    Extend,
-                    TaskResult( TaskListClearDown[i][j] ).A,
-                    TaskResult( TaskListE[i][j-1] ),
-                    j
-                );
-            elif i>1 and j=1 then
-                TaskListClearDown[i][1] := ScheduleTask(
-                    [
-                        TaskListClearDown[i-1][1]
-                    ],
-                    ClearDown,
-                    galoisField,
-                    C[i][1],
-                    TaskResult( TaskListClearDown[i-1][1] ).D,
-                    i
-                );
-                TaskListE[i][j] := ScheduleTask(
-                    [
-                        TaskListClearDown[i][j]
-                    ],
-                    Extend,
-                    TaskResult( TaskListClearDown[i][j] ).A,
-                    rec( rho:=[],delta:=[],nr:=0 ),
-                    j
-                );
-            else
-                TaskListClearDown[i][j] := ScheduleTask(
-                    [
-                        TaskListClearDown[i-1][j],
-                        TaskListUpdateR[i][j-1][j]
-                    ],
-                    ClearDown,
-                    galoisField,
-                    TaskResult( TaskListUpdateR[i][j-1][j] ).C,
-                    TaskResult( TaskListClearDown[i-1][j] ).D,
-                    i
-                );
-                TaskListE[i][j] := ScheduleTask(
-                    [
-                        TaskListClearDown[i][j],
-                        TaskListE[i][j-1]
-                    ],
-                    Extend,
-                    TaskResult( TaskListClearDown[i][j] ).A,
-                    TaskResult( TaskListE[i][j-1] ),
-                    j
-                );
-            fi;
-           
+			ExtendInput := ExtendParameters(i, j, TaskListClearDown, TaskListE);
+			TaskListE[i][j] := ScheduleTask(
+				ExtendInput[1],
+				Extend,
+				ExtendInput[2],
+				ExtendInput[3],
+				ExtendInput[4]
+			);
+			
             #tmp := ClearDown( galoisField,C[i][j],D[j],i );
             #D[j] := tmp.D;
             #A[i][j] := tmp.A;
