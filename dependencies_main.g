@@ -1,4 +1,4 @@
-	# This file contains some help functions making the parallel parts of the code 
+# This file contains some help functions making the parallel parts of the code 
 # in main_full_par_trafo.g more readable. (Dependency of main_full_par_trafo.g.)
 
 # Function in step 1
@@ -50,4 +50,33 @@ ExtendParameters := function(i, j, TaskListClearDown, TaskListE)
 
 	flag := j;
 	return [ list, A, E, flag ];
+end;
+
+UpdateRowParameters := function(i, j, k, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
+	local list, A, C, B, number; # parameters for UpdateRow as in subprograms.g
+
+	if (i = 1) and (j = 1) then
+		list := [ TaskListClearDown[i][j] ];
+		A := TaskResult( TaskListClearDown[i][j] ).A;
+		C := matrixC[i][k];
+		B := [];
+	elif (i = 1) and (j > 1) then
+		list := [ TaskListClearDown[i][j], TaskListUpdateR[i][j-1][k] ];
+		A := TaskResult( TaskListClearDown[i][j] ).A;
+		C := TaskResult( TaskListUpdateR[i][j-1][k] ).C;
+		B := [];
+	elif (i > 1) and (j = 1) then
+		list := [ TaskListClearDown[i][j], TaskListUpdateR[i-1][j][k] ];
+		A := TaskResult( TaskListClearDown[i][j] ).A;
+		C := matrixC[i][k];
+		B := TaskResult( TaskListUpdateR[i-1][j][k] ).B;
+	else
+		list := [ TaskListClearDown[i][j], TaskListUpdateR[i-1][j][k], TaskListUpdateR[i][j-1][k] ];
+		A := TaskResult( TaskListClearDown[i][j] ).A;
+		C := TaskResult( TaskListUpdateR[i][j-1][k] ).C;
+		B := TaskResult( TaskListUpdateR[i-1][j][k] ).B;
+	fi;
+
+	number := i;
+	return [ list, galoisField, A, C, B, number ];
 end;
