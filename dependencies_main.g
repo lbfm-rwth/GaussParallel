@@ -2,30 +2,24 @@
 # in main_full_par_trafo.g more readable. (Dependency of main_full_par_trafo.g.)
 
 # Function in step 1
-ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskListUpdateR, galoisField, dummyTask)
+ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
 	local list, C, D, number; # parameters for ClearDown as in subprograms.g
+    
+    list := [];
 
     if (i = 1) then
 		D := rec( vectors:=[], bitstring:=[] );
     else
 		D := TaskResult( TaskListClearDown[i-1][j] ).D;
+		Add(list, TaskListClearDown[i-1][j]);
     fi;
 
     if (j = 1) then
 		C := matrixC[i][1];
     else
 		C := TaskResult( TaskListUpdateR[i][j-1][j] ).C;
+		Add(list, TaskListUpdateR[i][j-1][j]);
     fi;
-
-	if (i = 1) and (j = 1) then
-		list := [];
-	elif (i = 1) and (j > 1) then
-		list := [ TaskListUpdateR[1][j-1][j] ];
-	elif (i > 1) and (j = 1) then
-		list := [ TaskListClearDown[i-1][1] ];
-	else
-		list := [ TaskListClearDown[i-1][j], TaskListUpdateR[i][j-1][j] ];
-	fi;
 		
 	number := i;
 	return [ list, galoisField, C, D, number ];
@@ -50,27 +44,21 @@ end;
 UpdateRowParameters := function(i, j, k, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
 	local list, A, C, B, number; # parameters for UpdateRow as in subprograms.g
 
+	list := [ TaskListClearDown[i][j] ];
+
     if (j = 1) then
 		C := matrixC[i][k];
     else
 		C := TaskResult( TaskListUpdateR[i][j-1][k] ).C;
+        Add(list, TaskListUpdateR[i][j-1][k]);
     fi;
 
     if (i = 1) then
 		B := [];
     else
 		B := TaskResult( TaskListUpdateR[i-1][j][k] ).B;
+        Add(list, TaskListUpdateR[i-1][j][k]);
     fi;
-
-	if (i = 1) and (j = 1) then
-		list := [ TaskListClearDown[i][j] ];
-	elif (i = 1) and (j > 1) then
-		list := [ TaskListClearDown[i][j], TaskListUpdateR[i][j-1][k] ];
-	elif (i > 1) and (j = 1) then
-		list := [ TaskListClearDown[i][j], TaskListUpdateR[i-1][j][k] ];
-	else
-		list := [ TaskListClearDown[i][j], TaskListUpdateR[i-1][j][k], TaskListUpdateR[i][j-1][k] ];
-	fi;
 
 	A := TaskResult( TaskListClearDown[i][j] ).A;
 	number := i;
@@ -80,28 +68,22 @@ end;
 UpdateRowTrafoParameters := function(i, j, k, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField)
 	local list, A, K, M, E; # parameters for UpdateRowTrafe as in subprograms.g
 
+	list := [ TaskListClearDown[i][j], TaskListE[k][j] ];
+    
     if (i = 1) then
         M := [];
     else
 		M := TaskResult( TaskListUpdateM[i-1][j][k] ).M;
+        Add(list, TaskListUpdateM[i-1][j][k]); 
     fi;
 
     if (j = 1) then
 		K := [];
     else
 		K := TaskResult( TaskListUpdateM[i][j-1][k] ).K;
+        Add(list, TaskListUpdateM[i][j-1][k]);
     fi;
     
-	if (i = 1) and (j = 1) then
-		list := [ TaskListClearDown[i][j], TaskListE[k][j] ];
-	elif (i = 1) and (j > 1) then
-		list := [ TaskListClearDown[i][j], TaskListE[k][j], TaskListUpdateM[i][j-1][k] ];
-	elif (i > 1) and (j = 1) then
-		list := [ TaskListClearDown[i][j], TaskListE[k][j], TaskListUpdateM[i-1][j][k] ];
-	else
-		list := [ TaskListClearDown[i][j], TaskListE[k][j], TaskListUpdateM[i][j-1][k], TaskListUpdateM[i-1][j][k] ];
-	fi;
-	
     A := TaskResult( TaskListClearDown[i][j] ).A;
     E := TaskResult( TaskListE[k][j] );
 

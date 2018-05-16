@@ -150,7 +150,7 @@ ChiefParallel := function( galoisField,mat,a,b )
     for i in [ 1 .. a ] do
         for j in [ 1 .. b ] do
 			ClearDownInput := ClearDownParameters(i, j, C, TaskListClearDown,
-				TaskListUpdateR, galoisField, dummyTask);
+				TaskListUpdateR, galoisField);
 			TaskListClearDown[i][j] := ScheduleTask(
 				ClearDownInput[1],
 				ClearDown,
