@@ -45,7 +45,11 @@ ChiefParallel := function( galoisField,mat,a,b )
             k,
             k_,
             l,
-            h;
+            h,
+			ClearDownInput,
+			ExtendInput,
+			UpdateRowInput,
+			UpdateRowTrafoInput;
 
     ##Preparation: Init and chopping the matrix mat
 
@@ -145,238 +149,54 @@ ChiefParallel := function( galoisField,mat,a,b )
     ## Step 1 ##
     for i in [ 1 .. a ] do
         for j in [ 1 .. b ] do
-            if i=1 and j=1 then
-                TaskListClearDown[1][1] := RunTask(
-                    ClearDown,
-                    galoisField,
-                    C[1][1],
-                    rec( vectors:=[],bitstring:=[] ),
-                    1
-                );
-                TaskListE[i][j] := ScheduleTask(
-                    [
-                        TaskListClearDown[i][j]
-                    ],
-                    Extend,
-                    TaskResult( TaskListClearDown[i][j] ).A,
-                    rec( rho:=[],delta:=[],nr:=0 ),
-                    j
-                );
-            elif i=1 and j>1 then
-                TaskListClearDown[1][j] := ScheduleTask(
-                    [
-                        TaskListUpdateR[1][j-1][j]
-                    ],
-                    ClearDown,
-                    galoisField,
-                    TaskResult( TaskListUpdateR[1][j-1][j] ).C,
-                    rec( vectors:=[],bitstring:=[] ),
-                    1
-                );
-                TaskListE[i][j] := ScheduleTask(
-                    [
-                        TaskListClearDown[i][j],
-                        TaskListE[i][j-1],
+			ClearDownInput := ClearDownParameters(i, j, C, TaskListClearDown,
+				TaskListUpdateR, galoisField);
+			TaskListClearDown[i][j] := ScheduleTask(
+				ClearDownInput[1],
+				ClearDown,
+				ClearDownInput[2],
+				ClearDownInput[3],
+				ClearDownInput[4],
+				ClearDownInput[5]
+			);
 
-                    ],
-                    Extend,
-                    TaskResult( TaskListClearDown[i][j] ).A,
-                    TaskResult( TaskListE[i][j-1] ),
-                    j
-                );
-            elif i>1 and j=1 then
-                TaskListClearDown[i][1] := ScheduleTask(
-                    [
-                        TaskListClearDown[i-1][1]
-                    ],
-                    ClearDown,
-                    galoisField,
-                    C[i][1],
-                    TaskResult( TaskListClearDown[i-1][1] ).D,
-                    i
-                );
-                TaskListE[i][j] := ScheduleTask(
-                    [
-                        TaskListClearDown[i][j]
-                    ],
-                    Extend,
-                    TaskResult( TaskListClearDown[i][j] ).A,
-                    rec( rho:=[],delta:=[],nr:=0 ),
-                    j
-                );
-            else
-                TaskListClearDown[i][j] := ScheduleTask(
-                    [
-                        TaskListClearDown[i-1][j],
-                        TaskListUpdateR[i][j-1][j]
-                    ],
-                    ClearDown,
-                    galoisField,
-                    TaskResult( TaskListUpdateR[i][j-1][j] ).C,
-                    TaskResult( TaskListClearDown[i-1][j] ).D,
-                    i
-                );
-                TaskListE[i][j] := ScheduleTask(
-                    [
-                        TaskListClearDown[i][j],
-                        TaskListE[i][j-1]
-                    ],
-                    Extend,
-                    TaskResult( TaskListClearDown[i][j] ).A,
-                    TaskResult( TaskListE[i][j-1] ),
-                    j
-                );
-            fi;
-           
-            #tmp := ClearDown( galoisField,C[i][j],D[j],i );
-            #D[j] := tmp.D;
-            #A[i][j] := tmp.A;
-            #if j=1 then
-            #    bs := rec( rho:=[],delta:=[],nr:=0 );
-            #else
-            #    bs := E[i][j-1];
-            #fi;
-            #E[i][j] := Extend( A[i][j],bs,j );
-
+			ExtendInput := ExtendParameters(i, j, TaskListClearDown, TaskListE);
+			TaskListE[i][j] := ScheduleTask(
+				ExtendInput[1],
+				Extend,
+				ExtendInput[2],
+				ExtendInput[3],
+				ExtendInput[4]
+			);
+			
             for k in [ j+1 .. b ] do
-                if i=1 and j=1 then
-                    TaskListUpdateR[i][j][k] := ScheduleTask(
-                        [
-                            TaskListClearDown[i][j]
-                        ],
-                        UpdateRow,
-                        galoisField,
-                        TaskResult( TaskListClearDown[i][j] ).A,
-                        C[i][k],
-                        [],
-                        i
-                    ); 
-                elif i=1 and j>1 then
-                    TaskListUpdateR[i][j][k] := ScheduleTask(
-                        [
-                            TaskListClearDown[i][j],
-                            TaskListUpdateR[i][j-1][k]
-                        ],
-                        UpdateRow,
-                        galoisField,
-                        TaskResult( TaskListClearDown[i][j] ).A,
-                        TaskResult( TaskListUpdateR[i][j-1][k] ).C,
-                        [],
-                        i
-                    ); 
-
-                elif i>1 and j=1 then
-                    TaskListUpdateR[i][j][k] := ScheduleTask(
-                        [
-                            TaskListClearDown[i][j],
-                            TaskListUpdateR[i-1][j][k]
-                        ],
-                        UpdateRow,
-                        galoisField,
-                        TaskResult( TaskListClearDown[i][j] ).A,
-                        C[i][k],
-                        TaskResult( TaskListUpdateR[i-1][j][k] ).B,
-                        i
-                    );
-                else
-                    TaskListUpdateR[i][j][k] := ScheduleTask(
-                        [
-                            TaskListClearDown[i][j],
-                            TaskListUpdateR[i-1][j][k],
-                            TaskListUpdateR[i][j-1][k]
-                        ],
-                        UpdateRow,
-                        galoisField,
-                        TaskResult( TaskListClearDown[i][j] ).A,
-                        TaskResult( TaskListUpdateR[i][j-1][k] ).C,
-                        TaskResult( TaskListUpdateR[i-1][j][k] ).B,
-                        i
-                    );
-                fi;
-                
-                
-                
-                #tmp := UpdateRow(  galoisField,A[i][j],C[i][k],
-                #                    B[j][k],i );
-                #C[i][k] := tmp.C;
-                #B[j][k] := tmp.B;
+				UpdateRowInput := UpdateRowParameters(i, j, k, C, TaskListClearDown,
+					TaskListUpdateR, galoisField);
+				TaskListUpdateR[i][j][k] := ScheduleTask(
+					UpdateRowInput[1],
+					UpdateRow,
+					UpdateRowInput[2],
+					UpdateRowInput[3],
+					UpdateRowInput[4],
+					UpdateRowInput[5],
+					UpdateRowInput[6]
+				);
             od;
-            for h in [ 1 .. i ] do
-                
-                if i=1 and j=1 then
-                    TaskListUpdateM[i][j][h] := ScheduleTask(
-                        [
-                            TaskListClearDown[i][j],
-                            TaskListE[h][j]
-                        ],
-                        UpdateRowTrafo,
-                        galoisField,
-                        TaskResult( TaskListClearDown[i][j] ).A,
-                        [],
-                        [],
-                        TaskResult( TaskListE[h][j] ),
-                        i,
-                        h,
-                        j
-                    ); 
-                elif i=1 and j>1 then
-                    TaskListUpdateM[i][j][h] := ScheduleTask(
-                        [
-                            TaskListClearDown[i][j],
-                            TaskListE[h][j],
-                            TaskListUpdateM[i][j-1][h]
-                        ],
-                        UpdateRowTrafo,
-                        galoisField,
-                        TaskResult( TaskListClearDown[i][j] ).A,
-                        TaskResult( TaskListUpdateM[i][j-1][h] ).K,
-                        [],
-                        TaskResult( TaskListE[h][j] ),
-                        i,
-                        h,
-                        j
-                    ); 
 
-                elif i>1 and j=1 then
-                    TaskListUpdateM[i][j][h] := ScheduleTask(
-                        [
-                            TaskListClearDown[i][j],
-                            TaskListE[h][j],
-                            TaskListUpdateM[i-1][j][h]
-                        ],
-                        UpdateRowTrafo,
-                        galoisField,
-                        TaskResult( TaskListClearDown[i][j] ).A,
-                        [],
-                        TaskResult( TaskListUpdateM[i-1][j][h] ).M,
-                        TaskResult( TaskListE[h][j] ),
-                        i,
-                        h,
-                        j
-                    );
-                else
-                    TaskListUpdateM[i][j][h] := ScheduleTask(
-                        [
-                            TaskListClearDown[i][j],
-                            TaskListE[h][j],
-                            TaskListUpdateM[i][j-1][h],
-                            TaskListUpdateM[i-1][j][h]
-                        ],
-                        UpdateRowTrafo,
-                        galoisField,
-                        TaskResult( TaskListClearDown[i][j] ).A,
-                        TaskResult( TaskListUpdateM[i][j-1][h] ).K,
-                        TaskResult( TaskListUpdateM[i-1][j][h] ).M,
-                        TaskResult( TaskListE[h][j] ),
-                        i,
-                        h,
-                        j
-                    );
-                fi;
-                #tmp := UpdateRowTrafo(  galoisField,A[i][j],K[i][h],
-                #                   M[j][h],E[h][j],i,h,j );
-                #K[i][h] := tmp.K;
-                #M[j][h] := tmp.M;
+            for h in [ 1 .. i ] do
+				UpdateRowTrafoInput := UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
+            	TaskListUpdateM[i][j][h] := ScheduleTask(
+					UpdateRowTrafoInput[1],
+                	UpdateRowTrafo,
+					UpdateRowTrafoInput[2],
+					UpdateRowTrafoInput[3],
+					UpdateRowTrafoInput[4],
+					UpdateRowTrafoInput[5],
+					UpdateRowTrafoInput[6],
+					UpdateRowTrafoInput[7],
+					UpdateRowTrafoInput[8],
+					UpdateRowTrafoInput[9]
+				); 
             od;
         od;    
     od;
