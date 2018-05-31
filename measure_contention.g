@@ -1,5 +1,7 @@
 Read("read_hpc.g");
-Read("main_full_par_trafo.g");
+
+#Make sure you called GAP with sufficient
+#preallocated memory via `-m`
 
 prepareCounters := function()
     Sleep(1);
@@ -31,13 +33,12 @@ compute := function(A, q, numberChops)
                                             [GF(q), A, numberChops, numberChops]);
 end;
 
-evaluate := function(nrAvailableThreads, bench, A)
+evaluate := function(nrAvailableThreads, bench, A, visible)
     local CPUTimeCompute, resPar, benchStd, resStd, correct, counters,
     totalAcquired, totalContended, factor;
+
     CPUTimeCompute := time;
     resPar := bench.result;
-    Print("Wall time  parallel execution: ", bench.time, "\n");
-    Print("CPU  time  parallel execution: ", CPUTimeCompute*1000, "\n");
     benchStd := GET_REAL_TIME_OF_FUNCTION_CALL(EchelonMatTransformation, [A]);
     resStd := benchStd.result;
     correct := -1 * resStd.vectors = resPar.vectors
@@ -45,34 +46,37 @@ evaluate := function(nrAvailableThreads, bench, A)
     if not correct then
         ErrorNoReturn("GaussPar: Result incorrect!");
     fi;
-    Print("Wall time Gauss pkg execution: ", benchStd.time, "\n");
     counters := List([1..nrAvailableThreads], x -> RunTask(getCountersForTaskThreads));
     counters := List(counters, TaskResult);
     SortParallel(List(counters, x -> x[1]), counters);
-    Print("Lock statistics(estimates):\n");
     totalAcquired := Sum(List(counters, x -> x[2]));
     totalContended := Sum(List(counters, x -> x[3]));
-    Print("acquired - ", totalAcquired, ", contended - ", totalContended);
     factor := Round(totalContended / totalAcquired * 100.);
-    Print(", factor - ", factor, "%\n");
-    Print("Locks acquired and contention counters per thread:\n");
-    Print(counters, "\n");
+    
+    if (visible) then
+        Print("Wall time  parallel execution: ", bench.time, "\n");
+        Print("CPU  time  parallel execution: ", CPUTimeCompute*1000, "\n");
+        Print("Wall time Gauss pkg execution: ", benchStd.time, "\n");
+        Print("Lock statistics(estimates):\n");
+        Print("acquired - ", totalAcquired, ", contended - ", totalContended);
+        Print(", factor - ", factor, "%\n");
+        Print("Locks acquired and contention counters per thread:\n");
+        Print(counters, "\n");
+    fi;
 end;
 
-measure_contention := function()
-    local nrAvailableThreads, numberChops, n, q, A, bench;
+MeasureContention := function(numberChops, q, A, options...)
+    local nrAvailableThreads, bench, visible;
 
-    Print("-----------------------------------------------------\n");
-    Print("Make sure you called GAP with sufficient\n");
-    Print("preallocated memory via `-m`\n");
-    Print("-----------------------------------------------------\n");
+    visible := true;
+    if ((Length(options) = 1) and (options[1] = false)) then
+        visible := false;
+    fi;
 
     nrAvailableThreads := GAPInfo.KernelInfo.NUM_CPUS;
     bench := "";
-    n := 4000;; numberChops := 8;; q := 5;;
-    A := RandomMat(n, n, GF(q));;
     
     prepare(nrAvailableThreads);;
     bench := compute(A, q, numberChops);;
-    evaluate(nrAvailableThreads, bench);;
+    evaluate(nrAvailableThreads, bench, A, visible);;
 end;
