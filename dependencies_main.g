@@ -1,5 +1,14 @@
 # This file contains some help functions making the parallel parts of the code 
-# in main_full_par_trafo.g more readable. (Dependency of main_full_par_trafo.g.)
+# in main.g more readable. (Dependency of main.g.)
+
+ClearUp := function( R,X,R_ )
+    if IsEmpty(R_) or IsEmpty(X) then return R; fi;
+    if IsEmpty(R) then
+        return X*R_;
+    else
+        return R + X*R_;
+    fi;
+end;
 
 # Function in step 1
 ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)

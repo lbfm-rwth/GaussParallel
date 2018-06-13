@@ -1,5 +1,5 @@
 Read("read_hpc.g");
-Read("main_full_par_trafo.g");
+Read("main.g");
 nrAvailableThreads := GAPInfo.KernelInfo.NUM_CPUS;
 numberChops := 0; n := 0; q := 0;
 A := "";
@@ -40,7 +40,7 @@ end;
 
 compute := function()
     bench := GET_REAL_TIME_OF_FUNCTION_CALL(ChiefParallel,
-                                            [GF(q), A, numberChops, numberChops]);
+                                            [GF(q), A, numberChops, numberChops, true]);
 end;
 
 evaluate := function()

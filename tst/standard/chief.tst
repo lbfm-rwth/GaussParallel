@@ -1,8 +1,8 @@
 gap> Read("read.g");
-gap> Read("main_seq_trafo.g");
+gap> Read("main.g");
 gap> n := 200;; numberChops := 8;; q := 5;;
 gap> A := RandomMat(n, n, GF(q));;
-gap> result := Chief(GF(q), A, numberChops, numberChops);;
+gap> result := ChiefParallel(GF(q), A, numberChops, numberChops, false);;
 gap> result_std := EchelonMatTransformation(A);;
 gap> -1 * result.vectors = result_std.vectors;
 true
