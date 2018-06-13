@@ -15,6 +15,5 @@ Read("./utils.g");
 Read("./subprograms.g");
 Read("./dependencies_main.g");
 Read("./main_seq_trafo.g");
-Read("./main_par_trafo.g");
-Read("./main_semi_par_trafo.g");
+Read("./main_full_par_trafo.g");
 Read("./timing.g");
