@@ -1,6 +1,6 @@
 # This file creates a matrix in strict row echelon form to be used for testing and a function that gets a matrix and returns another matrix with the same strict row echelon form.
 
-echelonMat := function(height, width, rank, randomSeed, ring)
+RandomEchelonMat := function(height, width, rank, randomSeed, ring)
    local echelonMat, rightCorner, i, j;
 
     rightCorner := RandomMat(randomSeed, rank, width-rank, ring);
@@ -20,12 +20,13 @@ echelonMat := function(height, width, rank, randomSeed, ring)
     return echelonMat;
 end;
 
-shapelessMat := function(mat, height, width, randomSeed, ring)
+_GAUSS_shapelessMat := function(mat, height, width, randomSeed, ring)
     local i, grp, left;
 
     grp := GL(height, ring);
     i := Length(GeneratorsOfGroup(grp));
     Group_InitPseudoRandom(grp, i+3, 20);
     left := PseudoRandom(grp);
+
     return left * mat;
 end;
