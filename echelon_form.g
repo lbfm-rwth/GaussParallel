@@ -4,12 +4,12 @@ echelonMat := function(height, width, rank, randomSeed, ring)
    local echelonMat, rightCorner, i, j;
 
     rightCorner := RandomMat(randomSeed, rank, width-rank, ring);
-    echelonMat := NullMat(height, width);
+    echelonMat := NullMat(height, width, ring);
 
     for i in [1 .. rank] do
-        echelonMat[i][i] := 1;
+        echelonMat[i][i] := One(ring);
     od;
-    echelonMat := echelonMat * One(ring);
+    echelonMat := echelonMat;
 
     for i in [1 .. rank] do
         for j in [1 .. (width-rank)] do
@@ -21,5 +21,11 @@ echelonMat := function(height, width, rank, randomSeed, ring)
 end;
 
 shapelessMat := function(mat, height, width, randomSeed, ring)
-    return RandomInvertibleMat(randomSeed, height, ring) * mat;
+    local i, grp, left;
+
+    grp := GL(height, ring);
+    i := Length(GeneratorsOfGroup(grp));
+    Group_InitPseudoRandom(grp, i+3, 20);
+    left := PseudoRandom(grp);
+    return left * mat;
 end;
