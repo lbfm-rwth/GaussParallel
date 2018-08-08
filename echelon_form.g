@@ -23,6 +23,9 @@ end;
 _GAUSS_shapelessMat := function(mat, height, width, randomSeed, ring)
     local i, grp, left;
 
+    # PseudoRandom takes too much time to initialize PseudoRandomSeed for big values
+    # of height. So we call the initialization ourselves with parameters that make it cheaper
+    # to compute.
     grp := GL(height, ring);
     i := Length(GeneratorsOfGroup(grp));
     Group_InitPseudoRandom(grp, i+3, 20);
