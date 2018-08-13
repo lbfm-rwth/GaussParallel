@@ -5,7 +5,7 @@
 ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
 	local list, C, D, number; # parameters for ClearDown as in subprograms.g
     
-    list := [];
+    list := [RunTask( function() return []; end )];
 
     if (i = 1) then
 		D := rec( vectors:=[], bitstring:=[] );
