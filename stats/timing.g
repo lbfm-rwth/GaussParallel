@@ -1,15 +1,15 @@
 ## Calculates time statistics for one matrix of a specific type using Benchmark()
 CalculateTime := function(isParallel, height, width, rank, ring, numberChopsH, numberChopsW, randomSeed)
     local echelon, shapeless, result, times, r;
-    Info(InfoGauss, 1, "Start CalculateTime in stats/timing.g");
+    Info(InfoGauss, 1, "Start CalculateTime");
     times := 0;
 
     # Create random matrices, calculate time.
     echelon := RandomEchelonMat(height, width, rank, randomSeed, ring);;
-    Info(InfoGauss, 2, "Echelon matrix:");
+    Info(InfoGauss, 3, "Echelon matrix:");
     Info(InfoGauss, 3, echelon);
     shapeless := _GAUSS_shapelessMat(echelon, height, width, randomSeed, ring);;
-    Info(InfoGauss, 2, "Shapeless matrx:");
+    Info(InfoGauss, 3, "Shapeless matrx:");
     Info(InfoGauss, 3, shapeless);
     if isParallel then
         Info(InfoGauss, 2, "Parallel version:");
