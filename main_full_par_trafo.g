@@ -52,6 +52,8 @@ ChiefParallel := function( galoisField,mat,a,b )
 			UpdateRowTrafoInput;
 
     ##Preparation: Init and chopping the matrix mat
+    Info(InfoGauss, 1, "------------ Start ChiefParallel in main_par_trafo.g ------------");
+    Info(InfoGauss, 1, "Preparation");
 
         ##Not supported yet
         if ( DimensionsMat(mat)[1] mod a <> 0) then
@@ -182,6 +184,7 @@ ChiefParallel := function( galoisField,mat,a,b )
 				ExtendInput[4]
 			);
 			
+            Info(InfoGauss, 2, "UpdateRow ", i, " ", j);
             for k in [ j+1 .. b ] do
 				UpdateRowInput := UpdateRowParameters(i, j, k, C, TaskListClearDown,
 					TaskListUpdateR, galoisField);
@@ -196,6 +199,7 @@ ChiefParallel := function( galoisField,mat,a,b )
 				);
             od;
 
+            Info(InfoGauss, 2, "UpdateRowTrafoInput ", i, " ", j);
             for h in [ 1 .. i ] do
 				UpdateRowTrafoInput := UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
             	TaskListUpdateM[i][j][h] := ScheduleTask(
@@ -214,6 +218,7 @@ ChiefParallel := function( galoisField,mat,a,b )
         od;    
     od;
 
+    Info(InfoGauss, 2, "Before WaitTask");
     WaitTask( Concatenation( TaskListClearDown ) );
     WaitTask( Concatenation( TaskListE ) );
     WaitTask( Concatenation( List( TaskListUpdateR,Concatenation ) ) );
@@ -236,6 +241,7 @@ ChiefParallel := function( galoisField,mat,a,b )
     od;
 
     ## Step 2 ##
+    Info(InfoGauss, 1, "Step 2");
     for j in [ 1 .. b ] do
         for h in [ 1 .. a ] do
             M[j][h] := RowLengthen( galoisField,M[j][h],E[h][j],E[h][b] );            
@@ -324,6 +330,7 @@ ChiefParallel := function( galoisField,mat,a,b )
     ###############################
 
     ## Write output
+    Info(InfoGauss, 1, "Write output");
     # Begin with row-select bitstring named v
     v := [];
     rank := 0;
