@@ -28,36 +28,6 @@ GET_REAL_TIME_OF_FUNCTION_CALL := function ( method, args, options... )
   return rec( result := result, time := total );
 end;
 
-alignRight := function( obj, n )
-  ## fill up string with " " on the left side
-  local m, string;
-  string := String( obj );
-  m := Maximum( 0, n - Size(string) );
-  return Concatenation(
-    RepeatedString( " ", m ),
-    string
-  );
-end;
-
-alignCenter := function( obj, n )
-  ## fill up string with " " on both sides
-  local m, ml, mr, string;
-  string := String( obj );
-  m := Maximum( 0, n - Size(string) );
-  if IsEvenInt( m ) then
-    ml := m/2;
-    mr := m/2;
-  else
-    ml := Int( Floor( 1. * m/2 ) );
-    mr := Int( Floor( 1. * m/2 ) ) + 1;
-  fi;
-  return Concatenation(
-    RepeatedString( " ", ml ),
-    string,
-    RepeatedString( " ", mr )
-  );
-end;
-
 threeSignificantDigits := function( x )
   local count;
   if not IsFloat(x) then
@@ -71,35 +41,6 @@ threeSignificantDigits := function( x )
   # Round to three significant digits
   x := Floor( x * 100 );
   return Round(x * 10^(count-2));
-end;
-
-## R-microbenchmark like Printing of statistics
-PrintStats := function( statistics )
-  ## TODO enable multiple row statistics and printing of these
-  ## TODO first determine timeUnit, then round to three significant digits appropriately
-  local timeUnit, median, columnNames, count;
-  columnNames := [ "Min", "1st Quart", "Mean", "Median", "3rd Quart", "Max" ];
-  median := Median( statistics );
-  if median < 10^4 * 1. then
-    timeUnit := "milliseconds";
-    statistics := statistics;
-  elif median < 10^7 * 1. then
-    timeUnit := "seconds";
-    statistics := statistics / (10^3);
-  elif median < 60 * 10^7 * 1. then
-    timeUnit := "minutes";
-    statistics := statistics / (60 * 10^3);
-  else
-    timeUnit := "hours";
-    statistics := statistics / (60 * 60 * 10^3);
-  fi;
-  Print( timeUnit, "\n" );
-  columnNames := List( columnNames, x -> alignRight( x, 13 ) );
-  columnNames := Concatenation( columnNames );
-  Print( columnNames, "\n" );
-  statistics := List( statistics, x -> alignRight( Int(x), 13 ) );
-  statistics := Concatenation( statistics );
-  Print( statistics, "\n" );
 end;
 
 GetStatistics := function( data )
@@ -161,9 +102,4 @@ Benchmark := function( func, args, opt... )
 
   res := rec( timings := timings, statistics := statistics );
   return res;
-end;
-
-## Execute function call only once
-BenchmarkOnce := function( func, args, opt... )
-  return Benchmark( func, args, rec( warmup := 0, times := 1  ) );
 end;

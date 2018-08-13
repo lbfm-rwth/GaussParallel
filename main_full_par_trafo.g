@@ -52,7 +52,7 @@ ChiefParallel := function( galoisField,mat,a,b )
 			UpdateRowTrafoInput;
 
     ##Preparation: Init and chopping the matrix mat
-    Info(InfoGauss, 1, "------------ Start ChiefParallel in main_par_trafo.g ------------");
+    Info(InfoGauss, 1, "------------ Start ChiefParallel ------------");
     Info(InfoGauss, 1, "Preparation");
 
         ##Not supported yet
@@ -152,27 +152,17 @@ ChiefParallel := function( galoisField,mat,a,b )
     Info(InfoGauss, 1, "Step 1");
     for i in [ 1 .. a ] do
         for j in [ 1 .. b ] do
-            Info(InfoGauss, 2, "ClearDown ", i, " ", j);
+            Info(InfoGauss, 2, "ClearDownParameters ", i, " ", j);
             ClearDownInput := ClearDownParameters(i, j, C, TaskListClearDown,
                 TaskListUpdateR, galoisField);
-            if false then
-                TaskListClearDown[i][j] := RunTask(
-                    ClearDown,
-                    ClearDownInput[2],
-                    ClearDownInput[3],
-                    ClearDownInput[4],
-                    ClearDownInput[5]
-                );
-            else
-                TaskListClearDown[i][j] := ScheduleTask(
-                    ClearDownInput[1],
-                    ClearDown,
-                    ClearDownInput[2],
-                    ClearDownInput[3],
-                    ClearDownInput[4],
-                    ClearDownInput[5]
-                );
-            fi;
+            TaskListClearDown[i][j] := ScheduleTask(
+                ClearDownInput[1],
+                ClearDown,
+                ClearDownInput[2],
+                ClearDownInput[3],
+                ClearDownInput[4],
+                ClearDownInput[5]
+            );
 
             Info(InfoGauss, 2, "ExtendParameters ", i, " ", j);
 			ExtendInput := ExtendParameters(i, j, TaskListClearDown, TaskListE);
@@ -184,7 +174,7 @@ ChiefParallel := function( galoisField,mat,a,b )
 				ExtendInput[4]
 			);
 			
-            Info(InfoGauss, 2, "UpdateRow ", i, " ", j);
+            Info(InfoGauss, 2, "UpdateRowParameters ", i, " ", j);
             for k in [ j+1 .. b ] do
 				UpdateRowInput := UpdateRowParameters(i, j, k, C, TaskListClearDown,
 					TaskListUpdateR, galoisField);
@@ -199,7 +189,7 @@ ChiefParallel := function( galoisField,mat,a,b )
 				);
             od;
 
-            Info(InfoGauss, 2, "UpdateRowTrafoInput ", i, " ", j);
+            Info(InfoGauss, 2, "UpdateRowTrafoParameters ", i, " ", j);
             for h in [ 1 .. i ] do
 				UpdateRowTrafoInput := UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
             	TaskListUpdateM[i][j][h] := ScheduleTask(
