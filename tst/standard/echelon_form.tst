@@ -1,6 +1,3 @@
-gap> Read("read.g");
-gap> Read("main_seq_trafo.g");
-gap> Read("echelon_form.g");
 gap> dimension := 10;; rank := 5;; q := 5;; numberChops := 2;;
 gap> rs := RandomSource(IsMersenneTwister);;
 gap> echelon := RandomEchelonMat(dimension, dimension, rank, rs, GF(q));;
