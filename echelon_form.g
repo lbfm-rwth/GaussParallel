@@ -5,7 +5,7 @@
 RandomEchelonMat := function(height, width, rank, randomSeed, ring)
    local echelonMat, rightCorner, i, j;
 
-    rightCorner := RandomMat(randomSeed, rank, width-rank, ring);
+    rightCorner := RandomMat(rank, width-rank, ring); #FIXME RandomSeed is unused
     echelonMat := NullMat(height, width, ring);
 
     for i in [1 .. rank] do
