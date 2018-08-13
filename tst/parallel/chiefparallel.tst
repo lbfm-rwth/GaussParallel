@@ -1,5 +1,3 @@
-gap> Read("read_hpc.g");
-gap> Read("main_full_par_trafo.g");
 gap> n := 200;; numberChops := 8;; q := 5;;
 gap> A := RandomMat(n, n, GF(q));;
 gap> result := ChiefParallel(GF(q), A, numberChops, numberChops);;
