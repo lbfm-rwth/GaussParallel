@@ -5,7 +5,10 @@
 ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
 	local list, C, D, number; # parameters for ClearDown as in subprograms.g
     
-    list := [];
+    # The output of this function is used by ScheduleTask which has a bug
+    # so that sometimes it doesn't work with an empty list. That's why
+    # we currently need this workaround.
+    list := [RunTask( function() return []; end )];
 
     if (i = 1) then
 		D := rec( vectors:=[], bitstring:=[] );

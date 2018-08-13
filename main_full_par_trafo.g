@@ -147,19 +147,22 @@ ChiefParallel := function( galoisField,mat,a,b )
     ###############################
 
     ## Step 1 ##
+    Info(InfoGauss, 1, "Step 1");
     for i in [ 1 .. a ] do
         for j in [ 1 .. b ] do
-			ClearDownInput := ClearDownParameters(i, j, C, TaskListClearDown,
-				TaskListUpdateR, galoisField);
-			TaskListClearDown[i][j] := ScheduleTask(
-				ClearDownInput[1],
-				ClearDown,
-				ClearDownInput[2],
-				ClearDownInput[3],
-				ClearDownInput[4],
-				ClearDownInput[5]
-			);
+            Info(InfoGauss, 2, "ClearDown ", i, " ", j);
+            ClearDownInput := ClearDownParameters(i, j, C, TaskListClearDown,
+                TaskListUpdateR, galoisField);
+            TaskListClearDown[i][j] := ScheduleTask(
+                ClearDownInput[1],
+                ClearDown,
+                ClearDownInput[2],
+                ClearDownInput[3],
+                ClearDownInput[4],
+                ClearDownInput[5]
+            );
 
+            Info(InfoGauss, 2, "ExtendParameters ", i, " ", j);
 			ExtendInput := ExtendParameters(i, j, TaskListClearDown, TaskListE);
 			TaskListE[i][j] := ScheduleTask(
 				ExtendInput[1],
