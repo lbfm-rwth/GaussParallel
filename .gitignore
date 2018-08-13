@@ -1,3 +1,4 @@
 *.swp
 profiles/
 examples/
+stats/*.csv
