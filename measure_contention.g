@@ -1,5 +1,3 @@
-Read("read_hpc.g");
-
 #Make sure you called GAP with sufficient
 #preallocated memory via `-m`
 

@@ -1,5 +1,3 @@
-gap> Read("read.g");
-gap> Read("main_seq_trafo.g");
 gap> n := 200;; numberChops := 8;; q := 5;;
 gap> A := RandomMat(n, n, GF(q));;
 gap> result := Chief(GF(q), A, numberChops, numberChops);;

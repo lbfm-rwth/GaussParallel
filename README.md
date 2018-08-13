@@ -4,10 +4,9 @@ Note that this is not an actual gap package but is supposed to be included in th
 
 ## The Sequential Implementation
 
-You can use this by reading `read.g` and `main_seq_trafo.g`:
+You can use this by reading `read.g`:
 ```
 Read("read.g");
-Read("main_seq_trafo.g");
 n := 4000;; numberChops := 8;; q := 5;;
 A := RandomMat(n, n, GF(q));;
 result := Chief(GF(q), A, numberChops, numberChops);;
@@ -24,8 +23,7 @@ For further information see `?EchelonMatTransformation`.
 
 Use the parallel implementation in a similar way. Note that you need to start HPC-GAP!
 ```
-Read("read_hpc.g");
-Read("main_full_par_trafo.g");
+Read("read.g");
 n := 4000;; numberChops := 8;; q := 5;;
 A := RandomMat(n, n, GF(q));;
 result := ChiefParallel(GF(q), A, numberChops, numberChops);;
@@ -39,5 +37,10 @@ To get some benchmark data on
 - how the algorithm performs in relation to the `Gauss` pkg
 - wall and CPU time
 - [lock contention](https://en.wikipedia.org/wiki/Lock_%28computer_science%29#Granularity)
-
-do `Read("measure_contention.g");`. The file will tell you how to proceed.
+start HPC-GAP and execute
+```
+Read("read.g");
+n := 4000;; numberChops := 8;; q := 5;;
+A := RandomMat(n, n, GF(q));;
+MeasureContention(numberChops, q, A, true);
+```
