@@ -14,7 +14,10 @@ end;
 ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
 	local list, C, D, number; # parameters for ClearDown as in subprograms.g
     
-    list := [];
+    # The output of this function is used by ScheduleTask which has a bug
+    # so that sometimes it doesn't work with an empty list. That's why
+    # we currently need this workaround.
+    list := [RunTask( function() return []; end )];
 
     if (i = 1) then
 		D := rec( vectors:=[], bitstring:=[] );
@@ -77,6 +80,7 @@ end;
 UpdateRowTrafoParameters := function(i, j, k, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField)
 	local list, A, K, M, E; # parameters for UpdateRowTrafe as in subprograms.g
 
+    Info(InfoGauss, 3, "Start UpdateRowTrafoParameters", i, " ", j, " ", k);
 	list := [ TaskListClearDown[i][j], TaskListE[k][j] ];
     
     if (i = 1) then

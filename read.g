@@ -1,19 +1,27 @@
-# Loads all necessary functions into HPCGAP, assuming access to packages 
-# "IO" and "GAUSS".
+InfoGauss := NewInfoClass("InfoGauss");;
+SetInfoLevel(InfoGauss, 0);
+Info(InfoGauss, 1, "Information about the Gauss package is enabled.");;
 
-# Is this still true: My current versions of HPCGAP/ the GAUSS pkg are not 
-# compatible, hence the repo at the moment
-#            uses a rather obscure looking work-around..)
-
-
-if not IsBound( EchelonMatTransformationDestructive ) then
+gauss := LoadPackage("GAUSS");
+if gauss = fail then
     Read("./hpc/gauss-upwards.gd");
+    Read("./hpc/gauss-upwards.gi");
 fi;
-LoadPackage("GAUSS");
 LoadPackage("IO");
-Read("./hpc/gauss-upwards.gi");
+
 Read("./utils.g");
 Read("./subprograms.g");
 Read("./dependencies_main.g");
+
 Read("./main.g");
 Read("./timing.g");
+Read("./echelon_form.g");
+
+if not IsHPCGAP then
+    Read("./tasks.g");
+fi;
+
+if IsHPCGAP then
+    Read("./measure_contention.g");
+    Read("./stats/timing.g");
+fi;
