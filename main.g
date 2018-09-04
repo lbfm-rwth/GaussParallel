@@ -1,7 +1,17 @@
 # Contains a version of the elimination alg. for HPCGAP computing RREF and a 
 # transformation, running completely in parallel.
 
-ChiefParallel := function( galoisField,mat,a,b,IsHPC )
+
+ClearUp := function( R,X,R_ )
+    if IsEmpty(R_) or IsEmpty(X) then return R; fi;
+    if IsEmpty(R) then
+        return X*R_;
+    else
+        return R + X*R_;
+    fi;
+end;
+
+Chief := function( galoisField,mat,a,b,IsHPC )
     ## inputs: a finite field, a matrix, natural nr. a,b to treat mat as axb matirx
     local   TaskListPreClearUp,
             TaskListClearDown,
@@ -42,6 +52,8 @@ ChiefParallel := function( galoisField,mat,a,b,IsHPC )
 			UpdateRowTrafoInput;
 
     ##Preparation: Init and chopping the matrix mat
+    Info(InfoGauss, 1, "------------ Start Chief ------------");
+    Info(InfoGauss, 1, "Preparation");
 
         ##Not supported yet
         if ( DimensionsMat(mat)[1] mod a <> 0) then
@@ -141,9 +153,11 @@ ChiefParallel := function( galoisField,mat,a,b,IsHPC )
     ###############################
 
     ## Step 1 ##
+    Info(InfoGauss, 1, "Step 1");
     for i in [ 1 .. a ] do
         for j in [ 1 .. b ] do
 		    if IsHPC then
+          		Info(InfoGauss, 2, "ClearDownParameters ", i, " ", j);
 			    ClearDownInput := ClearDownParameters(i, j, C, TaskListClearDown,
 				    TaskListUpdateR, galoisField);
 			    TaskListClearDown[i][j] := ScheduleTask(
@@ -155,6 +169,7 @@ ChiefParallel := function( galoisField,mat,a,b,IsHPC )
 				    ClearDownInput[5]
 			    );
     
+	        	    Info(InfoGauss, 2, "ExtendParameters ", i, " ", j);
 			    ExtendInput := ExtendParameters(i, j, TaskListClearDown, TaskListE);
 			    TaskListE[i][j] := ScheduleTask(
 				    ExtendInput[1],
@@ -163,6 +178,8 @@ ChiefParallel := function( galoisField,mat,a,b,IsHPC )
 				    ExtendInput[3],
 				    ExtendInput[4]
 			    );
+
+				Info(InfoGauss, 2, "UpdateRowParameters ", i, " ", j);
 		    else
 		        tmp := ClearDown( galoisField,C[i][j],D[j],i );
 		        D[j] := tmp.D;
@@ -196,6 +213,7 @@ ChiefParallel := function( galoisField,mat,a,b,IsHPC )
 		        fi;
             od;
 
+            Info(InfoGauss, 2, "UpdateRowTrafoParameters ", i, " ", j);
             for h in [ 1 .. i ] do
 		        if IsHPC then
 			        UpdateRowTrafoInput := UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
@@ -222,6 +240,7 @@ ChiefParallel := function( galoisField,mat,a,b,IsHPC )
     od;
 
 	if IsHPC then
+    Info(InfoGauss, 2, "Before WaitTask");
         WaitTask( Concatenation( TaskListClearDown ) );
         WaitTask( Concatenation( TaskListE ) );
         WaitTask( Concatenation( List( TaskListUpdateR,Concatenation ) ) );
@@ -245,6 +264,7 @@ ChiefParallel := function( galoisField,mat,a,b,IsHPC )
 	fi;
 
     ## Step 2 ##
+    Info(InfoGauss, 1, "Step 2");
     for j in [ 1 .. b ] do
         for h in [ 1 .. a ] do
             M[j][h] := RowLengthen( galoisField,M[j][h],E[h][j],E[h][b] );            
@@ -365,6 +385,7 @@ ChiefParallel := function( galoisField,mat,a,b,IsHPC )
     ###############################
 
     ## Write output
+    Info(InfoGauss, 1, "Write output");
     # Begin with row-select bitstring named v
     v := [];
     rank := 0;
