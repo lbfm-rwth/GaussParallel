@@ -4,12 +4,12 @@ Note that this is not an actual gap package but is supposed to be included in th
 
 ## The Sequential Implementation
 
-You can use this by reading `read.g`:
+You can use this by reading `read.g` and calling Chief with IsHPC = false:
 ```
 Read("read.g");
 n := 4000;; numberChops := 8;; q := 5;;
 A := RandomMat(n, n, GF(q));;
-result := Chief(GF(q), A, numberChops, numberChops);;
+result := Chief(GF(q), A, numberChops, numberChops, false);;
 ```
 
 `result` is a record with the components `coeffs, vectors, relations, pivotrows, pivotcols, rank`. To try it out directly type
@@ -21,12 +21,13 @@ For further information see `?EchelonMatTransformation`.
 
 ## The Parallel Implementation
 
-Use the parallel implementation in a similar way. Note that you need to start HPC-GAP!
+Use the parallel implementation in a similar way. Call Chief with IsHPC = true.
+Note that you need to start HPC-GAP!
 ```
 Read("read.g");
 n := 4000;; numberChops := 8;; q := 5;;
 A := RandomMat(n, n, GF(q));;
-result := ChiefParallel(GF(q), A, numberChops, numberChops);;
+result := Chief(GF(q), A, numberChops, numberChops, true);;
 ```
 
 As in the sequential version the result is a record with the components `coeffs, vectors, relations, pivotrows, pivotcols, rank`.

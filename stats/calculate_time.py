@@ -21,7 +21,7 @@ subprocess.call('echo "height,width,rank,ring,time,average,median" > stats/times
 # Path to hpcgap executable
 hpcgap = '/home/sergio/projects/gap-master/build/hpcgap/bin/gap.sh'
 
-# Calculates average and median of the duration of Chief and ChiefParallel for every combination
+# Calculates average and median of the duration of Chief for every combination
 # from lists of width, height, rank, ring. Saves them in the csv files.
 isParallel = ["true", "false"]
 dimensions = [5, 10, 50, 100, 200, 500]

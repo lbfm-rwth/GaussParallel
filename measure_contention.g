@@ -27,8 +27,8 @@ prepare := function(nrAvailableThreads)
 end;
 
 compute := function(A, q, numberChops)
-    return GET_REAL_TIME_OF_FUNCTION_CALL(ChiefParallel,
-                                            [GF(q), A, numberChops, numberChops]);
+    return GET_REAL_TIME_OF_FUNCTION_CALL(Chief,
+                                            [GF(q), A, numberChops, numberChops, true]);
 end;
 
 evaluate := function(nrAvailableThreads, bench, A, visible)

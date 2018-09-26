@@ -2,7 +2,7 @@ gap> dimension := 10;; rank := 5;; q := 5;; numberChops := 2;;
 gap> rs := RandomSource(IsMersenneTwister);;
 gap> echelon := RandomEchelonMat(dimension, dimension, rank, rs, GF(q));;
 gap> shapeless := _GAUSS_shapelessMat(echelon, dimension, dimension, rs, GF(q));;
-gap> result := Chief(GF(q), shapeless, numberChops, numberChops);;
+gap> result := Chief(GF(q), shapeless, numberChops, numberChops, false);;
 gap> result_std := EchelonMatTransformation(shapeless);;
 gap> -1 * result.vectors = result_std.vectors;
 true

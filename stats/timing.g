@@ -13,11 +13,10 @@ CalculateTime := function(isParallel, height, width, rank, ring, numberChopsH, n
     Info(InfoGauss, 3, shapeless);
     if isParallel then
         Info(InfoGauss, 2, "Parallel version:");
-        times := Benchmark(ChiefParallel, [ring, shapeless, numberChopsH, numberChopsW]);
     else
         Info(InfoGauss, 2, "Sequential version:");
-        times := Benchmark(Chief, [ring, shapeless, numberChopsH, numberChopsW]);
     fi;
+    times := Benchmark(Chief, [ring, shapeless, numberChopsH, numberChopsW, isParallel]);
 
     return times.timings;
 end;
