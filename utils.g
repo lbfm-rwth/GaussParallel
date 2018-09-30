@@ -1,7 +1,7 @@
 # Collection of small basic functions used in subfunctions of the algorithm
 
 
-REX := function( galoisField,positionsBitstring,mat )
+GAUSS_REX := function( galoisField,positionsBitstring,mat )
     local   i,
             up,
             down,
@@ -33,16 +33,16 @@ REX := function( galoisField,positionsBitstring,mat )
     return [ up,down ];
 end;
 
-CEX := function( galoisField,positionsBitstring,mat )
+GAUSS_CEX := function( galoisField,positionsBitstring,mat )
     local transposed;
     transposed := TransposedMat( mat );
-    transposed := REX( galoisField,positionsBitstring,transposed );
+    transposed := GAUSS_REX( galoisField,positionsBitstring,transposed );
     transposed[ 1 ] := TransposedMat( transposed[ 1 ] );
     transposed[ 2 ] := TransposedMat( transposed[ 2 ] );
     return transposed;
 end;
 
-PVC := function ( s,t )
+GAUSS_PVC := function ( s,t )
     #We assume that positions of t correspond to zeroes in s
     local   newBitstring,
             u,
@@ -84,7 +84,7 @@ PVC := function ( s,t )
     return [ newBitstring,u ]; 
 end;
 
-RRF := function( galoisField,rows0,rows1,u )
+GAUSS_RRF := function( galoisField,rows0,rows1,u )
     local   l,
             dim,
             index,
@@ -120,7 +120,7 @@ RRF := function( galoisField,rows0,rows1,u )
     return new;    
 end;
 
-CRZ := function( galoisField,mat,u,nr ) 
+GAUSS_CRZ := function( galoisField,mat,u,nr ) 
 #####################################
 ## !! Mind order of inputs to RRF !!
 #####################################
@@ -140,10 +140,10 @@ CRZ := function( galoisField,mat,u,nr )
     #numZero := Sum(u);
     ## or is it Length-Sum ? -> order of args in RRF !!
     nullMat := NullMat( sum,DimensionsMat(mat)[1],galoisField );
-    return TransposedMat( RRF( galoisField,TransposedMat( mat ),nullMat,u ) );
+    return TransposedMat( GAUSS_RRF( galoisField,TransposedMat( mat ),nullMat,u ) );
 end;
 
-ADI := function( galoisField,mat,bitstring  )
+GAUSS_ADI := function( galoisField,mat,bitstring  )
     local   one,
             posOfNewOnes,
             i,
@@ -197,7 +197,7 @@ MKR := function( bitstring,subBitstring )
     return newBitstring;
 end;
 
-ECH := function( f,H )
+GAUSS_ECH := function( f,H )
     local   sct,
             Mct,
             Kct,
