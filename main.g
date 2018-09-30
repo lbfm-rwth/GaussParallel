@@ -54,14 +54,28 @@ Chief := function( galoisField,mat,a,b,IsHPC )
     ##Preparation: Init and chopping the matrix mat
     Info(InfoGauss, 1, "------------ Start Chief ------------");
     Info(InfoGauss, 1, "Preparation");
+    
+    Info(InfoGauss, 3, "Input checks");
+    if not (HasIsField(galoisField) and IsField(galoisField)) then
+        ErrorNoReturn("Wrong argument: The first parameter is not a field.");
+    fi;
+    if not IsMatrix(mat) then
+        ErrorNoReturn("Wrong argument: The second parameter is not a matrix.");
+    fi;
+    if not (a in NonnegativeIntegers and b in NonnegativeIntegers) then
+        ErrorNoReturn("Wrong argument: The third or fourth parameter is not a nonnegative integer.");
+    fi;
+    if not IsBool(IsHPC) then
+        ErrorNoReturn("Wrong argument: The fifth parameter is not a boolean.");
+    fi;
 
-        ##Not supported yet
-        if ( DimensionsMat(mat)[1] mod a <> 0) then
-            ErrorNoReturn("Variable: 'a' must divide number of rows" );
-        fi;
-        if ( DimensionsMat(mat)[2] mod b <> 0) then
-            ErrorNoReturn("Variable: 'b' must divide number of columns" );
-        fi;
+    ##Not supported yet
+    if ( DimensionsMat(mat)[1] mod a <> 0) then
+        ErrorNoReturn("Variable: 'a' must divide number of rows" );
+    fi;
+    if ( DimensionsMat(mat)[2] mod b <> 0) then
+        ErrorNoReturn("Variable: 'b' must divide number of columns" );
+    fi;
 
     C := ChopMatrix( galoisField,mat,a,b );
     ncols := DimensionsMat( mat )[2];
