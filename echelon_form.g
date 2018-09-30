@@ -22,7 +22,7 @@ RandomEchelonMat := function(height, width, rank, randomSeed, ring)
     return echelonMat;
 end;
 
-_GAUSS_shapelessMat := function(mat, height, width, randomSeed, ring)
+GAUSS_shapelessMat := function(mat, height, width, randomSeed, ring)
     local i, grp, left;
 
     # PseudoRandom takes too much time to initialize PseudoRandomSeed for big
