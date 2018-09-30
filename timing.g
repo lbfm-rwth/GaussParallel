@@ -1,4 +1,4 @@
-GET_REAL_TIME_OF_FUNCTION_CALL := function ( method, args, options... )
+GAUSS_GET_REAL_TIME_OF_FUNCTION_CALL := function ( method, args, options... )
   local first_time, firstSeconds,
     firstMicroSeconds, result, second_time, secondSeconds,
   secondMicroSeconds, total, seconds, microSeconds;
@@ -28,7 +28,7 @@ GET_REAL_TIME_OF_FUNCTION_CALL := function ( method, args, options... )
   return rec( result := result, time := total );
 end;
 
-threeSignificantDigits := function( x )
+GAUSS_threeSignificantDigits := function( x )
   local count;
   if not IsFloat(x) then
     Error( "x must be a Float.\n" );
@@ -43,7 +43,7 @@ threeSignificantDigits := function( x )
   return Round(x * 10^(count-2));
 end;
 
-GetStatistics := function( data )
+GAUSS_GetStatistics := function( data )
   local statistics;
   ## Fill the statistics vector
   Sort( data );
@@ -61,12 +61,12 @@ GetStatistics := function( data )
     statistics[5] := data[ Int( 0.75 * Length(data) ) ];
   fi;
   statistics := 1. * statistics;
-  statistics := List( statistics, threeSignificantDigits );
+  statistics := List( statistics, GAUSS_threeSignificantDigits );
   return statistics;
 end;
 
 ## R-microbenchmark like statistics
-Benchmark := function( func, args, opt... )
+GAUSS_Benchmark := function( func, args, opt... )
   local timings, columnNames, statistics, i, t, res;
   Info(InfoGauss, 1, "Start Benchmark in timing.g");
   if opt = [] then
@@ -86,11 +86,11 @@ Benchmark := function( func, args, opt... )
   ## Perform the computations
   if opt.warmup > 0 then
     for i in [1 .. opt.warmup] do
-      GET_REAL_TIME_OF_FUNCTION_CALL( func, args );
+      GAUSS_GET_REAL_TIME_OF_FUNCTION_CALL( func, args );
     od;
   fi;
   for i in [ 1 .. opt.times ] do
-    res := GET_REAL_TIME_OF_FUNCTION_CALL( func, args );
+    res := GAUSS_GET_REAL_TIME_OF_FUNCTION_CALL( func, args );
     Info(InfoGauss, 1, "GET_REAL_TIME_OF_FUNCTION_CALL calculation ", i);
     t := res.time;
     # We don't care about microseconds
@@ -98,7 +98,7 @@ Benchmark := function( func, args, opt... )
     timings[ Length(timings)+1 ] := t;
   od;
 
-  statistics := GetStatistics( timings );
+  statistics := GAUSS_GetStatistics( timings );
 
   res := rec( timings := timings, statistics := statistics );
   return res;

@@ -1,6 +1,6 @@
 LoadPackage( "profil" );
 
-createMatrixFile := function( n, q, rank )
+GAUSS_createMatrixFile := function( n, q, rank )
     local A, B, proj, matrixFile;
     A := RandomMat( n, n, GF(q) );
     B := Representative( GL( n, GF(q) ) );
@@ -16,7 +16,7 @@ createMatrixFile := function( n, q, rank )
     Exec( Concatenation( "mv ", matrixFile, " examples/" ) );
 end;
 
-profileGauss := function( matrixFile, numberChops  )
+GAUSS_profileGauss := function( matrixFile, numberChops  )
     local file, A, res, profile, profileName;
     profileName := Concatenation( matrixFile, "-chop", String(numberChops) );
     file := InputTextFile( Concatenation( "examples/", matrixFile ) );
@@ -26,7 +26,7 @@ profileGauss := function( matrixFile, numberChops  )
     Exec( Concatenation( "rm -f ", profileName, ".gz" ) );
     Print("Computing...\c");
     ProfileLineByLine( Concatenation( profileName, ".gz" ) );
-    res := GaussParallel( A, numberChops, numberChops,DefaultFieldOfMatrix(A) );;
+    res := GAUSS_GaussParallel( A, numberChops, numberChops,DefaultFieldOfMatrix(A) );;
     UnprofileLineByLine();
     Print("OK\n");
     Print("Reading profile...\c");
