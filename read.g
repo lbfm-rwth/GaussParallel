@@ -1,6 +1,5 @@
-InfoGauss := NewInfoClass("InfoGauss");;
+DeclareInfoClass("InfoGauss");
 SetInfoLevel(InfoGauss, 0);
-Info(InfoGauss, 1, "Information about the Gauss package is enabled.");;
 
 gauss := LoadPackage("GAUSS");
 if gauss = fail then
