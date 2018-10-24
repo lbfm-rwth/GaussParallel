@@ -22,7 +22,11 @@ if [[ -z $NO_COVERAGE ]]; then
 fi
 
 if [[ $HPCGAP = yes ]]; then
-    $GAP tst/testparallel.g
+    if [[ ${SUITE} = statistics ]]; then
+        $GAP tst/teststats.g
+    else
+        $GAP tst/testparallel.g
+    fi
 else
     $GAP tst/teststandard.g
 fi
