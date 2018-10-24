@@ -1,5 +1,5 @@
 ## Calculates time statistics for one matrix of a specific type using Benchmark()
-CalculateTime := function(isParallel, height, width, rank, ring, numberChopsH, numberChopsW, randomSeed)
+GAUSS_CalculateTime := function(isParallel, height, width, rank, ring, numberChopsH, numberChopsW, randomSeed)
     local echelon, shapeless, result, times, r;
     Info(InfoGauss, 1, "Start CalculateTime");
     times := 0;
@@ -8,7 +8,7 @@ CalculateTime := function(isParallel, height, width, rank, ring, numberChopsH, n
     echelon := RandomEchelonMat(height, width, rank, randomSeed, ring);;
     Info(InfoGauss, 3, "Echelon matrix:");
     Info(InfoGauss, 3, echelon);
-    shapeless := _GAUSS_shapelessMat(echelon, height, width, randomSeed, ring);;
+    shapeless := GAUSS_shapelessMat(echelon, height, width, randomSeed, ring);;
     Info(InfoGauss, 3, "Shapeless matrx:");
     Info(InfoGauss, 3, shapeless);
     if isParallel then
@@ -16,13 +16,13 @@ CalculateTime := function(isParallel, height, width, rank, ring, numberChopsH, n
     else
         Info(InfoGauss, 2, "Sequential version:");
     fi;
-    times := Benchmark(Chief, [ring, shapeless, numberChopsH, numberChopsW, isParallel]);
+    times := GAUSS_Benchmark(Chief, [ring, shapeless, numberChopsH, numberChopsW, isParallel]);
 
     return times.timings;
 end;
 
 ## Calculates time statistics for 10 matrices of a specific type
-CalculateAverageTime := function(isParallel, height, width, rank, ring, numberChopsH, numberChopsW)
+GAUSS_CalculateAverageTime := function(isParallel, height, width, rank, ring, numberChopsH, numberChopsW)
     local randomSeed, timings, statistics, i;
 
     Info(InfoGauss, 1, "Start CalculateAverageTime in stats/timing.g");
@@ -33,9 +33,9 @@ CalculateAverageTime := function(isParallel, height, width, rank, ring, numberCh
     # Do a few times and calculate average.
     for i in [ 1 .. 10 ] do
         Info(InfoGauss, 2, "CalculateTime calculation no.", i);
-        Append(timings, CalculateTime(isParallel, height, width, rank, ring, numberChopsH, numberChopsW, randomSeed));
+        Append(timings, GAUSS_CalculateTime(isParallel, height, width, rank, ring, numberChopsH, numberChopsW, randomSeed));
     od;
 
-    statistics := GetStatistics(timings);
+    statistics := GAUSS_GetStatistics(timings);
     return statistics;
 end;

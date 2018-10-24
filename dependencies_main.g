@@ -1,7 +1,7 @@
 # This file contains some help functions making the parallel parts of the code 
 # in main.g more readable. (Dependency of main.g.)
 
-ClearUp := function( R,X,R_ )
+GAUSS_ClearUp := function( R,X,R_ )
     if IsEmpty(R_) or IsEmpty(X) then return R; fi;
     if IsEmpty(R) then
         return X*R_;
@@ -11,8 +11,8 @@ ClearUp := function( R,X,R_ )
 end;
 
 # Function in step 1
-ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
-	local list, C, D, number; # parameters for ClearDown as in subprograms.g
+GAUSS_ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
+	local list, C, D, number; # parameters for GAUSS_ClearDown as in subprograms.g
     
     # The output of this function is used by ScheduleTask which has a bug
     # so that sometimes it doesn't work with an empty list. That's why
@@ -37,8 +37,8 @@ ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskListUpdate
 	return [ list, galoisField, C, D, number ];
 end;
 
-ExtendParameters := function(i, j, TaskListClearDown, TaskListE)
-	local list, A, E, flag; # parameters for Extend as in subprograms.g
+GAUSS_ExtendParameters := function(i, j, TaskListClearDown, TaskListE)
+	local list, A, E, flag; # parameters for GAUSS_Extend as in subprograms.g
 	
     if (j = 1) then
 		list := [ TaskListClearDown[i][j] ];
@@ -53,8 +53,8 @@ ExtendParameters := function(i, j, TaskListClearDown, TaskListE)
 	return [ list, A, E, flag ];
 end;
 
-UpdateRowParameters := function(i, j, k, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
-	local list, A, C, B, number; # parameters for UpdateRow as in subprograms.g
+GAUSS_UpdateRowParameters := function(i, j, k, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
+	local list, A, C, B, number; # parameters for GAUSS_UpdateRow as in subprograms.g
 
 	list := [ TaskListClearDown[i][j] ];
 
@@ -77,8 +77,8 @@ UpdateRowParameters := function(i, j, k, matrixC, TaskListClearDown, TaskListUpd
 	return [ list, galoisField, A, C, B, number ];
 end;
 
-UpdateRowTrafoParameters := function(i, j, k, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField)
-	local list, A, K, M, E; # parameters for UpdateRowTrafe as in subprograms.g
+GAUSS_UpdateRowTrafoParameters := function(i, j, k, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField)
+	local list, A, K, M, E; # parameters for GAUSS_UpdateRowTrafe as in subprograms.g
 
     Info(InfoGauss, 3, "Start UpdateRowTrafoParameters", i, " ", j, " ", k);
 	list := [ TaskListClearDown[i][j], TaskListE[k][j] ];

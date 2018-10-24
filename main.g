@@ -1,8 +1,8 @@
-# Contains a version of the elimination alg. for HPCGAP computing RREF and a 
+# Contains a version of the elimination algorithm for HPCGAP computing RREF and a 
 # transformation, running completely in parallel.
 
 
-ClearUp := function( R,X,R_ )
+GAUSS_ClearUp := function( R,X,R_ )
     if IsEmpty(R_) or IsEmpty(X) then return R; fi;
     if IsEmpty(R) then
         return X*R_;
@@ -54,16 +54,30 @@ Chief := function( galoisField,mat,a,b,IsHPC )
     ##Preparation: Init and chopping the matrix mat
     Info(InfoGauss, 1, "------------ Start Chief ------------");
     Info(InfoGauss, 1, "Preparation");
+    
+    Info(InfoGauss, 3, "Input checks");
+    if not (HasIsField(galoisField) and IsField(galoisField)) then
+        ErrorNoReturn("Wrong argument: The first parameter is not a field.");
+    fi;
+    if not IsMatrix(mat) then
+        ErrorNoReturn("Wrong argument: The second parameter is not a matrix.");
+    fi;
+    if not (a in NonnegativeIntegers and b in NonnegativeIntegers) then
+        ErrorNoReturn("Wrong argument: The third or fourth parameter is not a nonnegative integer.");
+    fi;
+    if not IsBool(IsHPC) then
+        ErrorNoReturn("Wrong argument: The fifth parameter is not a boolean.");
+    fi;
 
-        ##Not supported yet
-        if ( DimensionsMat(mat)[1] mod a <> 0) then
-            ErrorNoReturn("Variable: 'a' must divide number of rows" );
-        fi;
-        if ( DimensionsMat(mat)[2] mod b <> 0) then
-            ErrorNoReturn("Variable: 'b' must divide number of columns" );
-        fi;
+    ##Not supported yet
+    if ( DimensionsMat(mat)[1] mod a <> 0) then
+        ErrorNoReturn("Variable: 'a' must divide number of rows" );
+    fi;
+    if ( DimensionsMat(mat)[2] mod b <> 0) then
+        ErrorNoReturn("Variable: 'b' must divide number of columns" );
+    fi;
 
-    C := ChopMatrix( galoisField,mat,a,b );
+    C := GAUSS_ChopMatrix( galoisField,mat,a,b );
     ncols := DimensionsMat( mat )[2];
 
 	if IsHPC then
@@ -158,11 +172,11 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         for j in [ 1 .. b ] do
 		    if IsHPC then
           		Info(InfoGauss, 2, "ClearDownParameters ", i, " ", j);
-			    ClearDownInput := ClearDownParameters(i, j, C, TaskListClearDown,
+			    ClearDownInput := GAUSS_ClearDownParameters(i, j, C, TaskListClearDown,
 				    TaskListUpdateR, galoisField);
 			    TaskListClearDown[i][j] := ScheduleTask(
 				    ClearDownInput[1],
-				    ClearDown,
+				    GAUSS_ClearDown,
 				    ClearDownInput[2],
 				    ClearDownInput[3],
 				    ClearDownInput[4],
@@ -170,10 +184,10 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 			    );
     
 	        	    Info(InfoGauss, 2, "ExtendParameters ", i, " ", j);
-			    ExtendInput := ExtendParameters(i, j, TaskListClearDown, TaskListE);
+			    ExtendInput := GAUSS_ExtendParameters(i, j, TaskListClearDown, TaskListE);
 			    TaskListE[i][j] := ScheduleTask(
 				    ExtendInput[1],
-				    Extend,
+				    GAUSS_Extend,
 				    ExtendInput[2],
 				    ExtendInput[3],
 				    ExtendInput[4]
@@ -181,7 +195,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 
 				Info(InfoGauss, 2, "UpdateRowParameters ", i, " ", j);
 		    else
-		        tmp := ClearDown( galoisField,C[i][j],D[j],i );
+		        tmp := GAUSS_ClearDown( galoisField,C[i][j],D[j],i );
 		        D[j] := tmp.D;
 		        A[i][j] := tmp.A;
 		        if j=1 then
@@ -189,16 +203,16 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 		        else
 			    bs := E[i][j-1];
 		        fi;
-		        E[i][j] := Extend( A[i][j],bs,j );
+		        E[i][j] := GAUSS_Extend( A[i][j],bs,j );
 		    fi;
 
             for k in [ j+1 .. b ] do
 		        if IsHPC then
-			        UpdateRowInput := UpdateRowParameters(i, j, k, C, TaskListClearDown,
+			        UpdateRowInput := GAUSS_UpdateRowParameters(i, j, k, C, TaskListClearDown,
 				        TaskListUpdateR, galoisField);
 			        TaskListUpdateR[i][j][k] := ScheduleTask(
 				        UpdateRowInput[1],
-				        UpdateRow,
+				        GAUSS_UpdateRow,
 				        UpdateRowInput[2],
 				        UpdateRowInput[3],
 				        UpdateRowInput[4],
@@ -206,7 +220,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 				        UpdateRowInput[6]
 			        );
 		        else
-		                tmp := UpdateRow(  galoisField,A[i][j],C[i][k],
+		                tmp := GAUSS_UpdateRow(  galoisField,A[i][j],C[i][k],
 		                                    B[j][k],i );
 		                C[i][k] := tmp.C;
 		                B[j][k] := tmp.B;
@@ -216,10 +230,10 @@ Chief := function( galoisField,mat,a,b,IsHPC )
             Info(InfoGauss, 2, "UpdateRowTrafoParameters ", i, " ", j);
             for h in [ 1 .. i ] do
 		        if IsHPC then
-			        UpdateRowTrafoInput := UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
+			        UpdateRowTrafoInput := GAUSS_UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
             	    TaskListUpdateM[i][j][h] := ScheduleTask(
 					    UpdateRowTrafoInput[1],
-                	    UpdateRowTrafo,
+                	    GAUSS_UpdateRowTrafo,
 					    UpdateRowTrafoInput[2],
 					    UpdateRowTrafoInput[3],
 					    UpdateRowTrafoInput[4],
@@ -230,7 +244,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 					    UpdateRowTrafoInput[9]
 				    ); 
 		        else
-		            tmp := UpdateRowTrafo(  galoisField,A[i][j],K[i][h],
+		            tmp := GAUSS_UpdateRowTrafo(  galoisField,A[i][j],K[i][h],
 		                                M[j][h],E[h][j],i,h,j );
 		            K[i][h] := tmp.K;
 		            M[j][h] := tmp.M;
@@ -267,7 +281,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
     Info(InfoGauss, 1, "Step 2");
     for j in [ 1 .. b ] do
         for h in [ 1 .. a ] do
-            M[j][h] := RowLengthen( galoisField,M[j][h],E[h][j],E[h][b] );            
+            M[j][h] := GAUSS_RowLengthen( galoisField,M[j][h],E[h][j],E[h][b] );            
         od;
     od;
 
@@ -280,13 +294,13 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         for j in [ 1 .. (k - 1) ] do
 		    if IsHPC then
                 TaskListPreClearUp[j][k] := RunTask(
-                    CEX,
+                    GAUSS_CEX,
                     galoisField,
                     D[k].bitstring,
                     B[j][k]
                 );
 		    else
-                tmp := CEX( galoisField,D[k].bitstring,B[j][k] );
+                tmp := GAUSS_CEX( galoisField,D[k].bitstring,B[j][k] );
                 X := tmp[1];
                 R[j][k] := tmp[2];
                 if IsEmpty(X) then continue; fi;
@@ -299,7 +313,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                                 [   TaskListPreClearUp[j][l],
                                     TaskListPreClearUp[j][k]
                                 ],
-                                ClearUp,
+                                GAUSS_ClearUp,
                                 TaskResult( TaskListPreClearUp[j][l] )[2],
                                 TaskResult( TaskListPreClearUp[j][k] )[1],
                                 R[k][l]
@@ -310,7 +324,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                                     TaskListClearUpR[k][l][l-k],
                                     TaskListPreClearUp[j][k]
                                 ],
-                                ClearUp,
+                                GAUSS_ClearUp,
                                 TaskResult( TaskListClearUpR[j][l][l-k] ),
                                 TaskResult( TaskListPreClearUp[j][k] )[1],
                                 TaskResult( TaskListClearUpR[k][l][l-k] )
@@ -334,7 +348,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                                 [
                                     TaskListPreClearUp[j][k]
                                 ],
-                                ClearUp,
+                                GAUSS_ClearUp,
                                 M[j][h],
                                 TaskResult( TaskListPreClearUp[j][k] )[1],
                                 M[k][h]
@@ -345,7 +359,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                                     TaskListClearUpM[k][h][k_-1],
                                     TaskListPreClearUp[j][k]
                                 ],
-                                ClearUp,
+                                GAUSS_ClearUp,
                                 TaskResult( TaskListClearUpM[j][h][k_-1] ),
                                 TaskResult( TaskListPreClearUp[j][k] )[1],
                                 TaskResult( TaskListClearUpM[k][h][k_-1] )
@@ -431,7 +445,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                 tmpC := tmpC + tmp; continue;
                 #M[j][i] := NullMat( rows[j],tmp,galoisField );
             else
-                M[j][i] := TransposedMat( RRF( galoisField,
+                M[j][i] := TransposedMat( GAUSS_RRF( galoisField,
                 NullMat( Length(E[i][b].rho)-
                 DimensionsMat(M[j][i])[2],
                 DimensionsMat(M[j][i])[1],galoisField ),
@@ -486,7 +500,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
          tmpR := tmpR + rows[i];
      od;    
 
-     C := TransposedMat( RRF( galoisField,TransposedMat(C), -IdentityMat( rank,galoisField ),w  ) );
+     C := TransposedMat( GAUSS_RRF( galoisField,TransposedMat(C), -IdentityMat( rank,galoisField ),w  ) );
 
     ## Glueing the blocks of K
     D := NullMat( Length(v)-rank,Length(v),galoisField );
@@ -520,7 +534,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                 tmpC := tmpC + tmp; continue;
                 #K[j][i] := NullMat( rows[j],tmp,galoisField );
             else
-                K[j][i] := TransposedMat( RRF( galoisField,
+                K[j][i] := TransposedMat( GAUSS_RRF( galoisField,
                     NullMat( Length(E[i][b].rho)-
                     DimensionsMat(K[j][i])[2],
                     DimensionsMat(K[j][i])[1],galoisField ),
@@ -535,8 +549,8 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         tmpR := tmpR + rows[j];
     od;
 
-     D := TransposedMat( RRF( galoisField,X,
-        TransposedMat( CEX( galoisField,v,D )[1] ),v ) );
+     D := TransposedMat( GAUSS_RRF( galoisField,X,
+        TransposedMat( GAUSS_CEX( galoisField,v,D )[1] ),v ) );
 
     return rec( coeffs:=B,vectors:=C,relations:=D,
                 pivotrows:=v,pivotcols:=w,rank:=rank);

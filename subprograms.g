@@ -1,6 +1,6 @@
 # Collection of larger subfunctions used in the Gaussian elimination alg.
 
-ChopMatrix := function( f,A,nrows,ncols )
+GAUSS_ChopMatrix := function( f,A,nrows,ncols )
     local   i,
             j,
             rrem,
@@ -39,27 +39,27 @@ ChopMatrix := function( f,A,nrows,ncols )
     return AA;
 end;
 
-Extend := function( A,E,flag )
+GAUSS_Extend := function( A,E,flag )
     local   tmp,
             rho,
             delta;
 
     if flag = 1 then
-        tmp := PVC( [],A.rho  );
+        tmp := GAUSS_PVC( [],A.rho  );
     else
-        tmp := PVC( E.rho,A.rho );
+        tmp := GAUSS_PVC( E.rho,A.rho );
     fi;
     return rec( rho := tmp[1],delta := tmp[2],
     nr := (Length(E.rho-Sum(E.rho))) );
 end;
 
-RowLengthen := function( galoisField,mat,Einter,Efin )
+GAUSS_RowLengthen := function( galoisField,mat,Einter,Efin )
     local   lambda;
     lambda := MKR( Efin.rho,Einter.rho );
-    return CRZ( galoisField,mat,lambda,Einter.nr );
+    return GAUSS_CRZ( galoisField,mat,lambda,Einter.nr );
 end;
 
-ClearDown := function( galoisField,C,D,i )
+GAUSS_ClearDown := function( galoisField,C,D,i )
     local   A,
             M,
             K,
@@ -77,12 +77,12 @@ ClearDown := function( galoisField,C,D,i )
                     rho:=[],lambda:=[] ), D:=D );
     fi;
     if i = 1 then
-        ech :=  ECH( galoisField,C );
-        tmp := PVC( [],ech[5] );
+        ech :=  GAUSS_ECH( galoisField,C );
+        tmp := GAUSS_PVC( [],ech[5] );
         return rec( A := rec( A:=[],M:=ech[1],K:=ech[2],rho:=ech[4],E:=[],lambda:=tmp[2] )
         ,D:= rec(bitstring := ech[5],vectors := ech[3] ) );
     fi;
-    tmp := CEX( galoisField,D.bitstring,C );
+    tmp := GAUSS_CEX( galoisField,D.bitstring,C );
     A := tmp[1];
     tmp := tmp[2];
     
@@ -93,24 +93,24 @@ ClearDown := function( galoisField,C,D,i )
     else
         H := tmp + A*D.vectors;
     fi;
-    ech := ECH( galoisField,H );
+    ech := GAUSS_ECH( galoisField,H );
     
-    tmp := CEX( galoisField,ech[5],D.vectors );
+    tmp := GAUSS_CEX( galoisField,ech[5],D.vectors );
     E := tmp[1];
     vectors_ := tmp[2];
     if not IsEmpty(ech[3]) and not IsEmpty(E) then
         vectors_ := vectors_ + E*ech[3];
     fi;
-    tmp := PVC( D.bitstring,ech[5] );
+    tmp := GAUSS_PVC( D.bitstring,ech[5] );
     bitstring := tmp[1];
     riffle := tmp[2];
-    vectors := RRF( galoisField,vectors_,ech[3],riffle );
+    vectors := GAUSS_RRF( galoisField,vectors_,ech[3],riffle );
 
     return rec( A := rec( A:=A,M:=ech[1],K:=ech[2],rho:=ech[4],E:=E,lambda:=riffle )
         ,D:= rec(bitstring := bitstring,vectors := vectors ) );
 end;
 
-UpdateRow := function( galoisField,A,C,B,i )
+GAUSS_UpdateRow := function( galoisField,A,C,B,i )
     local   tmp,
             B_,
             C_,
@@ -127,7 +127,7 @@ UpdateRow := function( galoisField,A,C,B,i )
         Z := C + A.A*B;
     fi;
 
-    tmp := REX( galoisField,A.rho,Z );
+    tmp := GAUSS_REX( galoisField,A.rho,Z );
     V := tmp[1];
     W := tmp[2];
     X := [];
@@ -142,7 +142,7 @@ UpdateRow := function( galoisField,A,C,B,i )
         else 
             S := B + A.E*X;
         fi;
-        B_ := RRF( galoisField,S,X,A.lambda );
+        B_ := GAUSS_RRF( galoisField,S,X,A.lambda );
     else
         B_ := X;
     fi; 
@@ -158,7 +158,7 @@ UpdateRow := function( galoisField,A,C,B,i )
     return rec( C := C_,B := B_ );
 end;
 
-UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
+GAUSS_UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
     local   tmp,
             K_,
             M_,
@@ -170,9 +170,9 @@ UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
 
     if (IsEmpty(A.A) and IsEmpty(A.M)) or IsEmpty(E.delta) then
         return rec( K:=K,M:=M );
-    fi;  #### for the or delta empty part, cf. paper: want to know if beta' in the descr of UpdateRowTrafo is 0..
+    fi;  #### for the or delta empty part, cf. paper: want to know if beta' in the descr of GAUSS_UpdateRowTrafo is 0..
     if j > 1 then
-        K_ := CRZ( galoisField,K,E.delta,E.nr );
+        K_ := GAUSS_CRZ( galoisField,K,E.delta,E.nr );
     fi;
 
     if ( not h=i ) and j > 1 then
@@ -192,13 +192,13 @@ UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
     fi;
 
     if not (j = 1 and h = i) then
-        tmp := REX( galoisField,A.rho,Z );
+        tmp := GAUSS_REX( galoisField,A.rho,Z );
         V := tmp[1];
         W := tmp[2];
     fi;
 
     if ( not j = 1 ) and h = i  then
-        V := ADI( galoisField,V,E.delta );
+        V := GAUSS_ADI( galoisField,V,E.delta );
     fi;
 
     if not (j = 1 and h = i) then
@@ -226,7 +226,7 @@ UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
     fi;
 
     if  not ( h = i and i = 1 ) then
-        M_ := RRF( galoisField,S,X,A.lambda );
+        M_ := GAUSS_RRF( galoisField,S,X,A.lambda );
     else
         M_ := X;
     fi;

@@ -45,7 +45,7 @@ for (p, d, ra, ri, n) in specifications:
             + ';; ring := GF(' + str(ri) + ')' \
             + ';; numberChops := ' + str(n) \
             + ';;\n'
-        instructions = 'measuredTime := CalculateAverageTime(isParallel, ' \
+        instructions = 'measuredTime := _GAUSS_CalculateAverageTime(isParallel, ' \
             + 'dimension, dimension, rank, ring, numberChops, numberChops);;' \
             + '\n' \
             + 'AppendTo(' + outfile \
