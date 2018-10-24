@@ -4,6 +4,9 @@
 ##
 ##
 
-Read("read.g");
-TestDirectory("tst/stats", rec(exitGAP := true));
+LoadPackage("GaussPar");
+TestDirectory(
+    DirectoriesPackageLibrary("GaussPar", "tst/stats"),
+    rec(exitGAP := true)
+);
 FORCE_QUIT_GAP(1);
