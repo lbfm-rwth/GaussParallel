@@ -4,6 +4,9 @@
 ##
 ##
 
-Read("read.g");
-TestDirectory("tst/parallel", rec(exitGAP := true));
+LoadPackage("GaussPar");
+TestDirectory(
+    DirectoriesPackageLibrary("GaussPar", "tst/parallel"),
+    rec(exitGAP := true)
+);
 FORCE_QUIT_GAP(1);
