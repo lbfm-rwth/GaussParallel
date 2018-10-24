@@ -21,6 +21,8 @@ matrix:
       compiler: gcc
     - env: CFLAGS="-O2" HPCGAP=yes GAP_PKGS_TO_BUILD="io"
       compiler: gcc
+    - env: CFLAGS="-O2" HPCGAP=yes SUITE=statistics GAP_PKGS_TO_BUILD="io"
+      compiler: gcc
 
 branches:
   except:
