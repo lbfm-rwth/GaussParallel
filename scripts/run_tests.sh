@@ -21,12 +21,4 @@ if [[ -z $NO_COVERAGE ]]; then
     GAP="$GAP --cover $COVDIR/test.coverage"
 fi
 
-if [[ $HPCGAP = yes ]]; then
-    if [[ ${SUITE} = statistics ]]; then
-        $GAP tst/teststats.g
-    else
-        $GAP tst/testparallel.g
-    fi
-else
-    $GAP tst/teststandard.g
-fi
+$GAP tst/testall.g
