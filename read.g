@@ -22,6 +22,7 @@ ReadPackage( "GaussPar", "gap/subprograms.g");
 ReadPackage( "GaussPar", "gap/dependencies_main.g");
 
 ReadPackage( "GaussPar", "gap/main.g");
+ReadPackage( "GaussPar", "gap/main.gi");
 ReadPackage( "GaussPar", "gap/timing.g");
 ReadPackage( "GaussPar", "gap/echelon_form.g");
 
