@@ -27,8 +27,8 @@ GAUSS_prepare := function(nrAvailableThreads)
 end;
 
 GAUSS_compute := function(A, q, numberChops)
-    return GAUSS_GET_REAL_TIME_OF_FUNCTION_CALL(Chief,
-                                            [GF(q), A, numberChops, numberChops, true]);
+    return GAUSS_GET_REAL_TIME_OF_FUNCTION_CALL(DoEchelonMatTransformationBlockwise,
+                                            [A, GF(q), true, numberChops, numberChops]);
 end;
 
 GAUSS_evaluate := function(nrAvailableThreads, bench, A, visible)
