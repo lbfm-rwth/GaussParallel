@@ -5,3 +5,5 @@
 #
 DeclareInfoClass("InfoGauss");
 SetInfoLevel(InfoGauss, 0);
+
+ReadPackage("GaussPar", "gap/main.gd");
