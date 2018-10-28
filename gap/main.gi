@@ -7,14 +7,17 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
         local galoisField, IsHPC, numberChopsHeight, numberChopsWidth,
             dim;
 
+        dim := DimensionsMat( mat );
         if Size(options) < 4 then
-            dim := DimensionsMat( mat );
             numberChopsHeight := GAUSS_calculateChops( dim[1] );
             numberChopsWidth := GAUSS_calculateChops( dim[2] );
         else
             numberChopsHeight := options[3];
             numberChopsWidth := options[4];
         fi;
+        Info(InfoGauss, 1, "The matrix has a height of ", dim[1],
+            " and a width of ", dim[2], " and is split into ", numberChopsHeight,
+            " chops vertically and ", numberChopsWidth, " horizontally.");
 
         if Size(options) < 2 then
             if not IsHPCGAP then
