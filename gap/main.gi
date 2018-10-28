@@ -15,9 +15,14 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
             numberChopsHeight := options[3];
             numberChopsWidth := options[4];
         fi;
-        Info(InfoGauss, 1, "The matrix has a height of ", dim[1],
-            " and a width of ", dim[2], " and is split into ", numberChopsHeight,
+        Info(InfoGauss, 1, "The matrix is split into ", numberChopsHeight,
             " chops vertically and ", numberChopsWidth, " horizontally.");
+        if ((numberChopsHeight = 1) or (numberChopsWidth = 1)
+            and (IsHPC = true)) then
+            Info(InfoGauss, 1, "Warning: The size of the chops is so small",
+                " that the parallel version is unlikely to bring benefits",
+                " in terms of runtime.");
+        fi;
 
         if Size(options) < 2 then
             if not IsHPCGAP then
