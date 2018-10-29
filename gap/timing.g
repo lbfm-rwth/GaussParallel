@@ -40,7 +40,7 @@ GAUSS_threeSignificantDigits := function( x )
   od;
   # Round to three significant digits
   x := Floor( x * 100 );
-  return Round(x * 10^(count-2));
+  return x * 10^(count-2);
 end;
 
 GAUSS_GetStatistics := function( data )
