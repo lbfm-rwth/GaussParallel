@@ -16,7 +16,7 @@ GAUSS_CalculateTime := function(isParallel, height, width, rank, ring, numberCho
     else
         Info(InfoGauss, 2, "Sequential version:");
     fi;
-    times := GAUSS_Benchmark(Chief, [ring, shapeless, numberChopsH, numberChopsW, isParallel]);
+    times := GAUSS_Benchmark(DoEchelonMatTransformationBlockwise, [shapeless, ring, isParallel, numberChopsH, numberChopsW]);
 
     return times.timings;
 end;
