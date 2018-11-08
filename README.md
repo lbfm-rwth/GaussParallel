@@ -89,3 +89,4 @@ the [issue tracker](https://github.com/lbfm-rwth/GaussPar/issues).
 under the terms of the GNU General Public License as published by the Free
 Software Foundation; either version 2 of the License, or (at your option) any
 later version.
+See file gpl-2.0.txt for further information.
