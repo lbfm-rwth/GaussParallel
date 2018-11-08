@@ -11,6 +11,31 @@ GAUSS_ClearUp := function( R,X,R_ )
     fi;
 end;
 
+GAUSS_createHeads := function( pivotrows, pivotcols, width )
+    # inputs: list that contains the row numbers of the pivot rows and
+    # list that contains the column numbers of the pivot cols and
+    # width of matrix
+    local result, i, currentPivot;
+    
+    if not Length(pivotrows) = Length(pivotcols) then
+        return [];
+    fi;
+
+    currentPivot := 0;
+    result := ListWithIdenticalEntries( width, 0 );
+    
+    for i in [1 .. width] do
+        if i in pivotcols then
+            currentPivot := currentPivot + 1;
+            result[i] := pivotrows[currentPivot];
+        else
+            result[i] := 0;
+        fi;
+    od;
+    
+    return result;
+end;
+
 Chief := function( galoisField,mat,a,b,IsHPC )
     ## inputs: a finite field, a matrix, natural nr. a,b to treat mat as axb matirx
     local   TaskListPreClearUp,
@@ -49,7 +74,8 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 			ClearDownInput,
 			ExtendInput,
 			UpdateRowInput,
-			UpdateRowTrafoInput;
+			UpdateRowTrafoInput,
+            heads;
 
     ##Preparation: Init and chopping the matrix mat
     Info(InfoGauss, 1, "------------ Start Chief ------------");
@@ -552,8 +578,11 @@ Chief := function( galoisField,mat,a,b,IsHPC )
      D := TransposedMat( GAUSS_RRF( galoisField,X,
         TransposedMat( GAUSS_CEX( galoisField,v,D )[1] ),v ) );
 
+    heads := GAUSS_createHeads(v, w, DimensionsMat(mat)[2]);
+
     return rec( coeffs:=B,vectors:=C,relations:=D,
-                pivotrows:=v,pivotcols:=w,rank:=rank);
+                pivotrows:=v,pivotcols:=w,rank:=rank,
+                heads:=heads);
 
 end;
 
