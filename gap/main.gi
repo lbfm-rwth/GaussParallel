@@ -50,9 +50,20 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
 );
 
 InstallGlobalFunction( EchelonMatTransformationBlockwise,
-    function ( mat )
+    function ( mat, options... )
+    # options is a list that can optionally specify the number of the vertical
+    # and horizontal chops that are being used for the calculation.
         local result;
-        result := DoEchelonMatTransformationBlockwise( mat );
+        if Size(options) = 2 then
+            result := DoEchelonMatTransformationBlockwise( mat,
+                rec(
+                    numberChopsHeight := options[1],
+                    numberChopsWidth := options[2]
+                )
+            );
+        else
+            result := DoEchelonMatTransformationBlockwise( mat, rec() );
+        fi;
         return rec(
             vectors := result.vectors,
             heads := result.heads,
@@ -63,9 +74,20 @@ InstallGlobalFunction( EchelonMatTransformationBlockwise,
 );
 
 InstallGlobalFunction( EchelonMatBlockwise,
-    function ( mat )
+    function ( mat, options... )
+    # options is a list that can optionally specify the number of the vertical
+    # and horizontal chops that are being used for the calculation.
         local result;
-        result := DoEchelonMatTransformationBlockwise( mat );
+        if Size(options) = 2 then
+            result := DoEchelonMatTransformationBlockwise( mat,
+                rec(
+                    numberChopsHeight := options[1],
+                    numberChopsWidth := options[2]
+                )
+            );
+        else
+            result := DoEchelonMatTransformationBlockwise( mat, rec() );
+        fi;
         return rec(
             vectors := result.vectors,
             heads := result.heads
