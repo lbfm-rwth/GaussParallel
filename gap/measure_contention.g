@@ -28,7 +28,7 @@ end;
 
 GAUSS_compute := function(A, q, numberChops)
     return GAUSS_GET_REAL_TIME_OF_FUNCTION_CALL(DoEchelonMatTransformationBlockwise,
-                                            [A, GF(q), true, numberChops, numberChops]);
+                                            [A, rec( galoisField := GF(q), IsHPC := true, numberChopsHeight := numberChops, numberChopsWidth := numberChops )]);
 end;
 
 GAUSS_evaluate := function(nrAvailableThreads, bench, A, visible)

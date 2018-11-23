@@ -1,19 +1,21 @@
 # Install global functions of this package
 
 InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
-    function ( mat, options... )
-    # options is a list that can optionally specify
+    function ( mat, options )
+    # options is a record that can optionally specify
     # galoisField, IsHPC, numberChopsHeight, numberChopsWidth
         local galoisField, IsHPC, numberChopsHeight, numberChopsWidth,
-            dim;
+            dim, recnames;
+
+        recnames := Set( RecNames( options ) );
 
         dim := DimensionsMat( mat );
-        if Size(options) < 4 then
+        if ("numberChopsHeight" in recnames) and ("numberChopsWidth" in recnames) then
+            numberChopsHeight := options.numberChopsHeight;
+            numberChopsWidth := options.numberChopsWidth;
+        else
             numberChopsHeight := GAUSS_calculateChops( dim[1] );
             numberChopsWidth := GAUSS_calculateChops( dim[2] );
-        else
-            numberChopsHeight := options[3];
-            numberChopsWidth := options[4];
         fi;
         Info(InfoGauss, 1, "The matrix is split into ", numberChopsHeight,
             " chops vertically and ", numberChopsWidth, " horizontally.");
@@ -24,23 +26,23 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
                 " in terms of runtime.");
         fi;
 
-        if Size(options) < 2 then
+        if "IsHPC" in recnames then
+            IsHPC := options.IsHPC;
+        else
             if not IsHPCGAP then
                 IsHPC := false;
             else
                 IsHPC := true;
             fi;
-        else
-            IsHPC := options[2];
         fi;
 
-        if Size(options) < 1 then
+        if "galoisField" in recnames then
+            galoisField := options.galoisField;
+        else
             galoisField := DefaultFieldOfMatrix( mat );
             if galoisField = fail then
                 return "Please specify the field of the matrix using the options parameter.";
             fi;
-        else
-            galoisField := options[1];
         fi;
 
         return Chief( galoisField, mat, numberChopsHeight, numberChopsWidth, IsHPC );
@@ -53,7 +55,7 @@ InstallGlobalFunction( EchelonMatTransformationBlockwise,
         result := DoEchelonMatTransformationBlockwise( mat );
         return rec(
             vectors := result.vectors,
-            heads := result.pivotrows, #TODO ersetze mit heads
+            heads := result.heads,
             coeffs := result.coeffs,
             relations := result.relations
         );
@@ -66,7 +68,7 @@ InstallGlobalFunction( EchelonMatBlockwise,
         result := DoEchelonMatTransformationBlockwise( mat );
         return rec(
             vectors := result.vectors,
-            heads := result.pivotrows, #TODO ersetze mit heads
+            heads := result.heads
         );
     end
 );

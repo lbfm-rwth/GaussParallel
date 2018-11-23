@@ -44,19 +44,18 @@ There is another function that you can use when you want to specify a few things
 n := 4000;; numberChops := 8;; q := 5;;
 A := RandomMat(n, n, GF(q));;
 # If you want to specify the field
-result := DoEchelonMatTransformationBlockwise(A, GF(q));;
+result := DoEchelonMatTransformationBlockwise(A, rec( galoisField := GF(q) ));;
 
 # If you want to specify, whether the sequential or parallel version
-# is being used (note that you also have to specify the field in this case!)
-# true means that you want to use the parallel version:
-result := DoEchelonMatTransformationBlockwise(A, GF(q), true);
+# is being used true means that you want to use the parallel version:
+result := DoEchelonMatTransformationBlockwise(A, rec( IsHPC := true ));
 
-# And if you want to specify the number of chops, you have to specify
-# the field and the version, too.
-# The third argument stands for the number of chops that the height of
-# the matrix is divided by and the fourth argument is the number of chops
-# that the width of the matrix is divided by.
-result := DoEchelonMatTransformationBlockwise(A, GF(q), true, numberChops, numberChops);
+# numberChopsHeight and numberChopsWidth let you determine what number
+# of chops there should be used for the calculation.
+result := DoEchelonMatTransformationBlockwise(A, rec( numberChopsHeight := numberChops, numberChopsWidth := numberChops ));
+
+# Of course you can specify an arbitrary combination of the arguments:
+result := DoEchelonMatTransformationBlockwise(A, rec( galoisField := GF(q), numberChopsHeight := numberChops, numberChopsWidth := numberChops ));
 ```
 
 In those cases the record `result` contains every time `vectors`, `heads`, `coeffs` and `relations`. But also `pivotrows`, `pivotcols` and `rank` of the matrix.
