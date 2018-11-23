@@ -2,7 +2,13 @@ GAUSS_TestSpecialMatrices := function(echelon, height, width, randomSource, galo
     local shapeless, result, result_std;
 
     shapeless := GAUSS_shapelessMat(echelon, width, height, randomSource, galoisField);
-    result := DoEchelonMatTransformationBlockwise(shapeless, galoisField, IsHPC, numberBlocks_height, numberBlocks_width);
+    result := DoEchelonMatTransformationBlockwise(
+        shapeless,
+        rec( galoisField := galoisField,
+             IsHPC := IsHPC,
+             numberBlocksHeight := numberBlocks_height,
+             numberBlocksWidth := numberBlocks_width )
+    );
     result_std := EchelonMatTransformation(shapeless);
     
     return (-1 * result.vectors = result_std.vectors)
