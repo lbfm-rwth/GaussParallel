@@ -1,4 +1,5 @@
 LoadPackage("GaussPar");
+SetInfoLevel(InfoGauss, 0);
 
 if IsHPCGAP then
     # parallel

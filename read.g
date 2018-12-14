@@ -30,3 +30,6 @@ if IsHPCGAP then
     ReadPackage( "GaussPar", "gap/measure_contention.g");
     ReadPackage( "GaussPar", "gap/stats/timing.g");
 fi;
+
+Info(InfoGauss, 1, "<< The package \"GaussPar\" is still in alpha stage! >>");
+Info(InfoGauss, 1, "<< See the README.md for some usage examples.      >>");

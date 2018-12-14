@@ -99,7 +99,7 @@ end;
 GAUSS_UpdateRowTrafoParameters := function(i, j, k, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField)
 	local list, A, K, M, E; # parameters for GAUSS_UpdateRowTrafe as in subprograms.g
 
-    Info(InfoGauss, 3, "Start UpdateRowTrafoParameters", i, " ", j, " ", k);
+    Info(InfoGauss, 4, "Start UpdateRowTrafoParameters", i, " ", j, " ", k);
 	list := [ TaskListClearDown[i][j], TaskListE[k][j] ];
     
     if (i = 1) then
