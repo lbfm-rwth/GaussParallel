@@ -68,7 +68,7 @@ end;
 ## R-microbenchmark like statistics
 GAUSS_Benchmark := function( func, args, opt... )
   local timings, columnNames, statistics, i, t, res;
-  Info(InfoGauss, 1, "Start Benchmark in timing.g");
+  Info(InfoGauss, 2, "Start Benchmark in timing.g");
   if opt = [] then
     opt := rec();
   else
@@ -91,7 +91,7 @@ GAUSS_Benchmark := function( func, args, opt... )
   fi;
   for i in [ 1 .. opt.times ] do
     res := GAUSS_GET_REAL_TIME_OF_FUNCTION_CALL( func, args );
-    Info(InfoGauss, 1, "GET_REAL_TIME_OF_FUNCTION_CALL calculation ", i);
+    Info(InfoGauss, 2, "GET_REAL_TIME_OF_FUNCTION_CALL calculation ", i);
     t := res.time;
     # We don't care about microseconds
     t := Floor( 1.0 * t / 1000 );

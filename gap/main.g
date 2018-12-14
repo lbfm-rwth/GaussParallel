@@ -78,10 +78,10 @@ Chief := function( galoisField,mat,a,b,IsHPC )
             heads;
 
     ##Preparation: Init and chopping the matrix mat
-    Info(InfoGauss, 1, "------------ Start Chief ------------");
-    Info(InfoGauss, 1, "Preparation");
+    Info(InfoGauss, 2, "------------ Start Chief ------------");
+    Info(InfoGauss, 2, "Preparation");
     
-    Info(InfoGauss, 3, "Input checks");
+    Info(InfoGauss, 4, "Input checks");
     if not (HasIsField(galoisField) and IsField(galoisField)) then
         ErrorNoReturn("Wrong argument: The first parameter is not a field.");
     fi;
@@ -193,11 +193,11 @@ Chief := function( galoisField,mat,a,b,IsHPC )
     ###############################
 
     ## Step 1 ##
-    Info(InfoGauss, 1, "Step 1");
+    Info(InfoGauss, 2, "Step 1");
     for i in [ 1 .. a ] do
         for j in [ 1 .. b ] do
 		    if IsHPC then
-          		Info(InfoGauss, 2, "ClearDownParameters ", i, " ", j);
+          		Info(InfoGauss, 3, "ClearDownParameters ", i, " ", j);
 			    ClearDownInput := GAUSS_ClearDownParameters(i, j, C, TaskListClearDown,
 				    TaskListUpdateR, galoisField);
 			    TaskListClearDown[i][j] := ScheduleTask(
@@ -209,7 +209,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 				    ClearDownInput[5]
 			    );
     
-	        	    Info(InfoGauss, 2, "ExtendParameters ", i, " ", j);
+	        	    Info(InfoGauss, 3, "ExtendParameters ", i, " ", j);
 			    ExtendInput := GAUSS_ExtendParameters(i, j, TaskListClearDown, TaskListE);
 			    TaskListE[i][j] := ScheduleTask(
 				    ExtendInput[1],
@@ -219,7 +219,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 				    ExtendInput[4]
 			    );
 
-				Info(InfoGauss, 2, "UpdateRowParameters ", i, " ", j);
+				Info(InfoGauss, 3, "UpdateRowParameters ", i, " ", j);
 		    else
 		        tmp := GAUSS_ClearDown( galoisField,C[i][j],D[j],i );
 		        D[j] := tmp.D;
@@ -253,7 +253,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 		        fi;
             od;
 
-            Info(InfoGauss, 2, "UpdateRowTrafoParameters ", i, " ", j);
+            Info(InfoGauss, 3, "UpdateRowTrafoParameters ", i, " ", j);
             for h in [ 1 .. i ] do
 		        if IsHPC then
 			        UpdateRowTrafoInput := GAUSS_UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
@@ -280,7 +280,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
     od;
 
 	if IsHPC then
-    Info(InfoGauss, 2, "Before WaitTask");
+    Info(InfoGauss, 3, "Before WaitTask");
         WaitTask( Concatenation( TaskListClearDown ) );
         WaitTask( Concatenation( TaskListE ) );
         WaitTask( Concatenation( List( TaskListUpdateR,Concatenation ) ) );
@@ -304,7 +304,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 	fi;
 
     ## Step 2 ##
-    Info(InfoGauss, 1, "Step 2");
+    Info(InfoGauss, 2, "Step 2");
     for j in [ 1 .. b ] do
         for h in [ 1 .. a ] do
             M[j][h] := GAUSS_RowLengthen( galoisField,M[j][h],E[h][j],E[h][b] );            
@@ -425,7 +425,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
     ###############################
 
     ## Write output
-    Info(InfoGauss, 1, "Write output");
+    Info(InfoGauss, 2, "Write output");
     # Begin with row-select bitstring named v
     v := [];
     rank := 0;

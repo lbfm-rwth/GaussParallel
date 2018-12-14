@@ -5,6 +5,7 @@
 ##
 
 LoadPackage("GaussPar");
+SetInfoLevel(InfoGauss, 0);
 TestDirectory(
     DirectoriesPackageLibrary("GaussPar", "tst/standard"),
     rec(exitGAP := true)
