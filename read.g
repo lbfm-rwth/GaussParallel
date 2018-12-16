@@ -19,7 +19,7 @@ fi;
 
 ReadPackage( "GaussPar", "gap/utils.g");
 ReadPackage( "GaussPar", "gap/subprograms.g");
-ReadPackage( "GaussPar", "gap/dependencies_main.g");
+ReadPackage( "GaussPar", "gap/dependencies.g");
 
 ReadPackage( "GaussPar", "gap/main.g");
 ReadPackage( "GaussPar", "gap/main.gi");

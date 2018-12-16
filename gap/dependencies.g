@@ -1,5 +1,6 @@
-# This file contains some help functions making the parallel parts of the code 
-# in main.g more readable. (Dependency of main.g.)
+# This file contains the help functions that manage the parallelization of the
+# algorithm. In particular, the functions in this file manage the dependencies
+# of the algorithm's subprograms between each other.
 
 # This function is temporary until it is not necessary anymore to find
 # a number of chops that divides the width or height.
