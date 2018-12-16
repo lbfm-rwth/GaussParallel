@@ -201,22 +201,22 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 			    ClearDownInput := GAUSS_ClearDownParameters(i, j, C, TaskListClearDown,
 				    TaskListUpdateR, galoisField);
 			    TaskListClearDown[i][j] := ScheduleTask(
-				    ClearDownInput[1],
+				    ClearDownInput.dependencies,
 				    GAUSS_ClearDown,
-				    ClearDownInput[2],
-				    ClearDownInput[3],
-				    ClearDownInput[4],
-				    ClearDownInput[5]
+				    ClearDownInput.parameters.galoisField,
+				    ClearDownInput.parameters.C,
+				    ClearDownInput.parameters.D,
+				    ClearDownInput.parameters.i
 			    );
     
 	        	    Info(InfoGauss, 2, "ExtendParameters ", i, " ", j);
 			    ExtendInput := GAUSS_ExtendParameters(i, j, TaskListClearDown, TaskListE);
 			    TaskListE[i][j] := ScheduleTask(
-				    ExtendInput[1],
+				    ExtendInput.dependencies,
 				    GAUSS_Extend,
-				    ExtendInput[2],
-				    ExtendInput[3],
-				    ExtendInput[4]
+				    ExtendInput.parameters.A,
+				    ExtendInput.parameters.E,
+				    ExtendInput.parameters.flag
 			    );
 
 				Info(InfoGauss, 2, "UpdateRowParameters ", i, " ", j);
@@ -237,13 +237,13 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 			        UpdateRowInput := GAUSS_UpdateRowParameters(i, j, k, C, TaskListClearDown,
 				        TaskListUpdateR, galoisField);
 			        TaskListUpdateR[i][j][k] := ScheduleTask(
-				        UpdateRowInput[1],
+				        UpdateRowInput.dependencies,
 				        GAUSS_UpdateRow,
-				        UpdateRowInput[2],
-				        UpdateRowInput[3],
-				        UpdateRowInput[4],
-				        UpdateRowInput[5],
-				        UpdateRowInput[6]
+				        UpdateRowInput.parameters.galoisField,
+				        UpdateRowInput.parameters.A,
+				        UpdateRowInput.parameters.C,
+				        UpdateRowInput.parameters.B,
+				        UpdateRowInput.parameters.i
 			        );
 		        else
 		                tmp := GAUSS_UpdateRow(  galoisField,A[i][j],C[i][k],
@@ -258,16 +258,16 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 		        if IsHPC then
 			        UpdateRowTrafoInput := GAUSS_UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
             	    TaskListUpdateM[i][j][h] := ScheduleTask(
-					    UpdateRowTrafoInput[1],
+					    UpdateRowTrafoInput.dependencies,
                 	    GAUSS_UpdateRowTrafo,
-					    UpdateRowTrafoInput[2],
-					    UpdateRowTrafoInput[3],
-					    UpdateRowTrafoInput[4],
-					    UpdateRowTrafoInput[5],
-					    UpdateRowTrafoInput[6],
-					    UpdateRowTrafoInput[7],
-					    UpdateRowTrafoInput[8],
-					    UpdateRowTrafoInput[9]
+					    UpdateRowTrafoInput.parameters.galoisField,
+					    UpdateRowTrafoInput.parameters.A,
+					    UpdateRowTrafoInput.parameters.K,
+					    UpdateRowTrafoInput.parameters.M,
+					    UpdateRowTrafoInput.parameters.E,
+					    UpdateRowTrafoInput.parameters.i,
+					    UpdateRowTrafoInput.parameters.k,
+					    UpdateRowTrafoInput.parameters.j
 				    ); 
 		        else
 		            tmp := GAUSS_UpdateRowTrafo(  galoisField,A[i][j],K[i][h],
