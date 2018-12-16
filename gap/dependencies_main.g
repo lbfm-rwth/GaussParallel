@@ -53,7 +53,7 @@ GAUSS_ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskList
     fi;
 		
 	number := i;
-	return [ list, galoisField, C, D, number ];
+	return rec( dependencies := list, parameters := rec( galoisField:=galoisField, C:=C, D:=D, i:=number )) ;
 end;
 
 GAUSS_ExtendParameters := function(i, j, TaskListClearDown, TaskListE)
@@ -69,7 +69,7 @@ GAUSS_ExtendParameters := function(i, j, TaskListClearDown, TaskListE)
     
 	A := TaskResult( TaskListClearDown[i][j] ).A;
 	flag := j;
-	return [ list, A, E, flag ];
+	return rec( dependencies := list, parameters := rec( A:=A, E:=E, flag:=flag) );
 end;
 
 GAUSS_UpdateRowParameters := function(i, j, k, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
@@ -93,7 +93,7 @@ GAUSS_UpdateRowParameters := function(i, j, k, matrixC, TaskListClearDown, TaskL
 
 	A := TaskResult( TaskListClearDown[i][j] ).A;
 	number := i;
-	return [ list, galoisField, A, C, B, number ];
+	return  rec( dependencies:=list, parameters:=rec(galoisField:=galoisField, A:=A, C:=C, B:=B, i:=number) );
 end;
 
 GAUSS_UpdateRowTrafoParameters := function(i, j, k, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField)
@@ -119,5 +119,5 @@ GAUSS_UpdateRowTrafoParameters := function(i, j, k, TaskListClearDown, TaskListE
     A := TaskResult( TaskListClearDown[i][j] ).A;
     E := TaskResult( TaskListE[k][j] );
 
-	return [ list, galoisField, A, K, M, E, i, k, j];
+	return rec( dependencies:=list, parameters:=rec(galoisField:=galoisField, A:=A, K:=K, M:=M, E:=E, i:=i, k:=k, j:=j) );
 end;
