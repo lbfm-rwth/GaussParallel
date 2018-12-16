@@ -20,15 +20,6 @@ GAUSS_calculateChops := function( a )
     return 1;
 end;
 
-GAUSS_ClearUp := function( R,X,R_ )
-    if IsEmpty(R_) or IsEmpty(X) then return R; fi;
-    if IsEmpty(R) then
-        return X*R_;
-    else
-        return R + X*R_;
-    fi;
-end;
-
 # Function in step 1
 GAUSS_ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
 	local list, C, D, number; # parameters for GAUSS_ClearDown as in subprograms.g

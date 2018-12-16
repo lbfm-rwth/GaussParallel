@@ -243,3 +243,12 @@ GAUSS_UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
 
     return rec( K:=K_,M:=M_ );
 end;
+
+GAUSS_ClearUp := function( R,X,R_ )
+    if IsEmpty(R_) or IsEmpty(X) then return R; fi;
+    if IsEmpty(R) then
+        return X*R_;
+    else
+        return R + X*R_;
+    fi;
+end;

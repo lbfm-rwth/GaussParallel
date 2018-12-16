@@ -2,15 +2,6 @@
 # transformation, running completely in parallel.
 
 
-GAUSS_ClearUp := function( R,X,R_ )
-    if IsEmpty(R_) or IsEmpty(X) then return R; fi;
-    if IsEmpty(R) then
-        return X*R_;
-    else
-        return R + X*R_;
-    fi;
-end;
-
 GAUSS_createHeads := function( pivotrows, pivotcols, width )
     # inputs: list that contains the row numbers of the pivot rows and
     # list that contains the column numbers of the pivot cols and
