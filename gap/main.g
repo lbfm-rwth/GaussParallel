@@ -147,7 +147,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
     E := [];
     K := [];
     M := [];
-    R := [];
+    R := FixedAtomicList(b,0);
     X := [];
     nrows := [];
     for i in [ 1 .. a ] do
@@ -172,7 +172,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
     for k in [ 1 .. b ] do
         D[k] := rec( vectors:=[],bitstring:=[] );
         B[k] := [];
-        R[k] := [];
+        R[k] := FixedAtomicList(b,0);
         X[k] := [];
         for j in [ 1 .. b ] do
             B[k][j] := [];
@@ -348,8 +348,8 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                             );
                         fi;
                 else
-                            GAUSS_ClearUp_destructive( R,X,j,k,l );
-                        fi;
+                    GAUSS_ClearUp_destructive( R,X,j,k,l );
+                fi;
             od;
 
             for h in [ 1 .. a ] do
