@@ -1,20 +1,20 @@
 ## Calculates time statistics for one matrix of a specific type using Benchmark()
 GAUSS_CalculateTime := function(isParallel, height, width, rank, ring, numberChopsH, numberChopsW, randomSeed)
     local echelon, shapeless, result, times, r;
-    Info(InfoGauss, 1, "Start CalculateTime");
+    Info(InfoGauss, 2, "Start CalculateTime");
     times := 0;
 
     # Create random matrices, calculate time.
     echelon := RandomEchelonMat(height, width, rank, randomSeed, ring);;
-    Info(InfoGauss, 3, "Echelon matrix:");
-    Info(InfoGauss, 3, echelon);
+    Info(InfoGauss, 4, "Echelon matrix:");
+    Info(InfoGauss, 4, echelon);
     shapeless := GAUSS_shapelessMat(echelon, height, width, randomSeed, ring);;
-    Info(InfoGauss, 3, "Shapeless matrx:");
-    Info(InfoGauss, 3, shapeless);
+    Info(InfoGauss, 4, "Shapeless matrx:");
+    Info(InfoGauss, 4, shapeless);
     if isParallel then
-        Info(InfoGauss, 2, "Parallel version:");
+        Info(InfoGauss, 3, "Parallel version:");
     else
-        Info(InfoGauss, 2, "Sequential version:");
+        Info(InfoGauss, 3, "Sequential version:");
     fi;
     times := GAUSS_Benchmark(DoEchelonMatTransformationBlockwise, [shapeless, rec( galoisField := ring, IsHPC := isParallel, numberChopsHeight := numberChopsH, numberChopsWidth := numberChopsW )]);
 
@@ -25,14 +25,14 @@ end;
 GAUSS_CalculateAverageTime := function(isParallel, height, width, rank, ring, numberChopsH, numberChopsW)
     local randomSeed, timings, statistics, i;
 
-    Info(InfoGauss, 1, "Start CalculateAverageTime in stats/timing.g");
+    Info(InfoGauss, 2, "Start CalculateAverageTime in stats/timing.g");
 
     randomSeed := RandomSource(IsMersenneTwister);;
     timings := [];
 
     # Do a few times and calculate average.
     for i in [ 1 .. 10 ] do
-        Info(InfoGauss, 2, "CalculateTime calculation no.", i);
+        Info(InfoGauss, 3, "CalculateTime calculation no.", i);
         Append(timings, GAUSS_CalculateTime(isParallel, height, width, rank, ring, numberChopsH, numberChopsW, randomSeed));
     od;
 

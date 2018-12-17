@@ -20,15 +20,6 @@ GAUSS_calculateChops := function( a )
     return 1;
 end;
 
-GAUSS_ClearUp := function( R,X,R_ )
-    if IsEmpty(R_) or IsEmpty(X) then return R; fi;
-    if IsEmpty(R) then
-        return X*R_;
-    else
-        return R + X*R_;
-    fi;
-end;
-
 # Function in step 1
 GAUSS_ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
 	local list, C, D, number; # parameters for GAUSS_ClearDown as in subprograms.g
@@ -53,7 +44,7 @@ GAUSS_ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskList
     fi;
 		
 	number := i;
-	return [ list, galoisField, C, D, number ];
+	return rec( dependencies := list, parameters := rec( galoisField:=galoisField, C:=C, D:=D, i:=number )) ;
 end;
 
 GAUSS_ExtendParameters := function(i, j, TaskListClearDown, TaskListE)
@@ -69,7 +60,7 @@ GAUSS_ExtendParameters := function(i, j, TaskListClearDown, TaskListE)
     
 	A := TaskResult( TaskListClearDown[i][j] ).A;
 	flag := j;
-	return [ list, A, E, flag ];
+	return rec( dependencies := list, parameters := rec( A:=A, E:=E, flag:=flag) );
 end;
 
 GAUSS_UpdateRowParameters := function(i, j, k, matrixC, TaskListClearDown, TaskListUpdateR, galoisField)
@@ -93,13 +84,13 @@ GAUSS_UpdateRowParameters := function(i, j, k, matrixC, TaskListClearDown, TaskL
 
 	A := TaskResult( TaskListClearDown[i][j] ).A;
 	number := i;
-	return [ list, galoisField, A, C, B, number ];
+	return  rec( dependencies:=list, parameters:=rec(galoisField:=galoisField, A:=A, C:=C, B:=B, i:=number) );
 end;
 
 GAUSS_UpdateRowTrafoParameters := function(i, j, k, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField)
 	local list, A, K, M, E; # parameters for GAUSS_UpdateRowTrafe as in subprograms.g
 
-    Info(InfoGauss, 3, "Start UpdateRowTrafoParameters", i, " ", j, " ", k);
+    Info(InfoGauss, 4, "Start UpdateRowTrafoParameters", i, " ", j, " ", k);
 	list := [ TaskListClearDown[i][j], TaskListE[k][j] ];
     
     if (i = 1) then
@@ -119,5 +110,5 @@ GAUSS_UpdateRowTrafoParameters := function(i, j, k, TaskListClearDown, TaskListE
     A := TaskResult( TaskListClearDown[i][j] ).A;
     E := TaskResult( TaskListE[k][j] );
 
-	return [ list, galoisField, A, K, M, E, i, k, j];
+	return rec( dependencies:=list, parameters:=rec(galoisField:=galoisField, A:=A, K:=K, M:=M, E:=E, i:=i, k:=k, j:=j) );
 end;

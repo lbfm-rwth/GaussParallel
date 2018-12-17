@@ -72,7 +72,7 @@ start HPC-GAP and execute
 Read("read.g");
 n := 4000;; numberChops := 8;; q := 5;;
 A := RandomMat(n, n, GF(q));;
-MeasureContention(numberChops, q, A, true);
+MeasureContention(numberChops, q, A);
 ```
 
 The algorithm will out the statistics.
