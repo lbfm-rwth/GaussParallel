@@ -2,8 +2,8 @@
 
 There are two different ways to use our package. You can either use the
 sequential or the parallel version of the Gauss algorithm.
-Both algorithms perform the Gauss algorithm on smaller chops of the
-matrix and unite those chops later.
+Both algorithms perform the Gauss algorithm on smaller blocks of the
+matrix and unite those blocks later.
 
 To use our package you should open a GAP session and type
 ```
@@ -13,13 +13,13 @@ with the directory GaussPar being somewhere in the paths searched through
 by GAP.
 
 Until now there are three different functions that you can use. The function `EchelonMatBlockwise` and `EchelonMatTransformationBlockwise` resemble `EchelonMat` and `EchelonMatTransformation` from the Gauss package. They need a matrix as input and return a record with different amounts of information.
-The third function is called `DoEchelonMatTransformationBlockwise`. As input you can specify the matrix of course, the field of the matrix, the numbers of chops that are used and whether to use the sequential or the parallel version.
+The third function is called `DoEchelonMatTransformationBlockwise`. As input you can specify the matrix of course, the field of the matrix, the numbers of blocks that are used and whether to use the sequential or the parallel version.
 
 ## EchelonMatBlockwise
 
 The most basic usage of our algorithm would be the following:
 ```
-n := 4000;; numberChops := 8;; q := 5;;
+n := 4000;; numberBlocks := 8;; q := 5;;
 A := RandomMat(n, n, GF(q));;
 result := EchelonMatBlockwise(A);;
 ```
@@ -30,7 +30,7 @@ result := EchelonMatBlockwise(A);;
 
 To receive more information you should to this:
 ```
-n := 4000;; numberChops := 8;; q := 5;;
+n := 4000;; numberBlocks := 8;; q := 5;;
 A := RandomMat(n, n, GF(q));;
 result := EchelonMatTransformationBlockwise(A);;
 ```
@@ -41,7 +41,7 @@ Now the record `result` does not contain only `vectors` and `heads`, but also `c
 
 There is another function that you can use when you want to specify a few things yourself:
 ```
-n := 4000;; numberChops := 8;; q := 5;;
+n := 4000;; numberBlocks := 8;; q := 5;;
 A := RandomMat(n, n, GF(q));;
 # If you want to specify the field
 result := DoEchelonMatTransformationBlockwise(A, GF(q));;
@@ -51,12 +51,12 @@ result := DoEchelonMatTransformationBlockwise(A, GF(q));;
 # true means that you want to use the parallel version:
 result := DoEchelonMatTransformationBlockwise(A, GF(q), true);
 
-# And if you want to specify the number of chops, you have to specify
+# And if you want to specify the number of blocks, you have to specify
 # the field and the version, too.
-# The third argument stands for the number of chops that the height of
-# the matrix is divided by and the fourth argument is the number of chops
+# The third argument stands for the number of blocks that the height of
+# the matrix is divided by and the fourth argument is the number of blocks
 # that the width of the matrix is divided by.
-result := DoEchelonMatTransformationBlockwise(A, GF(q), true, numberChops, numberChops);
+result := DoEchelonMatTransformationBlockwise(A, GF(q), true, numberBlocks, numberBlocks);
 ```
 
 In those cases the record `result` contains every time `vectors`, `heads`, `coeffs` and `relations`. But also `pivotrows`, `pivotcols` and `rank` of the matrix.
@@ -71,9 +71,9 @@ To get some benchmark data on
 start HPC-GAP and execute
 ```
 Read("read.g");
-n := 4000;; numberChops := 8;; q := 5;;
+n := 4000;; numberBlocks := 8;; q := 5;;
 A := RandomMat(n, n, GF(q));;
-MeasureContention(numberChops, q, A);
+MeasureContention(numberBlocks, q, A);
 ```
 
 The algorithm will out the statistics.

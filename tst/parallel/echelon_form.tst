@@ -1,8 +1,8 @@
-gap> dimension := 200;; rank := 150;; q := 5;; numberChops := 8;;
+gap> dimension := 200;; rank := 150;; q := 5;; numberBlocks := 8;;
 gap> rs := RandomSource(IsMersenneTwister);;
 gap> echelon := RandomEchelonMat(dimension, dimension, rank, rs, GF(q));;
 gap> shapeless := GAUSS_shapelessMat(echelon, dimension, dimension, rs, GF(q));;
-gap> result := DoEchelonMatTransformationBlockwise(shapeless, GF(q), true, numberChops, numberChops);;
+gap> result := DoEchelonMatTransformationBlockwise(shapeless, GF(q), true, numberBlocks, numberBlocks);;
 gap> result_std := EchelonMatTransformation(shapeless);;
 gap> -1 * result.vectors = result_std.vectors;
 true
