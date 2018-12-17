@@ -551,10 +551,10 @@ GAUSS_ClearUp := function( R,X,R_ )
 end;
 
 GAUSS_ClearUp_destructive := function( R,X,j,k,l )
-    if IsEmpty(R[k,l]) or IsEmpty(X) then return; fi;
-    if IsEmpty(R[j,l]) then
-        R[j,l] := X*R[k,l];
+    if IsEmpty(R[k][l]) or IsEmpty(X) then return; fi;
+    if IsEmpty(R[j][l]) then
+        R[j][l] := X*R[k][l];
     else
-        R[j,l] := R[j,l] + X*R[k,l];
+        R[j][l] := R[j][l] + X*R[k][l];
     fi;
 end;
