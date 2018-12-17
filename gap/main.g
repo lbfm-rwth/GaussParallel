@@ -348,14 +348,8 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                             );
                         fi;
 		        else
-                    if not IsEmpty(R[k][l]) then
-                        if IsEmpty(R[j][l]) then
-                            R[j][l] :=X*R[k][l];
-                        else
-                            R[j][l] := R[j][l] + X*R[k][l];
+                            GAUSS_ClearUp_destructive( R,X,j,k,l );
                         fi;
-                    fi;
-		        fi;
             od;
 
             for h in [ 1 .. a ] do
@@ -383,13 +377,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                             );
                         fi;
 		        else
-                    if not IsEmpty(M[k][h]) then
-                        if IsEmpty(M[j][h]) then
-                            M[j][h] := X*M[k][h];
-                        else
-                            M[j][h] := M[j][h] + X*M[k][h];
-                        fi;
-                    fi;
+                            GAUSS_ClearUp_destructive( M,X,j,k,h );
 		        fi;
             od;
         od;
