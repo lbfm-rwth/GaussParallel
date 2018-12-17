@@ -27,9 +27,9 @@ isParallel = ["true", "false"]
 dimensions = [5, 10, 50, 100, 200, 500]
 ranks = [1, 3, 7, 15, 50, 90, 155, 350, 500]
 rings = [2, 3, 5, 11, 17]
-numberChops = [1, 5, 50]
+numberBlocks = [1, 5, 50]
 
-specifications = list(itertools.product(isParallel, dimensions, ranks, rings, numberChops))
+specifications = list(itertools.product(isParallel, dimensions, ranks, rings, numberBlocks))
 if debugging:
     specifications = specifications[0:10]
 for (p, d, ra, ri, n) in specifications:
@@ -43,10 +43,10 @@ for (p, d, ra, ri, n) in specifications:
             + ';; dimension :=' + str(d) \
             + ';; rank := ' + str(ra) \
             + ';; ring := GF(' + str(ri) + ')' \
-            + ';; numberChops := ' + str(n) \
+            + ';; numberBlocks := ' + str(n) \
             + ';;\n'
         instructions = 'measuredTime := _GAUSS_CalculateAverageTime(isParallel, ' \
-            + 'dimension, dimension, rank, ring, numberChops, numberChops);;' \
+            + 'dimension, dimension, rank, ring, numberBlocks, numberBlocks);;' \
             + '\n' \
             + 'AppendTo(' + outfile \
             + ', dimension, ",", dimension, ",", rank, ",", ring, ",", ' \

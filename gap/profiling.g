@@ -16,9 +16,9 @@ GAUSS_createMatrixFile := function( n, q, rank )
     Exec( Concatenation( "mv ", matrixFile, " examples/" ) );
 end;
 
-GAUSS_profileGauss := function( matrixFile, numberChops  )
+GAUSS_profileGauss := function( matrixFile, numberBlocks  )
     local file, A, res, profile, profileName;
-    profileName := Concatenation( matrixFile, "-chop", String(numberChops) );
+    profileName := Concatenation( matrixFile, "-chop", String(numberBlocks) );
     file := InputTextFile( Concatenation( "examples/", matrixFile ) );
     Print("Reading input...\c");
     A := EvalString( ReadAll( file ) );
@@ -26,7 +26,7 @@ GAUSS_profileGauss := function( matrixFile, numberChops  )
     Exec( Concatenation( "rm -f ", profileName, ".gz" ) );
     Print("Computing...\c");
     ProfileLineByLine( Concatenation( profileName, ".gz" ) );
-    res := GAUSS_GaussParallel( A, numberChops, numberChops,DefaultFieldOfMatrix(A) );;
+    res := GAUSS_GaussParallel( A, numberBlocks, numberBlocks,DefaultFieldOfMatrix(A) );;
     UnprofileLineByLine();
     Print("OK\n");
     Print("Reading profile...\c");

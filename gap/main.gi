@@ -3,23 +3,23 @@
 InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
     function ( mat, options... )
     # options is a list that can optionally specify
-    # galoisField, IsHPC, numberChopsHeight, numberChopsWidth
-        local galoisField, IsHPC, numberChopsHeight, numberChopsWidth,
+    # galoisField, IsHPC, numberBlocksHeight, numberBlocksWidth
+        local galoisField, IsHPC, numberBlocksHeight, numberBlocksWidth,
             dim;
 
         dim := DimensionsMat( mat );
         if Size(options) < 4 then
-            numberChopsHeight := GAUSS_calculateChops( dim[1] );
-            numberChopsWidth := GAUSS_calculateChops( dim[2] );
+            numberBlocksHeight := GAUSS_calculateBlocks( dim[1] );
+            numberBlocksWidth := GAUSS_calculateBlocks( dim[2] );
         else
-            numberChopsHeight := options[3];
-            numberChopsWidth := options[4];
+            numberBlocksHeight := options[3];
+            numberBlocksWidth := options[4];
         fi;
-        Info(InfoGauss, 1, "The matrix is split into ", numberChopsHeight,
-            " chops vertically and ", numberChopsWidth, " horizontally.");
-        if ((numberChopsHeight = 1) or (numberChopsWidth = 1)
+        Info(InfoGauss, 1, "The matrix is split into ", numberBlocksHeight,
+            " blocks vertically and ", numberBlocksWidth, " horizontally.");
+        if ((numberBlocksHeight = 1) or (numberBlocksWidth = 1)
             and (IsHPC = true)) then
-            Info(InfoGauss, 1, "Warning: The size of the chops is so small",
+            Info(InfoGauss, 1, "Warning: The size of the blocks is so small",
                 " that the parallel version is unlikely to bring benefits",
                 " in terms of runtime.");
         fi;
@@ -43,7 +43,7 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
             galoisField := options[1];
         fi;
 
-        return Chief( galoisField, mat, numberChopsHeight, numberChopsWidth, IsHPC );
+        return Chief( galoisField, mat, numberBlocksHeight, numberBlocksWidth, IsHPC );
     end
 );
 

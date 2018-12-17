@@ -3,10 +3,10 @@
 # of the algorithm's subprograms between each other.
 
 # This function is temporary until it is not necessary anymore to find
-# a number of chops that divides the width or height.
+# a number of blocks that divides the width or height.
 # When different chop sizes are possible, we will presumably find the perfect
-# chop size and divide in chops of this size.
-GAUSS_calculateChops := function( a )
+# chop size and divide in blocks of this size.
+GAUSS_calculateBlocks := function( a )
     # a is either height or width of the matrix
     local i;
     i := 13;

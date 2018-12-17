@@ -23,14 +23,14 @@ GAUSS_prepare := function(nrAvailableThreads)
     fi;
 end;
 
-GAUSS_compute := function(A, q, numberChops, showOutput)
+GAUSS_compute := function(A, q, numberBlocks, showOutput)
     local res;
     if (showOutput) then
         Print("Starting the parallel execution.\n");
     fi;
     res := GAUSS_GET_REAL_TIME_OF_FUNCTION_CALL(
         DoEchelonMatTransformationBlockwise,
-        [A, GF(q), true, numberChops, numberChops]);
+        [A, GF(q), true, numberBlocks, numberBlocks]);
     # The variable `time` stores the cpu time that was used by the execution
     # of the last statement.
     res.cpuTime := time;
@@ -81,7 +81,7 @@ GAUSS_evaluate := function(nrAvailableThreads, bench, A, showOutput)
     fi;
 end;
 
-MeasureContention := function(numberChops, q, A, options...)
+MeasureContention := function(numberBlocks, q, A, options...)
     local nrAvailableThreads, bench, showOutput;
 
     # showOutput can be set for testing purposes
@@ -99,6 +99,6 @@ MeasureContention := function(numberChops, q, A, options...)
     bench := "";
     
     GAUSS_prepare(nrAvailableThreads);;
-    bench := GAUSS_compute(A, q, numberChops, showOutput);;
+    bench := GAUSS_compute(A, q, numberBlocks, showOutput);;
     GAUSS_evaluate(nrAvailableThreads, bench, A, showOutput);;
 end;
