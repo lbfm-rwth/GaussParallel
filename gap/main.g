@@ -330,10 +330,12 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                                 [   TaskListPreClearUp[j][l],
                                     TaskListPreClearUp[j][k]
                                 ],
-                                GAUSS_ClearUp,
-                                TaskResult( TaskListPreClearUp[j][l] )[2],
+                                GAUSS_ClearUp_destructive,
+                                R,
                                 TaskResult( TaskListPreClearUp[j][k] )[1],
-                                R[k][l]
+                                j,
+                                k,
+                                l
                             );
                         else
                             TaskListClearUpR[j][l][l-k+1] := ScheduleTask(
@@ -341,10 +343,12 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                                     TaskListClearUpR[k][l][l-k],
                                     TaskListPreClearUp[j][k]
                                 ],
-                                GAUSS_ClearUp,
-                                TaskResult( TaskListClearUpR[j][l][l-k] ),
+                                GAUSS_ClearUp_destructive,
+                                R,
                                 TaskResult( TaskListPreClearUp[j][k] )[1],
-                                TaskResult( TaskListClearUpR[k][l][l-k] )
+                                j,
+                                k,
+                                l
                             );
                         fi;
                 else
@@ -390,9 +394,9 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         for i in [ 1 .. b ] do
             k := b - i + 1;
             for j in [ 1 .. k-1 ] do
-                for h in [ k .. b ] do
-                    R[j][h] := TaskResult( TaskListClearUpR[j][h][h-k+1] );
-                od;
+                #for h in [ k .. b ] do
+                #    R[j][h] := TaskResult( TaskListClearUpR[j][h][h-k+1] );
+                #od;
                 for h in [ 1 .. a ] do
                     M[j][h] := TaskResult( TaskListClearUpM[j][h][i] );
                 od;
