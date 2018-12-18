@@ -176,8 +176,8 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         X[k] := [];
         for j in [ 1 .. b ] do
             B[k][j] := [];
-            R[k][j] := [];
-            X[k][j] := [];;
+            R[k][j] := MakeReadOnlyObj([]);
+            X[k][j] := [];
         od;
     od;
     ###############################
@@ -304,22 +304,19 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 
     ## Step3 ##
     for k in [ 1 .. b ] do
-        R[k][k] := D[k].vectors;
+        R[k][k] := ShallowCopy(D[k].vectors);
+        MakeReadOnlyObj(R[k][k]); # FIXME: do we need to do this?
     od;
     for k_ in [ 1 .. b ] do
         k := b-k_+1;
         for j in [ 1 .. (k - 1) ] do
             if IsHPC then
                 TaskListPreClearUp[j][k] := RunTask(
-                    GAUSS_CEX,
-                    galoisField,
-                    D[k].bitstring,
-                    B[j][k]
+                    GAUSS_PreClearUp,
+                    R, galoisField, D, B, j, k
                 );
             else
-                tmp := GAUSS_CEX( galoisField,D[k].bitstring,B[j][k] );
-                X := tmp[1];
-                R[j][k] := tmp[2];
+                X := GAUSS_PreClearUp( R,galoisField,D,B,j,k );
                 if IsEmpty(X) then continue; fi;
             fi;
 
@@ -332,7 +329,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                                 ],
                                 GAUSS_ClearUp_destructive,
                                 R,
-                                TaskResult( TaskListPreClearUp[j][k] )[1],
+                                TaskResult( TaskListPreClearUp[j][k] ),
                                 j,
                                 k,
                                 l
@@ -345,7 +342,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                                 ],
                                 GAUSS_ClearUp_destructive,
                                 R,
-                                TaskResult( TaskListPreClearUp[j][k] )[1],
+                                TaskResult( TaskListPreClearUp[j][k] ),
                                 j,
                                 k,
                                 l
@@ -365,7 +362,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                                 ],
                                 GAUSS_ClearUp,
                                 M[j][h],
-                                TaskResult( TaskListPreClearUp[j][k] )[1],
+                                TaskResult( TaskListPreClearUp[j][k] ),
                                 M[k][h]
                             );
                         else
@@ -376,7 +373,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                                 ],
                                 GAUSS_ClearUp,
                                 TaskResult( TaskListClearUpM[j][h][k_-1] ),
-                                TaskResult( TaskListPreClearUp[j][k] )[1],
+                                TaskResult( TaskListPreClearUp[j][k] ),
                                 TaskResult( TaskListClearUpM[k][h][k_-1] )
                             );
                         fi;
