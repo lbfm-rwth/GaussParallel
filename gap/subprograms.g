@@ -551,6 +551,16 @@ GAUSS_UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
     return rec( K:=K_,M:=M_ );
 end;
 
+# Calls GAUSS_CEX but writes into R and returns X
+GAUSS_PreClearUp := function( R,galoisField,D,B,j,k )
+    local tmp;
+    tmp := GAUSS_CEX( galoisField, D[k].bitstring, B[j][k] );
+    MakeReadOnlyObj(tmp[1]);
+    MakeReadOnlyObj(tmp[2]);
+    R[j][k] := tmp[2];
+    return tmp[1];
+end;
+
 GAUSS_ClearUp := function( R,X,R_ )
     if IsEmpty(R_) or IsEmpty(X) then return R; fi;
     if IsEmpty(R) then
