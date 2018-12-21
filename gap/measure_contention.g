@@ -70,8 +70,8 @@ GAUSS_evaluate := function(nrAvailableThreads, bench, A, showOutput)
     # Use ms instead of microseconds
     benchStd.time := Round(benchStd.time / 1000.);
     resStd := benchStd.result;
-    correct := -1 * resStd.vectors = resPar.vectors
-           and -1 * resStd.coeffs = resPar.coeffs;
+    correct := resStd.vectors = resPar.vectors
+           and resStd.coeffs = resPar.coeffs;
     if not correct then
         ErrorNoReturn("GaussPar: Result incorrect!");
     fi;

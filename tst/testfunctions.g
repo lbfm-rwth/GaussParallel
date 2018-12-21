@@ -11,7 +11,7 @@ GAUSS_TestSpecialMatrices := function(echelon, height, width, randomSource, galo
     );
     result_std := EchelonMatTransformation(shapeless);
     
-    return (-1 * result.vectors = result_std.vectors)
-        and (-1 * result.coeffs = result_std.coeffs)
-        and (-Concatenation(result.coeffs, result.relations) * shapeless = echelon);
+    return (result.vectors = result_std.vectors)
+        and (result.coeffs = result_std.coeffs)
+        and (Concatenation(result.coeffs, result.relations) * shapeless = echelon);
 end;
