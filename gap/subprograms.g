@@ -140,15 +140,19 @@ GAUSS_CRZ := function( galoisField,mat,u,nr )
     sum := Sum(u);
     if IsEmpty(mat) then
         if sum = 0 then
-            return [];
+            return MakeReadOnlyObj(MakeImmutable([]));
         else
-            return NullMat( nr,sum,galoisField ); 
+            return MakeReadOnlyObj(MakeImmutable(
+                NullMat(nr, sum, galoisField)
+            ));
         fi;
     fi;
-    #numZero := Sum(u);
-    ## or is it Length-Sum ? -> order of args in RRF !!
-    nullMat := NullMat( sum,DimensionsMat(mat)[1],galoisField );
-    return TransposedMat( GAUSS_RRF( galoisField,TransposedMat( mat ),nullMat,u ) );
+    nullMat := MakeReadOnlyObj(MakeImmutable(
+        NullMat(sum, DimensionsMat(mat)[1], galoisField)
+    ));
+    return MakeReadOnlyObj(MakeImmutable(
+        TransposedMat(GAUSS_RRF(galoisField, TransposedMat(mat), nullMat, u))
+    ));
 end;
 
 GAUSS_ADI := function( galoisField,mat,bitstring  )
