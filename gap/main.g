@@ -146,7 +146,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
     D := FixedAtomicList(b, 0);
     E := [];
     K := [];
-    M := [];
+    M := FixedAtomicList(b, 0);
     R := FixedAtomicList(b,0);
     X := [];
     nrows := [];
@@ -166,10 +166,10 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         od;
     od;
     for i in [ 1 .. b ] do
-        M[i] := [];
+        M[i] := FixedAtomicList(a, 0);
         nrows[i] := DimensionsMat(C[1][i])[2];
         for k in [ 1 .. a ] do
-            M[i][k] := [];
+            M[i][k] := MakeReadOnlyObj(MakeImmutable([]));
         od;
     od;
     for k in [ 1 .. b ] do
