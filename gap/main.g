@@ -383,9 +383,6 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         for i in [ 1 .. b ] do
             k := b - i + 1;
             for j in [ 1 .. k-1 ] do
-                #for h in [ k .. b ] do
-                #    R[j][h] := TaskResult( TaskListClearUpR[j][h][h-k+1] );
-                #od;
                 for h in [ 1 .. a ] do
                     M[j][h] := TaskResult( TaskListClearUpM[j][h][i] );
                 od;
