@@ -47,10 +47,12 @@ end;
 GAUSS_CEX := function( galoisField,positionsBitstring,mat )
     local transposed;
     transposed := TransposedMat( mat );
-    transposed := GAUSS_REX( galoisField,positionsBitstring,transposed );
+    transposed := ShallowCopy(
+        GAUSS_REX(galoisField, positionsBitstring, transposed)
+    );
     transposed[ 1 ] := TransposedMat( transposed[ 1 ] );
     transposed[ 2 ] := TransposedMat( transposed[ 2 ] );
-    return transposed;
+    return MakeReadOnlyObj(MakeImmutable(transposed));
 end;
 
 GAUSS_PVC := function ( s,t )
