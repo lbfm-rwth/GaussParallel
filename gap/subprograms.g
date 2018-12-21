@@ -62,14 +62,12 @@ GAUSS_PVC := function ( s,t )
             i;
     #Case s is empty 
     if IsEmpty(s) then
-        u := [];
-        for i in [ 1 .. Sum( t ) ] do
-            u[ i ] := 1;
-        od;
-        return [ t,u ];
+        u := ListWithIdenticalEntries(Sum(t), 1);
+        return MakeReadOnlyObj(MakeImmutable([ t,u ]));
     fi;
     if IsEmpty(t) then
-        return [ s,0*[1..(Sum(s))] ];
+        u := ListWithIdenticalEntries(Sum(s), 0);
+        return MakeReadOnlyObj(MakeImmutable([ s,u ]));
     fi;
     #Case otherwise
     u := []; 
@@ -92,7 +90,7 @@ GAUSS_PVC := function ( s,t )
             positionT := positionT + 1;
         fi;
     od;
-    return [ newBitstring,u ]; 
+    return MakeReadOnlyObj(MakeImmutable([ newBitstring,u ]));
 end;
 
 GAUSS_RRF := function( galoisField,rows0,rows1,u )
