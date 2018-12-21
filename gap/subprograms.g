@@ -183,7 +183,9 @@ MKR := function( bitstring,subBitstring )
             i,
             l;
     if IsEmpty(subBitstring) then
-        return 0*[1..Sum(bitstring)]+1;
+        return MakeReadOnlyObj(MakeImmutable(
+            ListWithIdenticalEntries(Sum(bitstring), 1)
+        ));
     fi;
     l := Length( bitstring  );
     newBitstring := [];
@@ -200,7 +202,7 @@ MKR := function( bitstring,subBitstring )
         current := current + 1;
         fi;
     od;
-    return newBitstring;
+    return MakeReadOnlyObj(MakeImmutable(newBitstring));
 end;
 
 GAUSS_ECH := function( f,H )
