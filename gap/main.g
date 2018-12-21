@@ -256,10 +256,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                         UpdateRowTrafoInput.parameters.j
                     );
                 else
-                    tmp := GAUSS_UpdateRowTrafo(  galoisField,A[i][j],K[i][h],
-                                        M[j][h],E[h][j],i,h,j );
-                    K[i][h] := tmp.K;
-                    M[j][h] := tmp.M;
+                    GAUSS_UpdateRowTrafo_destructive(  galoisField,A,K,M,E,i,h,j );
                 fi;
             od;
         od;
