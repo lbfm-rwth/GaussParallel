@@ -212,9 +212,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 
                 Info(InfoGauss, 3, "UpdateRowParameters ", i, " ", j);
             else
-                tmp := GAUSS_ClearDown( galoisField,C[i][j],D[j],i );
-                D[j] := tmp.D;
-                A[i][j] := tmp.A;
+                GAUSS_ClearDown_destructive( galoisField,C,D,A,i,j );
                 if j=1 then
                 bs := rec( rho:=[],delta:=[],nr:=0 );
                 else
@@ -237,10 +235,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                         UpdateRowInput.parameters.i
                     );
                 else
-                        tmp := GAUSS_UpdateRow(  galoisField,A[i][j],C[i][k],
-                                            B[j][k],i );
-                        C[i][k] := tmp.C;
-                        B[j][k] := tmp.B;
+                        GAUSS_UpdateRow_destructive(  galoisField,A,C,B,i,j,k );
                 fi;
             od;
 

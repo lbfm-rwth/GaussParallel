@@ -417,6 +417,59 @@ GAUSS_ClearDown := function( galoisField,C,D,i )
         ,D:= rec(bitstring := bitstring,vectors := vectors ) );
 end;
 
+GAUSS_ClearDown_destructive := function( galoisField,C,D,A,i,j )
+    local   A_,
+            M,
+            K,
+            bitstring,
+            E,
+            riffle,
+            vectors_,
+            vectors,
+            H,
+            tmp,
+            ech;
+
+    if IsEmpty(C[i][j]) then
+        A[i][j] :=rec(A:=[],M:=[],E:=[],K:=[],rho:=[],lambda:=[]);
+        return;
+    fi;
+    if i = 1 then
+        ech :=  GAUSS_ECH( galoisField,C[i][j] );
+        tmp := GAUSS_PVC( [],ech[5] );
+
+        A[i][j] := rec( A:=[],M:=ech[1],K:=ech[2],rho:=ech[4],E:=[],lambda:=tmp[2] );
+        D[j] := rec(bitstring := ech[5],vectors := ech[3] );
+        return;
+    fi;
+    tmp := GAUSS_CEX( galoisField,D[j].bitstring,C[i][j] );
+    A_ := tmp[1];
+    tmp := tmp[2];
+    
+    if IsEmpty(A_) or IsEmpty(D[j].vectors) then
+        H := tmp;
+    elif IsEmpty(tmp) then
+        H := A_*D[j].vectors;
+    else
+        H := tmp + A_*D[j].vectors;
+    fi;
+    ech := GAUSS_ECH( galoisField,H );
+    
+    tmp := GAUSS_CEX( galoisField,ech[5],D[j].vectors );
+    E := tmp[1];
+    vectors_ := tmp[2];
+    if not IsEmpty(ech[3]) and not IsEmpty(E) then
+        vectors_ := vectors_ + E*ech[3];
+    fi;
+    tmp := GAUSS_PVC( D[j].bitstring,ech[5] );
+    bitstring := tmp[1];
+    riffle := tmp[2];
+    vectors := GAUSS_RRF( galoisField,vectors_,ech[3],riffle );
+
+    A[i][j] := rec( A:=A_,M:=ech[1],K:=ech[2],rho:=ech[4],E:=E,lambda:=riffle );
+    D[j] := rec(bitstring := bitstring,vectors := vectors );
+end;
+
 GAUSS_UpdateRow := function( galoisField,A,C,B,i )
     local   tmp,
             B_,
@@ -463,6 +516,55 @@ GAUSS_UpdateRow := function( galoisField,A,C,B,i )
     fi;
 
     return rec( C := C_,B := B_ );
+end;
+
+GAUSS_UpdateRow_destructive := function( galoisField,A,C,B,i,j,k )
+    local   tmp,
+            B_,
+            C_,
+            S,
+            V,
+            W,
+            X,
+            Z;
+    if IsEmpty(A[i][j].A) or IsEmpty(B[j][k]) then
+        Z := C[i][k];
+    elif IsEmpty(C[i][k]) then
+        Z := A[i][j].A*B[j][k];
+    else
+        Z := C[i][k] + A[i][j].A*B[j][k];
+    fi;
+
+    tmp := GAUSS_REX( galoisField,A[i][j].rho,Z );
+    V := tmp[1];
+    W := tmp[2];
+    X := [];
+    if not IsEmpty(A[i][j].M) and not IsEmpty(V) then
+        X := A[i][j].M*V;
+    fi;
+    if i > 1 then
+        if IsEmpty(A[i][j].E) or IsEmpty(X) then
+            S := B[j][k];
+        elif IsEmpty(B[j][k]) then
+            S := A[i][j].E*X;
+        else 
+            S := B[j][k] + A[i][j].E*X;
+        fi;
+        B_ := GAUSS_RRF( galoisField,S,X,A[i][j].lambda );
+    else
+        B_ := X;
+    fi; 
+
+    if IsEmpty(A[i][j].K) or IsEmpty(V)   then
+        C_ := W;
+    elif IsEmpty(W) then
+        C_ := A[i][j].K*V;
+    else
+        C_ := W + A[i][j].K*V;
+    fi;
+
+    C[i][k] := C_;
+    B[j][k] := B_;
 end;
 
 GAUSS_UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
