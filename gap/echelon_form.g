@@ -22,13 +22,13 @@ RandomEchelonMat := function(height, width, rank, randomSeed, ring)
     return echelonMat;
 end;
 
-GAUSS_RandomMatFromEchelonForm := function(echelon, height, width, randomSeed, ring)
+GAUSS_RandomMatFromEchelonForm := function(echelon, height)
     local i, grp, left;
 
     # PseudoRandom takes too much time to initialize PseudoRandomSeed for big
     # values of height. So we call the initialization ourselves with parameters
     # that make it cheaper to compute.
-    grp := GL(height, ring);
+    grp := GL(height, DefaultFieldOfMatrix(echelon));
     i := Length(GeneratorsOfGroup(grp));
     Group_InitPseudoRandom(grp, i+3, 20);
     left := PseudoRandom(grp);
