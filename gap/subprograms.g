@@ -11,15 +11,10 @@ GAUSS_REX := function( galoisField,positionsBitstring,mat )
             numrows,
             row;
     if IsEmpty ( mat ) then
-        return [ Immutable([]), Immutable([]) ];
+        return MakeReadOnlyObj(MakeImmutable([[], []]));
     fi;
     if IsEmpty ( positionsBitstring ) then
-        # FIXME: can this ever do something? It looks like mat always is immutable
-        ConvertToMatrixRepNC( mat,galoisField );
-        # FIXME: MakeReadOnlyObj doesn't move compressed matrices into the public
-        # region. So mat always is immutable?
-        MakeReadOnlyObj( mat );
-        return [ Immutable([]),mat ];
+        return MakeReadOnlyObj(MakeImmutable([[], mat]));
     fi;
     numrows := Length( positionsBitstring );
     upCount := 1; 
@@ -35,13 +30,8 @@ GAUSS_REX := function( galoisField,positionsBitstring,mat )
         fi;
     od;
     ConvertToMatrixRepNC( up,galoisField );
-    # FIXME: Problem with MakeReadOnlyObj, see above
-    MakeReadOnlyObj( up );
     ConvertToMatrixRepNC( down,galoisField );
-    # FIXME: Problem with MakeReadOnlyObj, see above
-    MakeReadOnlyObj( down );
-
-    return [ up,down ];
+    return MakeReadOnlyObj(MakeImmutable([up, down]));
 end;
 
 GAUSS_CEX := function( galoisField,positionsBitstring,mat )
