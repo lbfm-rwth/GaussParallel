@@ -102,13 +102,12 @@ GAUSS_RRF := function( galoisField,rows0,rows1,u )
             new;
     if IsEmpty(rows0) then 
         ConvertToMatrixRepNC( rows1,galoisField );
-        return rows1; 
+        return MakeReadOnlyObj(MakeImmutable(rows1));
     fi;
     if IsEmpty(rows1) then 
         ConvertToMatrixRepNC( rows0,galoisField );
-        return rows0; 
+        return MakeReadOnlyObj(MakeImmutable(rows0));
     fi;
-        #dim := [ DimensionsMat(rows0)[1],DimensionsMat(rows1)[1] ];
     l := Length(u);
     index0 := 1;
     index1 := 1;
@@ -126,7 +125,7 @@ GAUSS_RRF := function( galoisField,rows0,rows1,u )
     od;
 
     ConvertToMatrixRepNC( new,galoisField );
-    return new;    
+    return MakeReadOnlyObj(MakeImmutable(new));
 end;
 
 GAUSS_CRZ := function( galoisField,mat,u,nr ) 
