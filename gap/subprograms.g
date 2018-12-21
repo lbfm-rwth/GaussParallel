@@ -233,12 +233,15 @@ GAUSS_ECH := function( f,H )
             dims,
             dimId;
 
-    if H = [] then return [ [],[],[],[],[] ]; fi;
-    #if Rank(H) = 0 then return [ [],[],[],[],[] ]; fi;   #--noetig?
+    if IsEmpty(H) then
+        return MakeReadOnlyObj(MakeImmutable(ListWithIdenticalEntries(5, [])));
+    fi;
  
     EMT := EchelonMatTransformation( H );
     m := TransposedMat(EMT.coeffs);
-    if IsEmpty(m) then return [ [],[],[],[],[] ]; fi;
+    if IsEmpty(m) then
+        return MakeReadOnlyObj(MakeImmutable(ListWithIdenticalEntries(5, [])));
+    fi;
     r := TransposedMat(EMT.vectors);
     k := TransposedMat(EMT.relations);
     s := [];
@@ -301,7 +304,7 @@ GAUSS_ECH := function( f,H )
     ConvertToMatrixRepNC( K,f );
     R := -TransposedMat(R);
     ConvertToMatrixRepNC( R,f );
-    return [M,K,R,s,t];
+    return MakeReadOnlyObj(MakeImmutable([M,K,R,s,t]));
  end;
 
 
