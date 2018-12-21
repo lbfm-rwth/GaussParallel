@@ -432,18 +432,25 @@ GAUSS_ClearDown_destructive := function( galoisField,C,D,A,i,j )
             ech;
 
     if IsEmpty(C[i][j]) then
-        A[i][j] :=rec(A:=[],M:=[],E:=[],K:=[],rho:=[],lambda:=[]);
+        A[i][j] := MakeReadOnlyObj(MakeImmutable(
+            rec(A := [], M := [], E := [], K := [], rho := [], lambda := [])
+        ));
         return;
     fi;
     if i = 1 then
         ech :=  GAUSS_ECH( galoisField,C[i][j] );
-        tmp := GAUSS_PVC( [],ech[5] );
+        tmp := GAUSS_PVC(MakeReadOnlyObj(MakeImmutable([])), ech[5]);
 
-        A[i][j] := rec( A:=[],M:=ech[1],K:=ech[2],rho:=ech[4],E:=[],lambda:=tmp[2] );
-        D[j] := rec(bitstring := ech[5],vectors := ech[3] );
+        A[i][j] := MakeReadOnlyObj(MakeImmutable(
+            rec(A := [], M := ech[1], E := [], K := ech[2],
+                rho := ech[4], lambda := tmp[2])
+        ));
+        D[j] := MakeReadOnlyObj(MakeImmutable(
+            rec(bitstring := ech[5], vectors := ech[3])
+        ));
         return;
     fi;
-    tmp := GAUSS_CEX( galoisField,D[j].bitstring,C[i][j] );
+    tmp := GAUSS_CEX( galoisField, D[j].bitstring, C[i][j] );
     A_ := tmp[1];
     tmp := tmp[2];
     
@@ -454,6 +461,7 @@ GAUSS_ClearDown_destructive := function( galoisField,C,D,A,i,j )
     else
         H := tmp + A_*D[j].vectors;
     fi;
+    MakeReadOnlyObj(MakeImmutable(H));
     ech := GAUSS_ECH( galoisField,H );
     
     tmp := GAUSS_CEX( galoisField,ech[5],D[j].vectors );
@@ -462,13 +470,19 @@ GAUSS_ClearDown_destructive := function( galoisField,C,D,A,i,j )
     if not IsEmpty(ech[3]) and not IsEmpty(E) then
         vectors_ := vectors_ + E*ech[3];
     fi;
+    MakeReadOnlyObj(MakeImmutable(vectors_));
     tmp := GAUSS_PVC( D[j].bitstring,ech[5] );
     bitstring := tmp[1];
     riffle := tmp[2];
     vectors := GAUSS_RRF( galoisField,vectors_,ech[3],riffle );
 
-    A[i][j] := rec( A:=A_,M:=ech[1],K:=ech[2],rho:=ech[4],E:=E,lambda:=riffle );
-    D[j] := rec(bitstring := bitstring,vectors := vectors );
+    A[i][j] := MakeReadOnlyObj(MakeImmutable(
+        rec(A := A_, M := ech[1], E := E, K := ech[2],
+            rho := ech[4], lambda := riffle)
+    ));
+    D[j] := MakeReadOnlyObj(MakeImmutable(
+        rec(bitstring := bitstring, vectors := vectors)
+    ));
 end;
 
 GAUSS_UpdateRow := function( galoisField,A,C,B,i )
