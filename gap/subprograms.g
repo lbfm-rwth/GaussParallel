@@ -322,28 +322,33 @@ GAUSS_ChopMatrix := function( f,A,nrows,ncols )
     b := ( DimensionsMat(A)[2] - crem ) / ncols; 
     ## the alogirthm tries to chop the matrix A in equally sized submatrices
     ## create a matrix AA of size 'nrows x ncols' which stores all submatrices
-    AA := [];
+    AA := FixedAtomicList(nrows, 0);
  
     ## these submatrices in AA have all equal dimensions 'a x b'
     for  i  in [ 1 .. nrows-1] do
-        AA[i] := [];
+        AA[i] := FixedAtomicList(ncols, 0);
         for j in [ 1 .. ncols-1 ] do
             AA[i][j] := A{[(i-1)*a+1 .. i*a]}{[(j-1)*b+1 .. j*b]};
-        ConvertToMatrixRepNC(AA[i][j],f);
+            ConvertToMatrixRepNC(AA[i][j],f);
+            MakeReadOnlyObj(MakeImmutable(AA[i][j]));
         od;
     od;
+
     ## to add the remaining submatrices we need to cut the submatrix dimensions if necessary
-    AA[nrows] := [];
+    AA[nrows] := FixedAtomicList(ncols, 0);
     for i in [ 1 .. nrows-1 ] do
         AA[i][ncols] := A{[(i-1)*a+1 .. i*a]}{[(ncols-1)*b+1 .. DimensionsMat(A)[2]]};
         ConvertToMatrixRepNC(AA[i][ncols],f);
+        MakeReadOnlyObj(MakeImmutable(AA[i][ncols]));
     od;
     for j in [ 1 .. ncols-1 ] do
         AA[nrows][j] := A{[(nrows-1)*a+1 .. DimensionsMat(A)[1]]}{[(j-1)*b+1 .. j*b]};
         ConvertToMatrixRepNC(AA[nrows][j],f);
+        MakeReadOnlyObj(MakeImmutable(AA[nrows][j]));
     od;
     AA[nrows][ncols] := A{[(nrows-1)*a+1 .. DimensionsMat(A)[1]]}{[(ncols-1)*b+1 .. DimensionsMat(A)[2]]};    
     ConvertToMatrixRepNC(AA[nrows][ncols],f);
+    MakeReadOnlyObj(MakeImmutable(AA[nrows][ncols]));
     return AA;
 end;
 
