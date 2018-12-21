@@ -353,7 +353,7 @@ GAUSS_Extend := function( A,E,flag )
             delta;
 
     if flag = 1 then
-        tmp := GAUSS_PVC( [],A.rho  );
+        tmp := GAUSS_PVC( MakeReadOnlyObj(MakeImmutable([])),A.rho  );
     else
         tmp := GAUSS_PVC( E.rho,A.rho );
     fi;
@@ -386,7 +386,7 @@ GAUSS_ClearDown := function( galoisField,C,D,i )
     fi;
     if i = 1 then
         ech :=  GAUSS_ECH( galoisField,C );
-        tmp := GAUSS_PVC( [],ech[5] );
+        tmp := GAUSS_PVC( MakeReadOnlyObj(MakeImmutable([])),ech[5] );
         return rec( A := rec( A:=[],M:=ech[1],K:=ech[2],rho:=ech[4],E:=[],lambda:=tmp[2] )
         ,D:= rec(bitstring := ech[5],vectors := ech[3] ) );
     fi;
