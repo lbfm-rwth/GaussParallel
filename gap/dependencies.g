@@ -44,8 +44,10 @@ GAUSS_ClearDownParameters := function(i, j, matrixC, TaskListClearDown, TaskList
         Add(list, TaskListUpdateR[i][j-1][j]);
     fi;
 
-    number := i;
-    return rec( dependencies := list, parameters := rec( galoisField:=galoisField, C:=C, D:=D, i:=number )) ;
+    return rec(
+        dependencies := list,
+        parameters := rec(galoisField := galoisField, C := C, D := D, i := i)
+    );
 end;
 
 GAUSS_ExtendParameters := function(i, j, TaskListClearDown, TaskListE)
