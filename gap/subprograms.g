@@ -663,6 +663,93 @@ GAUSS_PreClearUp := function( R,galoisField,D,B,j,k )
     return tmp[1];
 end;
 
+GAUSS_UpdateRowTrafo_destructive := function( galoisField,A,K,M,E,i,h,j )
+    local   tmp,
+            K_,
+            M_,
+            S,
+            V,
+            W,
+            X,
+            Z;
+
+    if (IsEmpty(A[i][j].A) and IsEmpty(A[i][j].M)) or IsEmpty(E[h][j].delta) then
+        return;
+    fi;  #### for the or delta empty part, cf. paper: want to know if beta' in the descr of GAUSS_UpdateRowTrafo is 0..
+    if j > 1 then
+        K_ := GAUSS_CRZ( galoisField,K[i][h],E[h][j].delta,E[h][j].nr );
+    fi;
+
+    if ( not h=i ) and j > 1 then
+        if IsEmpty(M[j][h]) or IsEmpty(A[i][j].A) then
+            Z := K_;
+        else
+            Z := K_ + A[i][j].A*M[j][h];
+        fi;
+    elif ( not h=i  ) then
+        if IsEmpty(M[j][h]) then
+            Z := Zero(galoisField)*A[i][j].A; 
+        else
+            Z := A[i][j].A*M[j][h];
+        fi;
+    elif j>1 then
+        Z := K_;
+    fi;
+
+    if not (j = 1 and h = i) then
+        tmp := GAUSS_REX( galoisField,A[i][j].rho,Z );
+        V := tmp[1];
+        W := tmp[2];
+    fi;
+
+    if ( not j = 1 ) and h = i  then
+        V := GAUSS_ADI( galoisField,V,E[h][j].delta );
+    fi;
+
+    if not (j = 1 and h = i) then
+        if IsEmpty(V) or IsEmpty(A[i][j].M) then
+            X := A[i][j].M;
+        else
+            X := A[i][j].M*V;
+        fi;
+    else
+        X := A[i][j].M;
+    fi;
+
+    if not h=i then
+        if IsEmpty(X) or IsEmpty(A[i][j].E) then
+            S := M[j][h];
+        else
+            S := M[j][h]+A[i][j].E*X;
+        fi;
+    elif not i=1 then
+        if IsEmpty(X) or IsEmpty(A[i][j].E) then
+            S := [];
+        else
+            S := A[i][j].E*X;
+        fi;
+    fi;
+
+    if  not ( h = i and i = 1 ) then
+        M_ := GAUSS_RRF( galoisField,S,X,A[i][j].lambda );
+    else
+        M_ := X;
+    fi;
+    
+    if  not ( h = i and j = 1 ) then
+        if IsEmpty(V) or IsEmpty(A[i][j].K) then
+            K_ := W;
+        else
+            K_ := W + A[i][j].K*V;
+        fi;
+    else
+        K_ := A[i][j].K;
+    fi;
+
+    K[i][h]:=K_;
+    M[j][h]:=M_;
+end;
+
 GAUSS_ClearUp := function( R,X,R_ )
     if IsEmpty(R_) or IsEmpty(X) then return R; fi;
     if IsEmpty(R) then
