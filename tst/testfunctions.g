@@ -13,5 +13,6 @@ GAUSS_TestSpecialMatrices := function(echelon, height, width, randomSource, galo
     
     return (-1 * result.vectors = result_std.vectors)
         and (-1 * result.coeffs = result_std.coeffs)
-        and (-Concatenation(result.coeffs, result.relations) * shapeless = echelon);
+        and (-Concatenation(result.coeffs, result.relations) * shapeless = echelon)
+        and (result.heads = result_std.heads);
 end;

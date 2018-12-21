@@ -6,3 +6,5 @@ gap> -1 * result.vectors = result_std.vectors;
 true
 gap> -1 * result.coeffs = result_std.coeffs;
 true
+gap> result.heads = result_std.heads;
+true
