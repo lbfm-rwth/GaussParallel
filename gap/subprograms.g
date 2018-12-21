@@ -180,7 +180,7 @@ GAUSS_ADI := function( galoisField,mat,bitstring  )
     return copy;
 end;
 
-MKR := function( bitstring,subBitstring )
+GAUSS_MKR := function( bitstring,subBitstring )
     local   newBitstring,
             current,
             i,
@@ -368,7 +368,7 @@ end;
 
 GAUSS_RowLengthen := function( galoisField,mat,Einter,Efin )
     local   lambda;
-    lambda := MKR( Efin.rho,Einter.rho );
+    lambda := GAUSS_MKR( Efin.rho,Einter.rho );
     return GAUSS_CRZ( galoisField,mat,lambda,Einter.nr );
 end;
 
