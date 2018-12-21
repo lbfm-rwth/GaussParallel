@@ -154,7 +154,9 @@ GAUSS_ADI := function( galoisField,mat,bitstring  )
             copy,
             l;
     if IsEmpty(mat) then
-        return IdentityMat( Length(bitstring),galoisField );
+        return MakeReadOnlyObj(MakeImmutable(
+            IdentityMat(Length(bitstring), galoisField)
+        ));
     else
         copy := MutableCopyMat( mat );
     fi;
@@ -172,7 +174,7 @@ GAUSS_ADI := function( galoisField,mat,bitstring  )
         copy[ i ][ posOfNewOnes[i] ] := one;
     od;
     ConvertToMatrixRepNC( copy,galoisField );
-    return copy;
+    return MakeReadOnlyObj(MakeImmutable(copy));
 end;
 
 GAUSS_MKR := function( bitstring,subBitstring )
