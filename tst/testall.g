@@ -5,7 +5,7 @@ if IsHPCGAP then
     # timing suite
     TestDirectory(
         DirectoriesPackageLibrary("GaussPar", "tst/stats"),
-        rec(exitGAP := true)
+        rec(exitGAP := false)
     );
 fi;
 
