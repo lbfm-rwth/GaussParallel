@@ -14,7 +14,7 @@ fi;
 LoadPackage("IO");
 
 if not IsHPCGAP then
-    ReadPackage( "GaussPar", "gap/tasks.g");
+    ReadPackage( "GaussPar", "gap/overload-hpcgap-functions-in-gap.g");
 fi;
 
 ReadPackage( "GaussPar", "gap/utils.g");
