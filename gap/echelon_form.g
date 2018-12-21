@@ -22,7 +22,7 @@ RandomEchelonMat := function(height, width, rank, randomSeed, ring)
     return echelonMat;
 end;
 
-GAUSS_shapelessMat := function(mat, height, width, randomSeed, ring)
+GAUSS_RandomMatFromEchelonForm := function(echelon, height, width, randomSeed, ring)
     local i, grp, left;
 
     # PseudoRandom takes too much time to initialize PseudoRandomSeed for big
@@ -33,5 +33,5 @@ GAUSS_shapelessMat := function(mat, height, width, randomSeed, ring)
     Group_InitPseudoRandom(grp, i+3, 20);
     left := PseudoRandom(grp);
 
-    return left * mat;
+    return left * echelon;
 end;

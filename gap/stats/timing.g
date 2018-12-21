@@ -8,7 +8,7 @@ GAUSS_CalculateTime := function(isParallel, height, width, rank, ring, numberBlo
     echelon := RandomEchelonMat(height, width, rank, randomSeed, ring);;
     Info(InfoGauss, 4, "Echelon matrix:");
     Info(InfoGauss, 4, echelon);
-    shapeless := GAUSS_shapelessMat(echelon, height, width, randomSeed, ring);;
+    shapeless := GAUSS_RandomMatFromEchelonForm(echelon, height, width, randomSeed, ring);;
     Info(InfoGauss, 4, "Shapeless matrx:");
     Info(InfoGauss, 4, shapeless);
     if isParallel then

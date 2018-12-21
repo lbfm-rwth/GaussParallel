@@ -1,7 +1,7 @@
 GAUSS_TestSpecialMatrices := function(echelon, height, width, randomSource, galoisField, numberBlocks_height, numberBlocks_width, IsHPC)
     local shapeless, result, result_std;
 
-    shapeless := GAUSS_shapelessMat(echelon, width, height, randomSource, galoisField);
+    shapeless := GAUSS_RandomMatFromEchelonForm(echelon, width, height, randomSource, galoisField);
     result := DoEchelonMatTransformationBlockwise(
         shapeless,
         rec( galoisField := galoisField,
