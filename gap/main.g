@@ -554,9 +554,9 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 
     heads := GAUSS_createHeads(v, w, DimensionsMat(mat)[2]);
 
-    return rec( coeffs:=B,vectors:=C,relations:=D,
-                pivotrows:=v,pivotcols:=w,rank:=rank,
-                heads:=heads);
+    return rec( coeffs := -B, vectors := -C, relations := D,
+                pivotrows := v, pivotcols := w, rank := rank,
+                heads := heads );
 
 end;
 
