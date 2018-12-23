@@ -28,7 +28,7 @@ GAUSS_createHeads := function( pivotrows, pivotcols, width )
 end;
 
 Chief := function( galoisField,mat,a,b,IsHPC )
-    ## inputs: a finite field, a matrix, natural nr. a,b to treat mat as axb matirx
+    ## inputs: a finite field, a matrix, number of vertical blocks, number of horizontal blocks
     local   TaskListPreClearUp,
             TaskListClearDown,
             TaskListClearUpR,

@@ -52,7 +52,7 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
 InstallGlobalFunction( EchelonMatTransformationBlockwise,
     function ( mat )
         local result;
-        result := DoEchelonMatTransformationBlockwise( mat );
+        result := DoEchelonMatTransformationBlockwise( mat, rec() );
         return rec(
             vectors := result.vectors,
             heads := result.heads,
@@ -65,7 +65,7 @@ InstallGlobalFunction( EchelonMatTransformationBlockwise,
 InstallGlobalFunction( EchelonMatBlockwise,
     function ( mat )
         local result;
-        result := DoEchelonMatTransformationBlockwise( mat );
+        result := DoEchelonMatTransformationBlockwise( mat, rec() );
         return rec(
             vectors := result.vectors,
             heads := result.heads
