@@ -98,14 +98,13 @@ Chief := function( galoisField,mat,a,b,IsHPC )
     ncols := DimensionsMat( mat )[2];
 
     if IsHPC then
-        dummyTask := RunTask( function() return []; end );
         TaskListClearDown := List(
             [ 1 .. a ],
-            x -> List( [ 1 .. b ], x -> dummyTask )
+            x -> List( [ 1 .. b ] )
         );
         TaskListE := List(
             [ 1 .. a ],
-            x -> List( [ 1 .. b ], x -> dummyTask )
+            x -> List( [ 1 .. b ] )
         );
         TaskListUpdateR := List(
             [ 1 .. b ],
@@ -123,20 +122,20 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         );
         TaskListPreClearUp := List(
             [ 1..b ],
-            x -> List( [ 1..b ], x -> dummyTask )
+            x -> []
         );
         TaskListClearUpR := List(
             [ 1..b ],
             x -> List(
                 [ 1..b ],
-                x -> List( [ 1..b ], x -> dummyTask )
+                x -> []
             )
         );
         TaskListClearUpM := List(
             [ 1..b ],
             x -> List(
                 [ 1..a ],
-                x -> List( [ 1..b ], x -> dummyTask )
+                x -> []
             )
         );
     fi;
@@ -321,9 +320,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                 if IsHPC then
                         if l-k = 0 then
                             TaskListClearUpR[j][l][1] := ScheduleTask(
-                                [   TaskListPreClearUp[j][l],
-                                    TaskListPreClearUp[j][k]
-                                ],
+                                [ TaskListPreClearUp[j][k] ],
                                 GAUSS_ClearUp_destructive,
                                 R,
                                 TaskResult( TaskListPreClearUp[j][k] ),
@@ -333,7 +330,8 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                             );
                         else
                             TaskListClearUpR[j][l][l-k+1] := ScheduleTask(
-                                [   TaskListClearUpR[j][l][l-k],
+                                [
+                                    TaskListClearUpR[j][l][l-k],
                                     TaskListClearUpR[k][l][l-k],
                                     TaskListPreClearUp[j][k]
                                 ],
