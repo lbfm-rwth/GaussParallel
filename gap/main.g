@@ -357,10 +357,12 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                                 [
                                     TaskListPreClearUp[j][k]
                                 ],
-                                GAUSS_ClearUp,
-                                M[j][h],
+                                GAUSS_ClearUp_destructive,
+                                M,
                                 TaskResult( TaskListPreClearUp[j][k] ),
-                                M[k][h]
+                                j,
+                                k,
+                                h
                             );
                         else
                             TaskListClearUpM[j][h][k_] := ScheduleTask(
@@ -368,10 +370,12 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                                     TaskListClearUpM[k][h][k_-1],
                                     TaskListPreClearUp[j][k]
                                 ],
-                                GAUSS_ClearUp,
-                                TaskResult( TaskListClearUpM[j][h][k_-1] ),
+                                GAUSS_ClearUp_destructive,
+                                M,
                                 TaskResult( TaskListPreClearUp[j][k] ),
-                                TaskResult( TaskListClearUpM[k][h][k_-1] )
+                                j,
+                                k,
+                                h
                             );
                         fi;
                 else
@@ -385,14 +389,6 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         WaitTask( Concatenation( TaskListPreClearUp ) );
         WaitTask( Concatenation( List( TaskListClearUpR,Concatenation ) ) );
         WaitTask( Concatenation( List( TaskListClearUpM,Concatenation ) ) );
-        for i in [ 1 .. b ] do
-            k := b - i + 1;
-            for j in [ 1 .. k-1 ] do
-                for h in [ 1 .. a ] do
-                    M[j][h] := TaskResult( TaskListClearUpM[j][h][i] );
-                od;
-            od;
-        od;
     fi;
 
     ###############################
