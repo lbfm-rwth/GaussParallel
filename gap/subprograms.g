@@ -772,15 +772,10 @@ end;
 # Writes into R
 GAUSS_ClearUp_destructive := function( R,X,j,k,l )
     local threadLocalResult;
-    # We use threadLocalResult to avoid a race condition:
-    # maybe another task tries to access R[j][i] while it is not in the
-    # read-only region.
     if IsEmpty(R[k][l]) or IsEmpty(X) then return; fi;
     if IsEmpty(R[j][l]) then
-        threadLocalResult := X*R[k][l];
+        R[j][l] := MakeReadOnlyObj(MakeImmutable(X*R[k][l]));
     else
-        threadLocalResult := R[j][l] + X*R[k][l];
+        R[j][l] := MakeReadOnlyObj(MakeImmutable(R[j][l] + X*R[k][l]));
     fi;
-    MakeReadOnlyObj(threadLocalResult);
-    R[j][l] := threadLocalResult;
 end;
