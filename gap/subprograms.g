@@ -364,6 +364,19 @@ GAUSS_Extend := function( A,E,flag )
     return rec( rho := tmp[1],delta := tmp[2],
     nr := (Length(E.rho-Sum(E.rho))) );
 end;
+GAUSS_Extend_destructive := function( A,E,i,j )
+    local   tmp,
+            rho,
+            delta;
+
+    if j = 1 then
+        tmp := GAUSS_PVC( MakeReadOnlyObj(MakeImmutable([])),A[i][j].rho  );
+    else
+        tmp := GAUSS_PVC( E[i][j-1].rho,A[i][j].rho );
+    fi;
+    E[i][j] := MakeReadOnlyObj(MakeImmutable( rec( rho := tmp[1],delta := tmp[2],
+               nr := (Length(E[i][j].rho-Sum(E[i][j].rho))) ) ));
+end;
 
 GAUSS_RowLengthen := function( galoisField,mat,Einter,Efin )
     local   lambda;
@@ -582,8 +595,8 @@ GAUSS_UpdateRow_destructive := function( galoisField,A,C,B,i,j,k )
         C_ := W + A[i][j].K*V;
     fi;
 
-    C[i][k] := C_;
-    B[j][k] := B_;
+    C[i][k] := MakeReadOnlyObj(MakeImmutable(C_));
+    B[j][k] := MakeReadOnlyObj(MakeImmutable(B_));
 end;
 
 GAUSS_UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
@@ -765,8 +778,8 @@ GAUSS_UpdateRowTrafo_destructive := function( galoisField,A,K,M,E,i,h,j )
         K_ := A[i][j].K;
     fi;
 
-    K[i][h]:=K_;
-    M[j][h]:=M_;
+    K[i][h] := MakeReadOnlyObj(MakeImmutable(K_));
+    M[j][h] := MakeReadOnlyObj(MakeImmutable(M_));
 end;
 
 GAUSS_ClearUp := function( R,X,R_ )
@@ -790,6 +803,6 @@ GAUSS_ClearUp_destructive := function( R,X,j,k,l )
     else
         threadLocalResult := R[j][l] + X*R[k][l];
     fi;
-    MakeReadOnlyObj(threadLocalResult);
+    MakeReadOnlyObj(MakeImmutable(threadLocalResult));
     R[j][l] := threadLocalResult;
 end;

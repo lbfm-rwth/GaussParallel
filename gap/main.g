@@ -142,45 +142,47 @@ Chief := function( galoisField,mat,a,b,IsHPC )
     fi;
 
     A := FixedAtomicList(a, 0);
-    B := [];
+    B := FixedAtomicList(b, 0);
     D := FixedAtomicList(b, 0);
-    E := [];
-    K := [];
-    M := [];
-    R := FixedAtomicList(b,0);
+    E := FixedAtomicList(a, 0);
+    K := FixedAtomicList(a, 0);
+    M := FixedAtomicList(b, 0);
+    R := FixedAtomicList(b, 0);
     X := [];
     nrows := [];
     for i in [ 1 .. a ] do
         A[i] := FixedAtomicList(b, 0);
-        E[i] := [];
-        K[i] := [];
+        E[i] := FixedAtomicList(b, 0);
+        K[i] := FixedAtomicList(a, 0);
         for k in [ 1 .. b ] do
             A[i][k] := MakeReadOnlyObj(MakeImmutable(
                 rec(A := [], M := [], E := [], K := [],
                 rho := [], lambda := [])
             ));
-            E[i][k] := rec( rho:=[],delta:=[],nr:=0 );
+            E[i][k] := MakeReadOnlyObj(MakeImmutable(
+                rec( rho:=[],delta:=[],nr:=0 ) 
+            ));
         od;
         for h in [ 1 .. a ] do
-            K[i][h] := [];
+            K[i][h] := MakeReadOnlyObj([]);
         od;
     od;
     for i in [ 1 .. b ] do
-        M[i] := [];
+        M[i] := FixedAtomicList(a, 0);
         nrows[i] := DimensionsMat(C[1][i])[2];
         for k in [ 1 .. a ] do
-            M[i][k] := [];
+            M[i][k] := MakeReadOnlyObj([]);
         od;
     od;
     for k in [ 1 .. b ] do
         D[k] := MakeReadOnlyObj(MakeImmutable(
             rec(vectors := [], bitstring := [])
         ));
-        B[k] := [];
-        R[k] := FixedAtomicList(b,0);
+        B[k] := FixedAtomicList(b, 0);
+        R[k] := FixedAtomicList(b, 0);
         X[k] := [];
         for j in [ 1 .. b ] do
-            B[k][j] := [];
+            B[k][j] := MakeReadOnlyObj([]);
             R[k][j] := MakeReadOnlyObj([]);
             X[k][j] := [];
         od;
@@ -198,32 +200,30 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                     TaskListUpdateR, galoisField);
                 TaskListClearDown[i][j] := ScheduleTask(
                     ClearDownInput.dependencies,
-                    GAUSS_ClearDown,
-                    ClearDownInput.parameters.galoisField,
-                    ClearDownInput.parameters.C,
-                    ClearDownInput.parameters.D,
-                    ClearDownInput.parameters.i
+                    GAUSS_ClearDown_destructive,
+                    galoisField,
+                    C,
+                    D,
+                    A,
+                    i,
+                    j
                 );
 
                     Info(InfoGauss, 3, "ExtendParameters ", i, " ", j);
                 ExtendInput := GAUSS_ExtendParameters(i, j, TaskListClearDown, TaskListE);
                 TaskListE[i][j] := ScheduleTask(
                     ExtendInput.dependencies,
-                    GAUSS_Extend,
-                    ExtendInput.parameters.A,
-                    ExtendInput.parameters.E,
-                    ExtendInput.parameters.flag
+                    GAUSS_Extend_destructive,
+                    A,
+                    E,
+                    i,
+                    j
                 );
 
                 Info(InfoGauss, 3, "UpdateRowParameters ", i, " ", j);
             else
                 GAUSS_ClearDown_destructive( galoisField,C,D,A,i,j );
-                if j=1 then
-                bs := rec( rho:=[],delta:=[],nr:=0 );
-                else
-                bs := E[i][j-1];
-                fi;
-                E[i][j] := GAUSS_Extend( A[i][j],bs,j );
+                GAUSS_Extend_destructive( A,E,i,j );
             fi;
 
             for k in [ j+1 .. b ] do
@@ -232,12 +232,14 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                         TaskListUpdateR, galoisField);
                     TaskListUpdateR[i][j][k] := ScheduleTask(
                         UpdateRowInput.dependencies,
-                        GAUSS_UpdateRow,
-                        UpdateRowInput.parameters.galoisField,
-                        UpdateRowInput.parameters.A,
-                        UpdateRowInput.parameters.C,
-                        UpdateRowInput.parameters.B,
-                        UpdateRowInput.parameters.i
+                        GAUSS_UpdateRow_destructive,
+                        galoisField,
+                        A,
+                        C,
+                        B,
+                        i,
+                        j,
+                        k
                     );
                 else
                         GAUSS_UpdateRow_destructive(  galoisField,A,C,B,i,j,k );
@@ -250,15 +252,15 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                     UpdateRowTrafoInput := GAUSS_UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
                     TaskListUpdateM[i][j][h] := ScheduleTask(
                         UpdateRowTrafoInput.dependencies,
-                        GAUSS_UpdateRowTrafo,
-                        UpdateRowTrafoInput.parameters.galoisField,
-                        UpdateRowTrafoInput.parameters.A,
-                        UpdateRowTrafoInput.parameters.K,
-                        UpdateRowTrafoInput.parameters.M,
-                        UpdateRowTrafoInput.parameters.E,
-                        UpdateRowTrafoInput.parameters.i,
-                        UpdateRowTrafoInput.parameters.k,
-                        UpdateRowTrafoInput.parameters.j
+                        GAUSS_UpdateRowTrafo_destructive,
+                        galoisField,
+                        A,
+                        K,
+                        M,
+                        E,
+                        i,
+                        h,
+                        j
                     );
                 else
                     GAUSS_UpdateRowTrafo_destructive(  galoisField,A,K,M,E,i,h,j );
@@ -273,23 +275,8 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         WaitTask( Concatenation( TaskListE ) );
         WaitTask( Concatenation( List( TaskListUpdateR,Concatenation ) ) );
         WaitTask( Concatenation( List( TaskListUpdateM,Concatenation ) ) );
-
-        for i in [ 1 .. a ] do
-            for j in [ 1 .. b ] do
-                E[i][j] := TaskResult( TaskListE[i][j] );
-                A[i][j] := TaskResult( TaskListClearDown[i][j] ).A;
-                D[j] := TaskResult( TaskListClearDown[i][j] ).D;
-                for k in [ j+1 .. b ] do
-                    C[i][k] := TaskResult( TaskListUpdateR[i][j][k] ).C;
-                    B[j][k] := TaskResult( TaskListUpdateR[i][j][k] ).B;
-                od;
-                for h in [ 1 .. i ] do
-                    K[i][h] := TaskResult( TaskListUpdateM[i][j][h] ).K;
-                    M[j][h] := TaskResult( TaskListUpdateM[i][j][h] ).M;
-                od;
-            od;
-        od;
     fi;
+    return M;
 
     ## Step 2 ##
     Info(InfoGauss, 2, "Step 2");
@@ -300,10 +287,12 @@ Chief := function( galoisField,mat,a,b,IsHPC )
     od;
 
     ## Step3 ##
+    Info(InfoGauss, 2, "Step 3");
     for k in [ 1 .. b ] do
         R[k][k] := ShallowCopy(D[k].vectors);
         MakeReadOnlyObj(R[k][k]); # FIXME: do we need to do this?
     od;
+    Info(InfoGauss, 2, "CLearUpR");
     for k_ in [ 1 .. b ] do
         k := b-k_+1;
         for j in [ 1 .. (k - 1) ] do
@@ -349,6 +338,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                     GAUSS_ClearUp_destructive( R,X,j,k,l );
                 fi;
             od;
+            Info(InfoGauss, 2, "CLearUpM");
 
             for h in [ 1 .. a ] do
                 if IsHPC then
