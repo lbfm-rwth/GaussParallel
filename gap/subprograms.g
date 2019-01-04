@@ -599,8 +599,8 @@ GAUSS_UpdateRow_destructive := function( galoisField,A,C,B,i,j,k )
         C_ := W + A[i][j].K*V;
     fi;
 
-    C[i][k] := C_;
-    B[j][k] := B_;
+    C[i][k] := MakeReadOnlyObj(MakeImmutable(C_));
+    B[j][k] := MakeReadOnlyObj(MakeImmutable(B_));
 end;
 
 GAUSS_UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
@@ -782,8 +782,8 @@ GAUSS_UpdateRowTrafo_destructive := function( galoisField,A,K,M,E,i,h,j )
         K_ := A[i][j].K;
     fi;
 
-    K[i][h]:=K_;
-    M[j][h]:=M_;
+    K[i][h] := MakeReadOnlyObj(MakeImmutable(K_));
+    M[j][h] := MakeReadOnlyObj(MakeImmutable(M_));
 end;
 
 # Writes into R
