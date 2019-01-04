@@ -215,51 +215,51 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
     for i in [ 1 .. a ] do
         for j in [ 1 .. b ] do
             if IsHPC then
-                  Info(InfoGauss, 3, "ClearDownParameters ", i, " ", j);
-                ClearDownInput := GAUSS_ClearDownParameters(i, j, C, TaskListClearDown,
-                    TaskListUpdateR, galoisField);
+                    Info(InfoGauss, 3, "ClearDownParameters ", i, " ", j);
+                ClearDownInput := GAUSS_ClearDownDependencies(i, j, TaskListClearDown,
+                    TaskListUpdateR );
                 TaskListClearDown[i][j] := ScheduleTask(
-                    ClearDownInput.dependencies,
-                    GAUSS_ClearDown,
-                    ClearDownInput.parameters.galoisField,
-                    ClearDownInput.parameters.C,
-                    ClearDownInput.parameters.D,
-                    ClearDownInput.parameters.i
+                    ClearDownInput,
+                    GAUSS_ClearDown_destructive,
+                    galoisField,
+                    C,
+                    D,
+                    A,
+                    i,
+                    j
                 );
 
                     Info(InfoGauss, 3, "ExtendParameters ", i, " ", j);
-                ExtendInput := GAUSS_ExtendParameters(i, j, TaskListClearDown, TaskListE);
+                ExtendInput := GAUSS_ExtendDependencies(i, j, TaskListClearDown, TaskListE);
                 TaskListE[i][j] := ScheduleTask(
-                    ExtendInput.dependencies,
-                    GAUSS_Extend,
-                    ExtendInput.parameters.A,
-                    ExtendInput.parameters.E,
-                    ExtendInput.parameters.flag
+                    ExtendInput,
+                    GAUSS_Extend_destructive,
+                    A,
+                    E,
+                    i,
+                    j
                 );
 
                 Info(InfoGauss, 3, "UpdateRowParameters ", i, " ", j);
             else
                 GAUSS_ClearDown_destructive( galoisField,C,D,A,i,j );
-                if j=1 then
-                bs := rec( rho:=[],delta:=[],nr:=0 );
-                else
-                bs := E[i][j-1];
-                fi;
-                E[i][j] := GAUSS_Extend( A[i][j],bs,j );
+                GAUSS_Extend_destructive( A,E,i,j );
             fi;
 
             for k in [ j+1 .. b ] do
                 if IsHPC then
-                    UpdateRowInput := GAUSS_UpdateRowParameters(i, j, k, C, TaskListClearDown,
-                        TaskListUpdateR, galoisField);
+                    UpdateRowInput := GAUSS_UpdateRowDependencies(i, j, k, TaskListClearDown,
+                        TaskListUpdateR );
                     TaskListUpdateR[i][j][k] := ScheduleTask(
-                        UpdateRowInput.dependencies,
-                        GAUSS_UpdateRow,
-                        UpdateRowInput.parameters.galoisField,
-                        UpdateRowInput.parameters.A,
-                        UpdateRowInput.parameters.C,
-                        UpdateRowInput.parameters.B,
-                        UpdateRowInput.parameters.i
+                        UpdateRowInput,
+                        GAUSS_UpdateRow_destructive,
+                        galoisField,
+                        A,
+                        C,
+                        B,
+                        i,
+                        j,
+                        k
                     );
                 else
                         GAUSS_UpdateRow_destructive(  galoisField,A,C,B,i,j,k );
@@ -270,18 +270,18 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
                 Info(InfoGauss, 3, "UpdateRowTrafoParameters ", i, " ", j);
                 for h in [ 1 .. i ] do
                     if IsHPC then
-                        UpdateRowTrafoInput := GAUSS_UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
+                        UpdateRowTrafoInput := GAUSS_UpdateRowTrafoDependencies(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM );
                         TaskListUpdateM[i][j][h] := ScheduleTask(
-                            UpdateRowTrafoInput.dependencies,
-                            GAUSS_UpdateRowTrafo,
-                            UpdateRowTrafoInput.parameters.galoisField,
-                            UpdateRowTrafoInput.parameters.A,
-                            UpdateRowTrafoInput.parameters.K,
-                            UpdateRowTrafoInput.parameters.M,
-                            UpdateRowTrafoInput.parameters.E,
-                            UpdateRowTrafoInput.parameters.i,
-                            UpdateRowTrafoInput.parameters.k,
-                            UpdateRowTrafoInput.parameters.j
+                            UpdateRowTrafoInput,
+                            GAUSS_UpdateRowTrafo_destructive,
+                            galoisField,
+                            A,
+                            K,
+                            M,
+                            E,
+                            i,
+                            h,
+                            j
                         );
                     else
                         GAUSS_UpdateRowTrafo_destructive(  galoisField,A,K,M,E,i,h,j );
@@ -297,24 +297,6 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
         WaitTask( Concatenation( TaskListE ) );
         WaitTask( Concatenation( List( TaskListUpdateR,Concatenation ) ) );
         WaitTask( Concatenation( List( TaskListUpdateM,Concatenation ) ) );
-
-        for i in [ 1 .. a ] do
-            for j in [ 1 .. b ] do
-                E[i][j] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListE[i][j] ));
-                A[i][j] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListClearDown[i][j] ).A);
-                D[j] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListClearDown[i][j] ).D);
-                for k in [ j+1 .. b ] do
-                    C[i][k] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListUpdateR[i][j][k] ).C);
-                    B[j][k] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListUpdateR[i][j][k] ).B);
-                od;
-                if withTrafo then
-                    for h in [ 1 .. i ] do
-                        K[i][h] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListUpdateM[i][j][h] ).K);
-                        M[j][h] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListUpdateM[i][j][h] ).M);
-                    od;
-                fi;
-            od;
-        od;
     fi;
 
     if  withTrafo then
