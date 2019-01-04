@@ -365,6 +365,23 @@ GAUSS_Extend := function( A,E,flag )
     nr := (Length(E.rho-Sum(E.rho))) );
 end;
 
+GAUSS_Extend_destructive := function( A,E,i,j )
+    local rhoE, nr, rhoA, res;
+    Info(InfoGauss, 1, "Extend_destructive: i ", i, ", j ", j);
+
+    if j = 1 then
+        rhoE := MakeReadOnlyObj(MakeImmutable([]));
+    else
+        rhoE := E[i][j-1].rho;
+    fi;
+    # Number of non-zero bits
+    nr := Length(Length(rhoE) - Sum(rhoE));
+    rhoA := A[i][j].rho;
+    res := ShallowCopy(GAUSS_PVC(rhoE, rhoA));
+    res.nr := nr;
+    E[i][j] := MakeReadOnlyObj(MakeImmutable(res));
+end;
+
 GAUSS_RowLengthen := function( galoisField,mat,Einter,Efin )
     local   lambda;
     lambda := GAUSS_MKR( Efin.rho,Einter.rho );
