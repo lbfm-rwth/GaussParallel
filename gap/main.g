@@ -319,10 +319,12 @@ Chief := function( galoisField,mat,a,b,IsHPC )
     od;
 
     ## Step3 ##
+    Info(InfoGauss, 2, "Step 3");
     for k in [ 1 .. b ] do
         R[k][k] := ShallowCopy(D[k].vectors);
         MakeReadOnlyObj(R[k][k]); # FIXME: do we need to do this?
     od;
+    Info(InfoGauss, 2, "CLearUpR");
     for k_ in [ 1 .. b ] do
         k := b-k_+1;
         for j in [ 1 .. (k - 1) ] do
@@ -368,6 +370,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                     GAUSS_ClearUp_destructive( R,X,j,k,l );
                 fi;
             od;
+            Info(InfoGauss, 2, "CLearUpM");
 
             for h in [ 1 .. a ] do
                 if IsHPC then
