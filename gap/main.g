@@ -140,33 +140,40 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         );
     fi;
 
+    # List dimensions:
+    # a x b
     A := FixedAtomicList(a, 0);
-    B := [];
+    # b x b
+    B := FixedAtomicList(b, 0);
+    # b
     D := FixedAtomicList(b, 0);
-    E := [];
-    K := [];
+    # a x b
+    E := FixedAtomicList(a, 0);
+    # a x a
+    K := FixedAtomicList(a, 0);
+    # b x a
     M := FixedAtomicList(b, 0);
-    R := FixedAtomicList(b,0);
-    X := [];
-    nrows := [];
+    # b x b
+    R := FixedAtomicList(b, 0);
     for i in [ 1 .. a ] do
         A[i] := FixedAtomicList(b, 0);
-        E[i] := [];
-        K[i] := [];
+        E[i] := FixedAtomicList(b, 0);
+        K[i] := FixedAtomicList(a, 0);
         for k in [ 1 .. b ] do
             A[i][k] := MakeReadOnlyObj(MakeImmutable(
                 rec(A := [], M := [], E := [], K := [],
                 rho := [], lambda := [])
             ));
-            E[i][k] := rec( rho:=[],delta:=[],nr:=0 );
+            E[i][k] := MakeReadOnlyObj(MakeImmutable(
+                rec( rho:=[],delta:=[],nr:=0 )
+            ));
         od;
         for h in [ 1 .. a ] do
-            K[i][h] := [];
+            K[i][h] := MakeReadOnlyObj(MakeImmutable([]));
         od;
     od;
     for i in [ 1 .. b ] do
         M[i] := FixedAtomicList(a, 0);
-        nrows[i] := DimensionsMat(C[1][i])[2];
         for k in [ 1 .. a ] do
             M[i][k] := MakeReadOnlyObj(MakeImmutable([]));
         od;
@@ -175,14 +182,26 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         D[k] := MakeReadOnlyObj(MakeImmutable(
             rec(vectors := [], bitstring := [])
         ));
-        B[k] := [];
-        R[k] := FixedAtomicList(b,0);
+        B[k] := FixedAtomicList(b, 0);
+        R[k] := FixedAtomicList(b, 0);
+        for j in [ 1 .. b ] do
+            B[k][j] := MakeReadOnlyObj(MakeImmutable([]));
+            R[k][j] := MakeReadOnlyObj(MakeImmutable([]));
+        od;
+    od;
+    # X is only used by the main thread so we don't need to make it threadsafe
+    # b x b
+    X := [];
+    for i in [ 1 .. b ] do
         X[k] := [];
         for j in [ 1 .. b ] do
-            B[k][j] := [];
-            R[k][j] := MakeReadOnlyObj([]);
             X[k][j] := [];
         od;
+    od;
+    # nrows is only used when glueing together R
+    nrows := [];
+    for i in [ 1 .. b ] do
+        nrows[i] := DimensionsMat(C[1][i])[2];
     od;
     ###############################
     ###############################
