@@ -216,32 +216,30 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                     TaskListUpdateR, galoisField);
                 TaskListClearDown[i][j] := ScheduleTask(
                     ClearDownInput.dependencies,
-                    GAUSS_ClearDown,
-                    ClearDownInput.parameters.galoisField,
-                    ClearDownInput.parameters.C,
-                    ClearDownInput.parameters.D,
-                    ClearDownInput.parameters.i
+                    GAUSS_ClearDown_destructive,
+                    galoisField,
+                    C,
+                    D,
+                    A,
+                    i,
+                    j
                 );
 
                     Info(InfoGauss, 3, "ExtendParameters ", i, " ", j);
                 ExtendInput := GAUSS_ExtendParameters(i, j, TaskListClearDown, TaskListE);
                 TaskListE[i][j] := ScheduleTask(
                     ExtendInput.dependencies,
-                    GAUSS_Extend,
-                    ExtendInput.parameters.A,
-                    ExtendInput.parameters.E,
-                    ExtendInput.parameters.flag
+                    GAUSS_Extend_destructive,
+                    A,
+                    E,
+                    i,
+                    j
                 );
 
                 Info(InfoGauss, 3, "UpdateRowParameters ", i, " ", j);
             else
                 GAUSS_ClearDown_destructive( galoisField,C,D,A,i,j );
-                if j=1 then
-                bs := rec( rho:=[],delta:=[],nr:=0 );
-                else
-                bs := E[i][j-1];
-                fi;
-                E[i][j] := GAUSS_Extend( A[i][j],bs,j );
+                GAUSS_Extend_destructive( A,E,i,j );
             fi;
 
             for k in [ j+1 .. b ] do
@@ -250,12 +248,14 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                         TaskListUpdateR, galoisField);
                     TaskListUpdateR[i][j][k] := ScheduleTask(
                         UpdateRowInput.dependencies,
-                        GAUSS_UpdateRow,
-                        UpdateRowInput.parameters.galoisField,
-                        UpdateRowInput.parameters.A,
-                        UpdateRowInput.parameters.C,
-                        UpdateRowInput.parameters.B,
-                        UpdateRowInput.parameters.i
+                        GAUSS_UpdateRow_destructive,
+                        galoisField,
+                        A,
+                        C,
+                        B,
+                        i,
+                        j,
+                        k
                     );
                 else
                         GAUSS_UpdateRow_destructive(  galoisField,A,C,B,i,j,k );
@@ -268,15 +268,15 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                     UpdateRowTrafoInput := GAUSS_UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
                     TaskListUpdateM[i][j][h] := ScheduleTask(
                         UpdateRowTrafoInput.dependencies,
-                        GAUSS_UpdateRowTrafo,
-                        UpdateRowTrafoInput.parameters.galoisField,
-                        UpdateRowTrafoInput.parameters.A,
-                        UpdateRowTrafoInput.parameters.K,
-                        UpdateRowTrafoInput.parameters.M,
-                        UpdateRowTrafoInput.parameters.E,
-                        UpdateRowTrafoInput.parameters.i,
-                        UpdateRowTrafoInput.parameters.k,
-                        UpdateRowTrafoInput.parameters.j
+                        GAUSS_UpdateRowTrafo_destructive,
+                        galoisField,
+                        A,
+                        K,
+                        M,
+                        E,
+                        i,
+                        h,
+                        j
                     );
                 else
                     GAUSS_UpdateRowTrafo_destructive(  galoisField,A,K,M,E,i,h,j );
@@ -291,22 +291,6 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         WaitTask( Concatenation( TaskListE ) );
         WaitTask( Concatenation( List( TaskListUpdateR,Concatenation ) ) );
         WaitTask( Concatenation( List( TaskListUpdateM,Concatenation ) ) );
-
-        for i in [ 1 .. a ] do
-            for j in [ 1 .. b ] do
-                E[i][j] := TaskResult( TaskListE[i][j] );
-                A[i][j] := TaskResult( TaskListClearDown[i][j] ).A;
-                D[j] := TaskResult( TaskListClearDown[i][j] ).D;
-                for k in [ j+1 .. b ] do
-                    C[i][k] := TaskResult( TaskListUpdateR[i][j][k] ).C;
-                    B[j][k] := TaskResult( TaskListUpdateR[i][j][k] ).B;
-                od;
-                for h in [ 1 .. i ] do
-                    K[i][h] := TaskResult( TaskListUpdateM[i][j][h] ).K;
-                    M[j][h] := TaskResult( TaskListUpdateM[i][j][h] ).M;
-                od;
-            od;
-        od;
     fi;
 
     ## Step 2 ##
