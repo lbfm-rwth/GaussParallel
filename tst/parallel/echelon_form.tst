@@ -1,12 +1,7 @@
-gap> dimension := 200;; rank := 150;; q := 5;; numberBlocks := 8;;
-gap> rs := RandomSource(IsMersenneTwister);;
-gap> echelon := RandomEchelonMat(dimension, dimension, rank, rs, GF(q));;
-gap> shapeless := GAUSS_RandomMatFromEchelonForm(echelon, dimension);;
-gap> result := DoEchelonMatTransformationBlockwise(shapeless, rec( galoisField := GF(q), IsHPC := true, numberBlocksHeight := numberBlocks, numberBlocksWidth := numberBlocks ));;
-gap> result_std := EchelonMatTransformation(shapeless);;
-gap> result.vectors = result_std.vectors;
+gap> ReadPackage("GaussPar", "tst/testfunctions.g");;
+gap> GAUSS_TestEchelonMatTransformationBlockwiseWithSetRank(10, 2, 7, 5, 5, true);
 true
-gap> result.coeffs = result_std.coeffs;
+gap> GAUSS_TestEchelonMatTransformationBlockwiseWithSetRank(50, 30, 17, 2, 2, true);
 true
-gap> Concatenation(result.coeffs, result.relations) * shapeless = echelon;
+gap> GAUSS_TestEchelonMatTransformationBlockwiseWithSetRank(200, 157, 11, 8, 8, true);
 true
