@@ -1,8 +1,7 @@
-gap> n := 200;; numberBlocks := 8;; q := 5;;
-gap> A := RandomMat(n, n, GF(q));;
-gap> result := DoEchelonMatTransformationBlockwise(A, rec( galoisField := GF(q), IsHPC := false, numberBlocksHeight := numberBlocks, numberBlocksWidth := numberBlocks ));;
-gap> result_std := EchelonMatTransformation(A);;
-gap> result.vectors = result_std.vectors;
+gap> ReadPackage("GaussPar", "tst/testfunctions.g");;
+gap> GAUSS_BasicTestEchelonMatTransformationBlockwise(200, 8, 5, false);
 true
-gap> result.coeffs = result_std.coeffs;
+gap> GAUSS_BasicTestEchelonMatTransformationBlockwise(100, 10, 11, false);
+true
+gap> GAUSS_BasicTestEchelonMatTransformationBlockwise(300, 10, 17, false);
 true
