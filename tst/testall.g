@@ -14,6 +14,7 @@ TestDirectory(
     DirectoriesPackageLibrary("GaussPar", "tst/parallel"),
     rec(exitGAP := false)
 );
+
 # standard
 TestDirectory(
     DirectoriesPackageLibrary("GaussPar", "tst/standard"),
