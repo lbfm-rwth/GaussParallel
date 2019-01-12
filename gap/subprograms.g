@@ -452,6 +452,7 @@ GAUSS_ClearDown_destructive := function( galoisField,C,D,A,i,j )
             tmp,
             ech;
 
+    Info(InfoGauss, 1, "ClearDown_destructive: i ", i, ", j ", j);
     if IsEmpty(C[i][j]) then
         A[i][j] := MakeReadOnlyObj(MakeImmutable(
             rec(A := [], M := [], E := [], K := [], rho := [], lambda := [])
@@ -563,6 +564,9 @@ GAUSS_UpdateRow_destructive := function( galoisField,A,C,B,i,j,k )
             W,
             X,
             Z;
+
+    Info(InfoGauss, 1,
+        "UpdateRow_destructive: i ", i, ", j ", j, ", k ", k);
     if IsEmpty(A[i][j].A) or IsEmpty(B[j][k]) then
         Z := C[i][k];
     elif IsEmpty(C[i][k]) then
@@ -709,6 +713,8 @@ GAUSS_UpdateRowTrafo_destructive := function( galoisField,A,K,M,E,i,h,j )
             X,
             Z;
 
+    Info(InfoGauss, 1,
+        "UpdateRowTrafo_destructive: i ", i, ", j ", j, ", h ", h);
     if (IsEmpty(A[i][j].A) and IsEmpty(A[i][j].M)) or IsEmpty(E[h][j].delta) then
         return;
     fi;  #### for the or delta empty part, cf. paper: want to know if beta' in the descr of GAUSS_UpdateRowTrafo is 0..
