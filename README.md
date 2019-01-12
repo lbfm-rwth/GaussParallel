@@ -78,6 +78,13 @@ MeasureContention(numberBlocks, q, A);
 
 The algorithm will print out information and statistics.
 
+## Compatibility with old HPC-GAP version
+Older versions of hpcgap still have working guards. Unfortunately, in those
+versions you can't load this package via `LoadPackage`.
+Let's assume that you can run your old HPC-GAP version via $HPCGAP-OLD
+Instead `cd` into the root folder of this repository and run:
+`$HPCGAP-OLD compatibility-for-old-hpcgap/read.g`
+
 ## Contact
 
 Please submit bug reports, suggestions for improvements and patches via
