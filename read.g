@@ -8,8 +8,8 @@
 # the functions we need from the following files we copied.
 gauss := LoadPackage("GAUSS");
 if gauss = fail then
-    ReadPackage( "GaussPar", "gap/hpc/gauss-upwards.gd");
-    ReadPackage( "GaussPar", "gap/hpc/gauss-upwards.gi");
+    ReadPackage( "GaussPar", "hpc/gauss-upwards.gd");
+    ReadPackage( "GaussPar", "hpc/gauss-upwards.gi");
 fi;
 LoadPackage("IO");
 
