@@ -22,7 +22,7 @@ GAUSS_REX := function( galoisField,positionsBitstring,mat )
     up := []; 
     down := [];
     for i in [ 1 .. numrows ] do
-        row := mat[ i ];
+        row := ShallowCopy(mat[ i ]);
         if positionsBitstring[i] = 1 then
             up[ upCount ] := row; upCount := upCount + 1;
         else
