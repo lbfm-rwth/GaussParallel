@@ -107,17 +107,17 @@ Chief := function( galoisField,mat,a,b,IsHPC )
             x -> List( [ 1 .. b ] )
         );
         TaskListUpdateR := List(
-            [ 1 .. b ],
+            [ 1 .. a ],
             x -> List(
                 [ 1 .. b ],
                 x -> List( [ 1 .. b ], x -> RunTask( function() return rec( C := [],B:=[] ); end ) )
             )
         );
         TaskListUpdateM := List(
-            [ 1 .. b ],
+            [ 1 .. a ],
             x -> List(
-                [ 1 .. a ],
-                x -> List( [ 1 .. b ], x -> RunTask( function() return rec( M := [],K:=[] ); end ) )
+                [ 1 .. b ],
+                x -> List( [ 1 .. a ], x -> RunTask( function() return rec( M := [],K:=[] ); end ) )
             )
         );
         TaskListPreClearUp := List(
