@@ -5,7 +5,7 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
     # options is a record that can optionally specify
     # galoisField, IsHPC, numberBlocksHeight, numberBlocksWidth
         local galoisField, IsHPC, numberBlocksHeight, numberBlocksWidth,
-            dim, recnames;
+            dim, recnames, withTrafo;
 
         recnames := Set( RecNames( options ) );
 

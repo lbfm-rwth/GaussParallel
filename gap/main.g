@@ -262,7 +262,6 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo )
                 fi;
             od;
 
-<<<<<<< HEAD
             if withTrafo then
                 Info(InfoGauss, 3, "UpdateRowTrafoParameters ", i, " ", j);
                 for h in [ 1 .. i ] do
