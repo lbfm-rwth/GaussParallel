@@ -17,14 +17,6 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
             numberBlocksHeight := GAUSS_calculateBlocks( dim[1] );
             numberBlocksWidth := GAUSS_calculateBlocks( dim[2] );
         fi;
-        Info(InfoGauss, 1, "The matrix is split into ", numberBlocksHeight,
-            " blocks vertically and ", numberBlocksWidth, " horizontally.");
-        if ((numberBlocksHeight = 1) or (numberBlocksWidth = 1)
-            and (IsHPC = true)) then
-            Info(InfoGauss, 1, "Warning: The size of the blocks is so small",
-                " that the parallel version is unlikely to bring benefits",
-                " in terms of runtime.");
-        fi;
 
         if "IsHPC" in recnames then
             IsHPC := options.IsHPC;
@@ -34,6 +26,15 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
             else
                 IsHPC := true;
             fi;
+        fi;
+
+        Info(InfoGauss, 1, "The matrix is split into ", numberBlocksHeight,
+            " blocks vertically and ", numberBlocksWidth, " horizontally.");
+        if ((numberBlocksHeight = 1) or (numberBlocksWidth = 1)
+            and (IsHPC = true)) then
+            Info(InfoGauss, 1, "Warning: The size of the blocks is so small",
+                " that the parallel version is unlikely to bring benefits",
+                " in terms of runtime.");
         fi;
 
         if "galoisField" in recnames then
