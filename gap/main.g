@@ -213,7 +213,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
             if IsHPC then
                   Info(InfoGauss, 3, "ClearDownParameters ", i, " ", j);
                 ClearDownInput := GAUSS_ClearDownParameters(i, j, C, TaskListClearDown,
-                    TaskListUpdateR, galoisField);
+                    TaskListUpdateR, galoisField,a,b);
                 TaskListClearDown[i][j] := ScheduleTask(
                     ClearDownInput.dependencies,
                     GAUSS_ClearDown_destructive,
@@ -226,7 +226,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                 );
 
                     Info(InfoGauss, 3, "ExtendParameters ", i, " ", j);
-                ExtendInput := GAUSS_ExtendParameters(i, j, TaskListClearDown, TaskListE);
+                ExtendInput := GAUSS_ExtendParameters(i, j, TaskListClearDown, TaskListE,a,b);
                 TaskListE[i][j] := ScheduleTask(
                     ExtendInput.dependencies,
                     GAUSS_Extend_destructive,
@@ -245,7 +245,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
             for k in [ j+1 .. b ] do
                 if IsHPC then
                     UpdateRowInput := GAUSS_UpdateRowParameters(i, j, k, C, TaskListClearDown,
-                        TaskListUpdateR, galoisField);
+                        TaskListUpdateR, galoisField,a,b);
                     TaskListUpdateR[i][j][k] := ScheduleTask(
                         UpdateRowInput.dependencies,
                         GAUSS_UpdateRow_destructive,
@@ -265,7 +265,7 @@ Chief := function( galoisField,mat,a,b,IsHPC )
             Info(InfoGauss, 3, "UpdateRowTrafoParameters ", i, " ", j);
             for h in [ 1 .. i ] do
                 if IsHPC then
-                    UpdateRowTrafoInput := GAUSS_UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
+                    UpdateRowTrafoInput := GAUSS_UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField,a,b);
                     TaskListUpdateM[i][j][h] := ScheduleTask(
                         UpdateRowTrafoInput.dependencies,
                         GAUSS_UpdateRowTrafo_destructive,
