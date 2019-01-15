@@ -27,7 +27,7 @@ GAUSS_createHeads := function( pivotrows, pivotcols, width )
     return result;
 end;
 
-Chief := function( galoisField,mat,a,b,IsHPC )
+Chief := function( galoisField,mat,a,b,IsHPC,withTrafo )
     ## inputs: a finite field, a matrix, number of vertical blocks, number of horizontal blocks
     local   TaskListPreClearUp,
             TaskListClearDown,
@@ -262,26 +262,28 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                 fi;
             od;
 
-            Info(InfoGauss, 3, "UpdateRowTrafoParameters ", i, " ", j);
-            for h in [ 1 .. i ] do
-                if IsHPC then
-                    UpdateRowTrafoInput := GAUSS_UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
-                    TaskListUpdateM[i][j][h] := ScheduleTask(
-                        UpdateRowTrafoInput.dependencies,
-                        GAUSS_UpdateRowTrafo,
-                        UpdateRowTrafoInput.parameters.galoisField,
-                        UpdateRowTrafoInput.parameters.A,
-                        UpdateRowTrafoInput.parameters.K,
-                        UpdateRowTrafoInput.parameters.M,
-                        UpdateRowTrafoInput.parameters.E,
-                        UpdateRowTrafoInput.parameters.i,
-                        UpdateRowTrafoInput.parameters.k,
-                        UpdateRowTrafoInput.parameters.j
-                    );
-                else
-                    GAUSS_UpdateRowTrafo_destructive(  galoisField,A,K,M,E,i,h,j );
-                fi;
-            od;
+            if withTrafo then
+                Info(InfoGauss, 3, "UpdateRowTrafoParameters ", i, " ", j);
+                for h in [ 1 .. i ] do
+                    if IsHPC then
+                        UpdateRowTrafoInput := GAUSS_UpdateRowTrafoParameters(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM, galoisField);
+                        TaskListUpdateM[i][j][h] := ScheduleTask(
+                            UpdateRowTrafoInput.dependencies,
+                            GAUSS_UpdateRowTrafo,
+                            UpdateRowTrafoInput.parameters.galoisField,
+                            UpdateRowTrafoInput.parameters.A,
+                            UpdateRowTrafoInput.parameters.K,
+                            UpdateRowTrafoInput.parameters.M,
+                            UpdateRowTrafoInput.parameters.E,
+                            UpdateRowTrafoInput.parameters.i,
+                            UpdateRowTrafoInput.parameters.k,
+                            UpdateRowTrafoInput.parameters.j
+                        );
+                    else
+                        GAUSS_UpdateRowTrafo_destructive(  galoisField,A,K,M,E,i,h,j );
+                    fi;
+                od;
+            fi;
         od;
     od;
 
@@ -301,21 +303,25 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                     C[i][k] := TaskResult( TaskListUpdateR[i][j][k] ).C;
                     B[j][k] := TaskResult( TaskListUpdateR[i][j][k] ).B;
                 od;
-                for h in [ 1 .. i ] do
-                    K[i][h] := TaskResult( TaskListUpdateM[i][j][h] ).K;
-                    M[j][h] := TaskResult( TaskListUpdateM[i][j][h] ).M;
-                od;
+                if withTrafo then
+                    for h in [ 1 .. i ] do
+                        K[i][h] := TaskResult( TaskListUpdateM[i][j][h] ).K;
+                        M[j][h] := TaskResult( TaskListUpdateM[i][j][h] ).M;
+                    od;
+                fi;
             od;
         od;
     fi;
 
-    ## Step 2 ##
-    Info(InfoGauss, 2, "Step 2");
-    for j in [ 1 .. b ] do
-        for h in [ 1 .. a ] do
-            M[j][h] := GAUSS_RowLengthen( galoisField,M[j][h],E[h][j],E[h][b] );
+    if  withTrafo then
+        ## Step 2 ##
+        Info(InfoGauss, 2, "Step 2");
+        for j in [ 1 .. b ] do
+            for h in [ 1 .. a ] do
+                M[j][h] := GAUSS_RowLengthen( galoisField,M[j][h],E[h][j],E[h][b] );
+            od;
         od;
-    od;
+    fi;
 
     ## Step3 ##
     Info(InfoGauss, 2, "Step 3");
@@ -368,47 +374,51 @@ Chief := function( galoisField,mat,a,b,IsHPC )
                     GAUSS_ClearUp_destructive( R,X,j,k,l );
                 fi;
             od;
-            Info(InfoGauss, 2, "CLearUpM");
-
-            for h in [ 1 .. a ] do
-                if IsHPC then
-                        if k_ = 1 then
-                            TaskListClearUpM[j][h][1] := ScheduleTask(
-                                [
-                                    TaskListPreClearUp[j][k]
-                                ],
-                                GAUSS_ClearUp_destructive,
-                                M,
-                                TaskResult( TaskListPreClearUp[j][k] ),
-                                j,
-                                k,
-                                h
-                            );
-                        else
-                            TaskListClearUpM[j][h][k_] := ScheduleTask(
-                                [   TaskListClearUpM[j][h][k_-1],
-                                    TaskListClearUpM[k][h][k_-1],
-                                    TaskListPreClearUp[j][k]
-                                ],
-                                GAUSS_ClearUp_destructive,
-                                M,
-                                TaskResult( TaskListPreClearUp[j][k] ),
-                                j,
-                                k,
-                                h
-                            );
-                        fi;
-                else
-                            GAUSS_ClearUp_destructive( M,X,j,k,h );
-                fi;
-            od;
+            
+            if  withTrafo then
+                Info(InfoGauss, 2, "CLearUpM");
+                for h in [ 1 .. a ] do
+                    if IsHPC then
+                            if k_ = 1 then
+                                TaskListClearUpM[j][h][1] := ScheduleTask(
+                                    [
+                                        TaskListPreClearUp[j][k]
+                                    ],
+                                    GAUSS_ClearUp_destructive,
+                                    M,
+                                    TaskResult( TaskListPreClearUp[j][k] ),
+                                    j,
+                                    k,
+                                    h
+                                );
+                            else
+                                TaskListClearUpM[j][h][k_] := ScheduleTask(
+                                    [   TaskListClearUpM[j][h][k_-1],
+                                        TaskListClearUpM[k][h][k_-1],
+                                        TaskListPreClearUp[j][k]
+                                    ],
+                                    GAUSS_ClearUp_destructive,
+                                    M,
+                                    TaskResult( TaskListPreClearUp[j][k] ),
+                                    j,
+                                    k,
+                                    h
+                                );
+                            fi;
+                    else
+                                GAUSS_ClearUp_destructive( M,X,j,k,h );
+                    fi;
+                od;
+            fi;
         od;
     od;
 
     if IsHPC then
         WaitTask( Concatenation( TaskListPreClearUp ) );
         WaitTask( Concatenation( List( TaskListClearUpR,Concatenation ) ) );
-        WaitTask( Concatenation( List( TaskListClearUpM,Concatenation ) ) );
+        if  withTrafo then
+            WaitTask( Concatenation( List( TaskListClearUpM,Concatenation ) ) );
+        fi;
     fi;
 
     ###############################
@@ -430,51 +440,53 @@ Chief := function( galoisField,mat,a,b,IsHPC )
         rank := rank + Sum( tmp );
     od;
 
-    #### Glueing the blocks of M
-    B := NullMat( rank,Length(v),galoisField );
-    rows := [];
+    if  withTrafo then
+        #### Glueing the blocks of M
+        B := NullMat( rank,Length(v),galoisField );
+        rows := [];
 
-    for j in [ 1 .. b ] do
-        rows[j] := 0;
-        for i in [ 1 .. a ] do
-            if  not IsEmpty(M[j][i]) then
-                rows[j] := DimensionsMat(M[j][i])[1];
-                break;
-            fi;
-        od;
-    od;
-
-    tmpR := 1;
-    for j in [ 1 .. b ] do
-        if rows[j]=0 then
-            continue;
-        fi;
-        tmpC := 1;
-        w := DimensionsMat(mat)[1]/a;
-        for i in [ 1 .. a ] do
-            if IsEmpty(M[j][i]) then
-                if IsEmpty(E[i][b].rho) then
-                    tmp := w;
-                else
-                    tmp := Length( E[i][b].rho );
+        for j in [ 1 .. b ] do
+            rows[j] := 0;
+            for i in [ 1 .. a ] do
+                if  not IsEmpty(M[j][i]) then
+                    rows[j] := DimensionsMat(M[j][i])[1];
+                    break;
                 fi;
-                tmpC := tmpC + tmp; continue;
-                #M[j][i] := NullMat( rows[j],tmp,galoisField );
-            else
-                M[j][i] := TransposedMat( GAUSS_RRF( galoisField,
-                NullMat( Length(E[i][b].rho)-
-                DimensionsMat(M[j][i])[2],
-                DimensionsMat(M[j][i])[1],galoisField ),
-                TransposedMat(M[j][i]),E[i][b].rho ) );
-            fi;
-
-            B{[tmpR .. tmpR + DimensionsMat(M[j][i])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(M[j][i])[2]-1 ]}
-            := M[j][i];
-            tmpC := tmpC + DimensionsMat(M[j][i])[2];
+            od;
         od;
-        tmpR := tmpR + rows[j];
-    od;
 
+        tmpR := 1;
+        for j in [ 1 .. b ] do
+            if rows[j]=0 then
+                continue;
+            fi;
+            tmpC := 1;
+            w := DimensionsMat(mat)[1]/a;
+            for i in [ 1 .. a ] do
+                if IsEmpty(M[j][i]) then
+                    if IsEmpty(E[i][b].rho) then
+                        tmp := w;
+                    else
+                        tmp := Length( E[i][b].rho );
+                    fi;
+                    tmpC := tmpC + tmp; continue;
+                    #M[j][i] := NullMat( rows[j],tmp,galoisField );
+                else
+                    M[j][i] := TransposedMat( GAUSS_RRF( galoisField,
+                    NullMat( Length(E[i][b].rho)-
+                    DimensionsMat(M[j][i])[2],
+                    DimensionsMat(M[j][i])[1],galoisField ),
+                    TransposedMat(M[j][i]),E[i][b].rho ) );
+                fi;
+
+                B{[tmpR .. tmpR + DimensionsMat(M[j][i])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(M[j][i])[2]-1 ]}
+                := M[j][i];
+                tmpC := tmpC + DimensionsMat(M[j][i])[2];
+            od;
+            tmpR := tmpR + rows[j];
+        od;
+    fi;
+    
     ### Glueing the blocks of R
     C := NullMat( rank,ncols-rank,galoisField );
     rows := [];
@@ -518,61 +530,65 @@ Chief := function( galoisField,mat,a,b,IsHPC )
 
      C := TransposedMat( GAUSS_RRF( galoisField,TransposedMat(C), -IdentityMat( rank,galoisField ),w  ) );
 
-    ## Glueing the blocks of K
-    D := NullMat( Length(v)-rank,Length(v),galoisField );
-    X := IdentityMat( Length(v)-rank,galoisField );
-    rows := [];
-    for j in [ 1 .. a ] do
-        rows[j] := 0;
-        for i in [ 1 .. a ] do
-            if IsEmpty(K[j][i]) then
-                rows[j] := Length(E[j][b].rho) - Sum(E[j][b].rho);
-            else
-                rows[j] := DimensionsMat(K[j][i])[1];
-                break;
-            fi;
-        od;
-    od;
-    tmpR := 1;
-    for j in [ 1 .. a ] do
-        if rows[j]=0 then
-            continue;
-        fi;
-        tmpC := 1;
-        for i in [ 1 .. a ] do
-            if IsEmpty(K[j][i]) then
-                if IsEmpty(E[i][b].rho) then
-                    #tmp := b;
-                    tmp := DimensionsMat(mat)[1]/a;
+    if withTrafo then
+        ## Glueing the blocks of K
+        D := NullMat( Length(v)-rank,Length(v),galoisField );
+        X := IdentityMat( Length(v)-rank,galoisField );
+        rows := [];
+        for j in [ 1 .. a ] do
+            rows[j] := 0;
+            for i in [ 1 .. a ] do
+                if IsEmpty(K[j][i]) then
+                    rows[j] := Length(E[j][b].rho) - Sum(E[j][b].rho);
                 else
-                    tmp := Length( E[i][b].rho );
+                    rows[j] := DimensionsMat(K[j][i])[1];
+                    break;
                 fi;
-                tmpC := tmpC + tmp; continue;
-                #K[j][i] := NullMat( rows[j],tmp,galoisField );
-            else
-                K[j][i] := TransposedMat( GAUSS_RRF( galoisField,
-                    NullMat( Length(E[i][b].rho)-
-                    DimensionsMat(K[j][i])[2],
-                    DimensionsMat(K[j][i])[1],galoisField ),
-                    TransposedMat(K[j][i]),E[i][b].rho ) );
-            fi;
-
-            D{[tmpR .. tmpR + DimensionsMat(K[j][i])[1]-1 ]}
-            {[tmpC .. tmpC + DimensionsMat(K[j][i])[2]-1 ]}
-            := K[j][i];
-            tmpC := tmpC + DimensionsMat(K[j][i])[2];
+            od;
         od;
-        tmpR := tmpR + rows[j];
-    od;
+        tmpR := 1;
+        for j in [ 1 .. a ] do
+            if rows[j]=0 then
+                continue;
+            fi;
+            tmpC := 1;
+            for i in [ 1 .. a ] do
+                if IsEmpty(K[j][i]) then
+                    if IsEmpty(E[i][b].rho) then
+                        #tmp := b;
+                        tmp := DimensionsMat(mat)[1]/a;
+                    else
+                        tmp := Length( E[i][b].rho );
+                    fi;
+                    tmpC := tmpC + tmp; continue;
+                    #K[j][i] := NullMat( rows[j],tmp,galoisField );
+                else
+                    K[j][i] := TransposedMat( GAUSS_RRF( galoisField,
+                        NullMat( Length(E[i][b].rho)-
+                        DimensionsMat(K[j][i])[2],
+                        DimensionsMat(K[j][i])[1],galoisField ),
+                        TransposedMat(K[j][i]),E[i][b].rho ) );
+                fi;
 
-     D := TransposedMat( GAUSS_RRF( galoisField,X,
-        TransposedMat( GAUSS_CEX( galoisField,v,D )[1] ),v ) );
+                D{[tmpR .. tmpR + DimensionsMat(K[j][i])[1]-1 ]}
+                {[tmpC .. tmpC + DimensionsMat(K[j][i])[2]-1 ]}
+                := K[j][i];
+                tmpC := tmpC + DimensionsMat(K[j][i])[2];
+            od;
+            tmpR := tmpR + rows[j];
+        od;
+        D := TransposedMat( GAUSS_RRF( galoisField,X,
+            TransposedMat( GAUSS_CEX( galoisField,v,D )[1] ),v ) );
+    fi;
+    
 
     heads := GAUSS_createHeads(v, w, DimensionsMat(mat)[2]);
-
-    return rec( coeffs := -B, vectors := -C, relations := D,
+    if withTrafo then
+        return rec( coeffs := -B, vectors := -C, relations := D,
                 pivotrows := v, pivotcols := w, rank := rank,
                 heads := heads );
-
+        
+    fi;
+    return rec( vectors := -C,pivotrows := v, pivotcols := w, rank := rank, heads := heads );
 end;
 

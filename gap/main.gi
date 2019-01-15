@@ -27,6 +27,12 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
                 IsHPC := true;
             fi;
         fi;
+        
+        if "withTrafo" in recnames then
+            withTrafo := options.withTrafo;
+        else
+            withTrafo := true;
+        fi;
 
         Info(InfoGauss, 1, "The matrix is split into ", numberBlocksHeight,
             " blocks vertically and ", numberBlocksWidth, " horizontally.");
@@ -46,7 +52,7 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
             fi;
         fi;
 
-        return Chief( galoisField, mat, numberBlocksHeight, numberBlocksWidth, IsHPC );
+        return Chief( galoisField, mat, numberBlocksHeight, numberBlocksWidth, IsHPC, withTrafo );
     end
 );
 
