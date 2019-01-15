@@ -375,10 +375,10 @@ GAUSS_Extend_destructive := function( A,E,i,j )
         rhoE := E[i][j-1].rho;
     fi;
     # Number of non-zero bits
-    nr := Length(Length(rhoE) - Sum(rhoE));
+    nr := Length(rhoE) - Sum(rhoE);
     rhoA := A[i][j].rho;
-    res := ShallowCopy(GAUSS_PVC(rhoE, rhoA));
-    res.nr := nr;
+    res := GAUSS_PVC(rhoE, rhoA);
+    res := rec(rho := res[1], delta := res[2], nr := nr);
     E[i][j] := MakeReadOnlyObj(MakeImmutable(res));
 end;
 
