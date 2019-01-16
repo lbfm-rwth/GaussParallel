@@ -161,33 +161,33 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
         E[i] := FixedAtomicList(b, 0);
         K[i] := FixedAtomicList(a, 0);
         for k in [ 1 .. b ] do
-            A[i][k] := MakeReadOnlyObj(MakeImmutable(
+            A[i][k] := MakeReadOnlyOrImmutableObj(
                 rec(A := [], M := [], E := [], K := [],
                 rho := [], lambda := [])
-            ));
-            E[i][k] := MakeReadOnlyObj(MakeImmutable(
+            );
+            E[i][k] := MakeReadOnlyOrImmutableObj(
                 rec( rho:=[],delta:=[],nr:=0 )
-            ));
+            );
         od;
         for h in [ 1 .. a ] do
-            K[i][h] := MakeReadOnlyObj(MakeImmutable([]));
+            K[i][h] := MakeReadOnlyOrImmutableObj([]);
         od;
     od;
     for i in [ 1 .. b ] do
         M[i] := FixedAtomicList(a, 0);
         for k in [ 1 .. a ] do
-            M[i][k] := MakeReadOnlyObj(MakeImmutable([]));
+            M[i][k] := MakeReadOnlyOrImmutableObj([]);
         od;
     od;
     for k in [ 1 .. b ] do
-        D[k] := MakeReadOnlyObj(MakeImmutable(
+        D[k] := MakeReadOnlyOrImmutableObj(
             rec(vectors := [], bitstring := [])
-        ));
+        );
         B[k] := FixedAtomicList(b, 0);
         R[k] := FixedAtomicList(b, 0);
         for j in [ 1 .. b ] do
-            B[k][j] := MakeReadOnlyObj(MakeImmutable([]));
-            R[k][j] := MakeReadOnlyObj(MakeImmutable([]));
+            B[k][j] := MakeReadOnlyOrImmutableObj([]);
+            R[k][j] := MakeReadOnlyOrImmutableObj([]);
         od;
     od;
     # X is only used by the main thread so we don't need to make it threadsafe
@@ -328,7 +328,7 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
     Info(InfoGauss, 2, "Step 3");
     for k in [ 1 .. b ] do
         R[k][k] := ShallowCopy(D[k].vectors);
-        MakeReadOnlyObj(R[k][k]); # FIXME: do we need to do this?
+        MakeReadOnlyOrImmutableObj(R[k][k]); # FIXME: do we need to do this?
     od;
     Info(InfoGauss, 2, "CLearUpR");
     for k_ in [ 1 .. b ] do
