@@ -304,7 +304,7 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo )
             od;
         od;
     fi;
-
+    
     ## Step3 ##
     Info(InfoGauss, 2, "Step 3");
     for k in [ 1 .. b ] do
