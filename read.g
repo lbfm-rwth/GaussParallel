@@ -13,6 +13,11 @@ if gauss = fail then
 fi;
 LoadPackage("IO");
 
+if IsHPCGAP then
+     MakeReadOnlyOrImmutableObj := MakeReadOnlyObj;
+else
+     MakeReadOnlyOrImmutableObj := MakeImmutable;
+fi;
 if not IsHPCGAP then
     ReadPackage( "GaussPar", "gap/overload-hpcgap-functions-in-gap.g");
 fi;

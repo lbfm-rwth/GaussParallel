@@ -1,0 +1,2 @@
+#!/bin/bash
+sed -i 's/MakeReadOnlyObj(MakeReadOnlyOrImmutableObj/MakeReadOnlyObj(MakeImmutable/g' gap/main.g gap/subprograms.g
