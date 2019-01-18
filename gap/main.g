@@ -62,6 +62,8 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
             k_,
             l,
             h,
+            idMat,
+            nullMat,
             ClearDownInput,
             ExtendInput,
             UpdateRowInput,
