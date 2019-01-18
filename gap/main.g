@@ -62,6 +62,8 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
             k_,
             l,
             h,
+            idMat,
+            nullMat,
             ClearDownInput,
             ExtendInput,
             UpdateRowInput,
@@ -444,6 +446,7 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
     if  withTrafo then
         #### Glueing the blocks of M
         B := NullMat( rank,Length(v),galoisField );
+        ConvertToMatrixRepNC(B, galoisField);
         rows := [];
 
         for j in [ 1 .. b ] do
@@ -473,11 +476,14 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
                     tmpC := tmpC + tmp; continue;
                     #M[j][i] := NullMat( rows[j],tmp,galoisField );
                 else
-                    M[j][i] := TransposedMat( GAUSS_RRF( galoisField,
-                    NullMat( Length(E[i][b].rho)-
-                    DimensionsMat(M[j][i])[2],
-                    DimensionsMat(M[j][i])[1],galoisField ),
-                    TransposedMat(M[j][i]),E[i][b].rho ) );
+                    nullMat := NullMat(Length(E[i][b].rho)
+                                       - DimensionsMat(M[j][i])[2],
+                                       DimensionsMat(M[j][i])[1],
+                                       galoisField);
+                    M[j][i] := TransposedMat(
+                        GAUSS_RRF(galoisField, nullMat, TransposedMat(M[j][i]),
+                                  E[i][b].rho)
+                    );
                 fi;
 
                 B{[tmpR .. tmpR + DimensionsMat(M[j][i])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(M[j][i])[2]-1 ]}
@@ -529,7 +535,11 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
          tmpR := tmpR + rows[i];
      od;
 
-     C := TransposedMat( GAUSS_RRF( galoisField,TransposedMat(C), -IdentityMat( rank,galoisField ),w  ) );
+     idMat := IdentityMat( rank,galoisField );
+     ConvertToMatrixRepNC(idMat, galoisField);
+     # FIXME Is it safe to call ConvertToMatrixRepNC(C, galoisField) here?
+     # ConvertToMatrixRepNC(C, galoisField);
+     C := TransposedMat( GAUSS_RRF( galoisField,TransposedMat(C), -idMat,w  ) );
 
     if withTrafo then
         ## Glueing the blocks of K
@@ -564,11 +574,14 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
                     tmpC := tmpC + tmp; continue;
                     #K[j][i] := NullMat( rows[j],tmp,galoisField );
                 else
-                    K[j][i] := TransposedMat( GAUSS_RRF( galoisField,
-                        NullMat( Length(E[i][b].rho)-
-                        DimensionsMat(K[j][i])[2],
-                        DimensionsMat(K[j][i])[1],galoisField ),
-                        TransposedMat(K[j][i]),E[i][b].rho ) );
+                    nullMat := NullMat(Length(E[i][b].rho)
+                                       - DimensionsMat(K[j][i])[2],
+                                       DimensionsMat(K[j][i])[1],
+                                       galoisField);
+                    K[j][i] := TransposedMat(
+                        GAUSS_RRF(galoisField, nullMat, TransposedMat(K[j][i]),
+                                  E[i][b].rho)
+                    );
                 fi;
 
                 D{[tmpR .. tmpR + DimensionsMat(K[j][i])[1]-1 ]}
@@ -578,6 +591,10 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
             od;
             tmpR := tmpR + rows[j];
         od;
+        # FIXME: Is it safe to call ConvertToMatrixRepNC(.., galoisField) on D and X here?
+        # D and X may contain empty lists as rows.
+        # ConvertToMatrixRepNC(D, galoisField);
+        # ConvertToMatrixRepNC(X, galoisField);
         D := TransposedMat( GAUSS_RRF( galoisField,X,
             TransposedMat( GAUSS_CEX( galoisField,v,D )[1] ),v ) );
     fi;

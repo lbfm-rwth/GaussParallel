@@ -134,14 +134,14 @@ GAUSS_CRZ := function( galoisField,mat,u,nr )
         if sum = 0 then
             return MakeReadOnlyOrImmutableObj([]);
         else
-            return MakeReadOnlyOrImmutableObj(
-                NullMat(nr, sum, galoisField)
-            );
+            nullMat := NullMat(nr, sum, galoisField);
+            ConvertToMatrixRepNC(nullMat);
+            return MakeReadOnlyOrImmutableObj(nullMat);
         fi;
     fi;
-    nullMat := MakeReadOnlyOrImmutableObj(
-        NullMat(sum, DimensionsMat(mat)[1], galoisField)
-    );
+    nullMat := NullMat(sum, DimensionsMat(mat)[1], galoisField);
+    ConvertToMatrixRepNC(nullMat, galoisField);
+    MakeReadOnlyOrImmutableObj(nullMat);
     return MakeReadOnlyOrImmutableObj(
         TransposedMat(GAUSS_RRF(galoisField, TransposedMat(mat), nullMat, u))
     );
@@ -154,12 +154,11 @@ GAUSS_ADI := function( galoisField,mat,bitstring  )
             copy,
             l;
     if IsEmpty(mat) then
-        return MakeReadOnlyOrImmutableObj(
-            IdentityMat(Length(bitstring), galoisField)
-        );
-    else
-        copy := MutableCopyMat( mat );
+        copy := IdentityMat(Length(bitstring), galoisField);
+        ConvertToMatrixRepNC(copy, galoisField);
+        return MakeReadOnlyOrImmutableObj(copy);
     fi;
+    copy := MutableCopyMat( mat );
     l := Length( bitstring );
     one := One( galoisField );
     posOfNewOnes := [];
@@ -249,6 +248,7 @@ GAUSS_ECH := function( f,H )
     one := One(f);
     zero := Zero(f);
     Id := IdentityMat( Length(EMT.vectors),f );
+    ConvertToMatrixRepNC(Id, f);
     sct := 1;
     Mct := 1;
     Kct := 1;
