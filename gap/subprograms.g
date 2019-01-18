@@ -108,10 +108,10 @@ GAUSS_RRF := function( galoisField,rows0,rows1,u )
     while ( index0 + index1 -1 <= l ) do
         index := index0 + index1 -1;
         if u[index] = 0 then
-            new[index] := rows0[index0];
+            new[index] := ShallowCopy(rows0[index0]);
             index0 := index0 + 1;
         else 
-            new[index] := rows1[index1];
+            new[index] := ShallowCopy(rows1[index1]);
             index1 := index1 + 1;
         fi;
     od;
