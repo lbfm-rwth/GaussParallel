@@ -298,17 +298,17 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
 
         for i in [ 1 .. a ] do
             for j in [ 1 .. b ] do
-                E[i][j] := TaskResult( TaskListE[i][j] );
-                A[i][j] := TaskResult( TaskListClearDown[i][j] ).A;
-                D[j] := TaskResult( TaskListClearDown[i][j] ).D;
+                E[i][j] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListE[i][j] ));
+                A[i][j] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListClearDown[i][j] ).A);
+                D[j] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListClearDown[i][j] ).D);
                 for k in [ j+1 .. b ] do
-                    C[i][k] := TaskResult( TaskListUpdateR[i][j][k] ).C;
-                    B[j][k] := TaskResult( TaskListUpdateR[i][j][k] ).B;
+                    C[i][k] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListUpdateR[i][j][k] ).C);
+                    B[j][k] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListUpdateR[i][j][k] ).B);
                 od;
                 if withTrafo then
                     for h in [ 1 .. i ] do
-                        K[i][h] := TaskResult( TaskListUpdateM[i][j][h] ).K;
-                        M[j][h] := TaskResult( TaskListUpdateM[i][j][h] ).M;
+                        K[i][h] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListUpdateM[i][j][h] ).K);
+                        M[j][h] := MakeReadOnlyOrImmutableObj(TaskResult( TaskListUpdateM[i][j][h] ).M);
                     od;
                 fi;
             od;
@@ -320,7 +320,7 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
         Info(InfoGauss, 2, "Step 2");
         for j in [ 1 .. b ] do
             for h in [ 1 .. a ] do
-                M[j][h] := GAUSS_RowLengthen( galoisField,M[j][h],E[h][j],E[h][b] );
+                M[j][h] := MakeReadOnlyOrImmutableObj(GAUSS_RowLengthen( galoisField,M[j][h],E[h][j],E[h][b] ));
             od;
         od;
     fi;
