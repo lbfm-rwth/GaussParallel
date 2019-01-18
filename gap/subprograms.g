@@ -134,14 +134,14 @@ GAUSS_CRZ := function( galoisField,mat,u,nr )
         if sum = 0 then
             return MakeReadOnlyOrImmutableObj([]);
         else
-            return MakeReadOnlyOrImmutableObj(
-                NullMat(nr, sum, galoisField)
-            );
+            nullMat := NullMat(nr, sum, galoisField);
+            ConvertToMatrixRepNC(nullMat);
+            return MakeReadOnlyOrImmutableObj(nullMat);
         fi;
     fi;
-    nullMat := MakeReadOnlyOrImmutableObj(
-        NullMat(sum, DimensionsMat(mat)[1], galoisField)
-    );
+    nullMat := NullMat(sum, DimensionsMat(mat)[1], galoisField);
+    ConvertToMatrixRepNC(nullMat, galoisField);
+    MakeReadOnlyOrImmutableObj(nullMat);
     return MakeReadOnlyOrImmutableObj(
         TransposedMat(GAUSS_RRF(galoisField, TransposedMat(mat), nullMat, u))
     );
@@ -154,12 +154,11 @@ GAUSS_ADI := function( galoisField,mat,bitstring  )
             copy,
             l;
     if IsEmpty(mat) then
-        return MakeReadOnlyOrImmutableObj(
-            IdentityMat(Length(bitstring), galoisField)
-        );
-    else
-        copy := MutableCopyMat( mat );
+        copy := IdentityMat(Length(bitstring), galoisField);
+        ConvertToMatrixRepNC(copy, galoisField);
+        return MakeReadOnlyOrImmutableObj(copy);
     fi;
+    copy := MutableCopyMat( mat );
     l := Length( bitstring );
     one := One( galoisField );
     posOfNewOnes := [];
@@ -249,6 +248,7 @@ GAUSS_ECH := function( f,H )
     one := One(f);
     zero := Zero(f);
     Id := IdentityMat( Length(EMT.vectors),f );
+    ConvertToMatrixRepNC(Id, f);
     sct := 1;
     Mct := 1;
     Kct := 1;
@@ -797,9 +797,10 @@ end;
 
 # Functions for Step 3
 GAUSS_GlueM := function(rank, v, galoisField, a, b, M, E, mat)
-    local B, rows, i, j, tmpR, tmpC,tmp, w;
+    local B, rows, i, j, tmpR, tmpC, tmp, nullMat, w;
 
     B := NullMat( rank,Length(v),galoisField );
+    ConvertToMatrixRepNC(B, galoisField);
     rows := [];
     for j in [ 1 .. b ] do
         rows[j] := 0;
@@ -828,24 +829,33 @@ GAUSS_GlueM := function(rank, v, galoisField, a, b, M, E, mat)
                 tmpC := tmpC + tmp; continue;
                 #M[j][i] := NullMat( rows[j],tmp,galoisField );
             else
-                M[j][i] := TransposedMat( GAUSS_RRF( galoisField,
-                NullMat( Length(E[i][b].rho)-
-                DimensionsMat(M[j][i])[2],
-                DimensionsMat(M[j][i])[1],galoisField ),
-                TransposedMat(M[j][i]),E[i][b].rho ) );
+                # FIXME convert?
+                nullMat := NullMat(Length(E[i][b].rho)
+                                   - DimensionsMat(M[j][i])[2],
+                                   DimensionsMat(M[j][i])[1],
+                                   galoisField);
+                M[j][i] := TransposedMat(
+                    GAUSS_RRF(galoisField, nullMat, TransposedMat(M[j][i]),
+                              E[i][b].rho)
+                );
             fi;
-            B{[tmpR .. tmpR + DimensionsMat(M[j][i])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(M[j][i])[2]-1 ]} := M[j][i];
+            B{[tmpR .. tmpR + DimensionsMat(M[j][i])[1]-1 ]}
+                {[tmpC .. tmpC + DimensionsMat(M[j][i])[2]-1 ]}
+                := M[j][i];
             tmpC := tmpC + DimensionsMat(M[j][i])[2];
         od;
         tmpR := tmpR + rows[j];
     od;
 
+    # FIXME: convert?
     return B;
 end;
 
 GAUSS_GlueR := function(rank, ncols, galoisField, nrows, D, R, a, b)
-    local C, rows, w, i, j, tmpR, tmpC;
+    local C, rows, w, i, j, tmpR, tmpC, idMat;
 
+    # We can't convert C since `C{list1}{list2} := ..` is not valid for
+    # compressed matrices. We need to use CopySubMatrix instead.
     C := NullMat( rank,ncols-rank,galoisField );
     rows := [];
     w := [];
@@ -879,20 +889,27 @@ GAUSS_GlueR := function(rank, ncols, galoisField, nrows, D, R, a, b)
                  fi;
                  continue;
              fi;
-             C{[tmpR .. tmpR + DimensionsMat(R[i][j])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(R[i][j])[2]-1 ]} := R[i][j];
+             C{[tmpR .. tmpR + DimensionsMat(R[i][j])[1]-1 ]}
+                {[tmpC .. tmpC + DimensionsMat(R[i][j])[2]-1 ]}
+                := R[i][j];
             tmpC := tmpC + DimensionsMat(R[i][j])[2];
         od;
         tmpR := tmpR + rows[i];
     od;
 
-    C := TransposedMat( GAUSS_RRF( galoisField,TransposedMat(C), -IdentityMat( rank,galoisField ),w  ) );
-
+    idMat := IdentityMat( rank,galoisField );
+    ConvertToMatrixRepNC(idMat, galoisField);
+    C := TransposedMat( GAUSS_RRF( galoisField, TransposedMat(C), -idMat, w ) );
+    # FIXME Is it safe to call ConvertToMatrixRepNC(C, galoisField) here?
+    # ConvertToMatrixRepNC(C, galoisField);
     return rec( C := C, w := w );
 end;
 
 GAUSS_GlueK := function(v, rank, galoisField, a, b, E, K, mat)
-    local D, X, rows, i, j, tmpR, tmpC, tmp;
+    local D, X, rows, i, j, tmpR, tmpC, tmp, nullMat;
 
+    # We can't convert D and X since `D{list1}{list2} := ..` is not valid for
+    # compressed matrices. We need to use CopySubMatrix instead.
     D := NullMat( Length(v)-rank,Length(v),galoisField );
     X := IdentityMat( Length(v)-rank,galoisField );
     rows := [];
@@ -925,17 +942,29 @@ GAUSS_GlueK := function(v, rank, galoisField, a, b, E, K, mat)
                 tmpC := tmpC + tmp; continue;
                 #K[j][i] := NullMat( rows[j],tmp,galoisField );
             else
-                K[j][i] := TransposedMat( GAUSS_RRF( galoisField,
-                    NullMat( Length(E[i][b].rho)-DimensionsMat(K[j][i])[2],
-                    DimensionsMat(K[j][i])[1],galoisField ),
-                    TransposedMat(K[j][i]),E[i][b].rho ) );
+                # FIXME convert?
+                nullMat := NullMat(Length(E[i][b].rho)
+                                   - DimensionsMat(K[j][i])[2],
+                                   DimensionsMat(K[j][i])[1],
+                                   galoisField);
+                K[j][i] := TransposedMat(
+                    GAUSS_RRF(galoisField, nullMat, TransposedMat(K[j][i]),
+                              E[i][b].rho)
+                );
             fi;
-            D{[tmpR .. tmpR + DimensionsMat(K[j][i])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(K[j][i])[2]-1 ]} := K[j][i];
+            D{[tmpR .. tmpR + DimensionsMat(K[j][i])[1]-1 ]}
+                {[tmpC .. tmpC + DimensionsMat(K[j][i])[2]-1 ]}
+                := K[j][i];
             tmpC := tmpC + DimensionsMat(K[j][i])[2];
         od;
         tmpR := tmpR + rows[j];
     od;
 
+    # FIXME: Is it safe to call ConvertToMatrixRepNC(.., galoisField) on D and
+    # X here?
+    # D and X may contain empty lists as rows.
+    # ConvertToMatrixRepNC(D, galoisField);
+    # ConvertToMatrixRepNC(X, galoisField);
     return TransposedMat( GAUSS_RRF( galoisField,X,
         TransposedMat( GAUSS_CEX( galoisField,v,D )[1] ),v ) );
 end;
