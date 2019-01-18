@@ -332,7 +332,7 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
         R[k][k] := ShallowCopy(D[k].vectors);
         MakeReadOnlyOrImmutableObj(R[k][k]); # FIXME: do we need to do this?
     od;
-    Info(InfoGauss, 2, "CLearUpR");
+    Info(InfoGauss, 2, "ClearUpR and possibly ClearUpM");
     for k_ in [ 1 .. b ] do
         k := b-k_+1;
         for j in [ 1 .. (k - 1) ] do
@@ -348,6 +348,7 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
 
             for l in [ k .. b ] do
                 if IsHPC then
+                        Info(InfoGauss, 3, "ClearUpR j, k, l: ", j, " ", k, " ", l);
                         if l-k = 0 then
                             TaskListClearUpR[j][l][1] := ScheduleTask(
                                 [ TaskListPreClearUp[j][k] ],
@@ -379,9 +380,9 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
             od;
             
             if  withTrafo then
-                Info(InfoGauss, 2, "CLearUpM");
                 for h in [ 1 .. a ] do
                     if IsHPC then
+                            Info(InfoGauss, 3, "ClearUpM j, k, h: ", j, " ", k, " ", h);
                             if k_ = 1 then
                                 TaskListClearUpM[j][h][1] := ScheduleTask(
                                     [
