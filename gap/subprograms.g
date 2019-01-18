@@ -622,6 +622,8 @@ GAUSS_UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
     if ( not h=i ) and j > 1 then
         if IsEmpty(M) or IsEmpty(A.A) then
             Z := K_;
+        elif IsEmpty(K_) then
+            Z := A.A*M;
         else
             Z := K_ + A.A*M;
         fi;
@@ -678,6 +680,8 @@ GAUSS_UpdateRowTrafo := function( galoisField,A,K,M,E,i,h,j )
     if  not ( h = i and j = 1 ) then
         if IsEmpty(V) or IsEmpty(A.K) then
             K_ := W;
+        elif IsEmpty(W) then
+            K_ := A.K*V;
         else
             K_ := W + A.K*V;
         fi;
@@ -718,6 +722,8 @@ GAUSS_UpdateRowTrafo_destructive := function( galoisField,A,K,M,E,i,h,j )
     if ( not h=i ) and j > 1 then
         if IsEmpty(M[j][h]) or IsEmpty(A[i][j].A) then
             Z := K_;
+        elif IsEmpty(K_) then
+            Z := A[i][j].A*M[j][h];
         else
             Z := K_ + A[i][j].A*M[j][h];
         fi;
@@ -774,6 +780,8 @@ GAUSS_UpdateRowTrafo_destructive := function( galoisField,A,K,M,E,i,h,j )
     if  not ( h = i and j = 1 ) then
         if IsEmpty(V) or IsEmpty(A[i][j].K) then
             K_ := W;
+        elif IsEmpty(W) then
+            K_ := A[i][j].K*V;
         else
             K_ := W + A[i][j].K*V;
         fi;
