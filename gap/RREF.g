@@ -15,19 +15,19 @@ IsMatrixInRREF := function(A)
         leadingElementFound := false;
         for j in [ 1 .. dimensions[2] ] do
             if not leadingElementFound and i < dimensions[1] then
-                if not A[i+1][j] = 0 then
+                if not IsZero(A[i+1][j]) then
                     Info(InfoGauss, 4, "Leading ones don't go from left to right when going down");
                     return false;
                 fi;
             fi;
-            if not leadingElementFound and not A[i][j] = 0 then
+            if not leadingElementFound and not IsZero(A[i][j]) then
                 leadingElementFound := true;
-                if not A[i][j] = 1 then
+                if not IsOne(A[i][j]) then
                     Info(InfoGauss, 4, "Row with a leading element that is not 1");
                     return false;
                 fi;
                 for k in [ 1 .. dimensions[1] ] do
-                    if not k = i and not A[k][j] = 0 then
+                    if not k = i and not IsZero(A[k][j]) then
                         Info(InfoGauss, 4, "Column with leading one contains other elements unequal to zero");
                         return false;
                     fi;
