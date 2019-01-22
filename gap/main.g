@@ -66,7 +66,8 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo )
             ExtendInput,
             UpdateRowInput,
             UpdateRowTrafoInput,
-            heads;
+            heads,
+            result;
 
     ##Preparation: Init and chopping the matrix mat
     Info(InfoGauss, 2, "------------ Start Chief ------------");
@@ -583,12 +584,12 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo )
     
 
     heads := GAUSS_createHeads(v, w, DimensionsMat(mat)[2]);
+    result := rec(vectors := -C, pivotrows := v, pivotcols := w, rank := rank,
+                  heads := heads);
     if withTrafo then
-        return rec( coeffs := -B, vectors := -C, relations := D,
-                pivotrows := v, pivotcols := w, rank := rank,
-                heads := heads );
-        
+        result.coeffs := -B;
+        result.relations := D;
     fi;
-    return rec( vectors := -C,pivotrows := v, pivotcols := w, rank := rank, heads := heads );
+    return result;
 end;
 
