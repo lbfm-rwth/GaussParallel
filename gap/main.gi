@@ -3,9 +3,10 @@
 InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
     function ( mat, options )
     # options is a record that can optionally specify
-    # galoisField, IsHPC, numberBlocksHeight, numberBlocksWidth
+    # galoisField, IsHPC, numberBlocksHeight, numberBlocksWidth,
+    # withTrafo and verify
         local galoisField, IsHPC, numberBlocksHeight, numberBlocksWidth,
-            dim, recnames, withTrafo;
+            dim, recnames, withTrafo, verify;
 
         recnames := Set( RecNames( options ) );
 
@@ -52,7 +53,13 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
             fi;
         fi;
 
-        return Chief( galoisField, mat, numberBlocksHeight, numberBlocksWidth, IsHPC, withTrafo );
+        if "verify" in recnames then
+            verify := options.verify;
+        else
+            verify := true;
+        fi;
+
+        return Chief( galoisField, mat, numberBlocksHeight, numberBlocksWidth, IsHPC, withTrafo, verify );
     end
 );
 
