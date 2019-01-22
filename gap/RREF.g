@@ -16,9 +16,6 @@ IsMatrixInRREF := function(A)
         for j in [ 1 .. dimensions[2] ] do
             if not leadingElementFound and i < dimensions[1] then
                 if not A[i+1][j] = 0 then
-                    Info(InfoGauss, 8, i, " ", j);
-                    Info(InfoGauss, 8, "A[i,j] = ", A[i][j]);
-                    Info(InfoGauss, 8, "A[i+1,j] = ", A[i+1][j]);
                     Info(InfoGauss, 4, "Leading ones don't go from left to right when going down");
                     return false;
                 fi;
