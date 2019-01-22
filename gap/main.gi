@@ -48,7 +48,7 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
         else
             galoisField := DefaultFieldOfMatrix( mat );
             if galoisField = fail then
-                return "Please specify the field of the matrix using the options parameter.";
+                Error("Please specify the field of the matrix using the options parameter.");
             fi;
         fi;
 
