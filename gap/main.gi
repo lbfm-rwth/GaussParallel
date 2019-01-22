@@ -3,9 +3,10 @@
 InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
     function ( mat, options )
     # options is a record that can optionally specify
-    # galoisField, IsHPC, numberBlocksHeight, numberBlocksWidth
+    # galoisField, IsHPC, numberBlocksHeight, numberBlocksWidth,
+    # withTrafo and verify
         local galoisField, IsHPC, numberBlocksHeight, numberBlocksWidth,
-            dim, recnames, withTrafo;
+            dim, recnames, withTrafo, verify;
 
         recnames := Set( RecNames( options ) );
 
@@ -43,6 +44,17 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
             fi;
         fi;
 
+        # verify only makes sense if withTrafo is true
+        if "verify" in recnames then
+            verify := options.verify;
+        else
+            verify := withTrafo;
+        fi;
+        if verify and not withTrafo then
+            Error("can't verify the calculation without computing the ",
+                  "transformation matrix");
+        fi;
+
         Info(InfoGauss, 1, "The matrix is split into ", numberBlocksHeight,
             " blocks vertically and ", numberBlocksWidth, " horizontally.");
         if ((numberBlocksHeight = 1) or (numberBlocksWidth = 1)
@@ -52,7 +64,7 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
                 " in terms of runtime.");
         fi;
 
-        return Chief( galoisField, mat, numberBlocksHeight, numberBlocksWidth, IsHPC, withTrafo );
+        return Chief( galoisField, mat, numberBlocksHeight, numberBlocksWidth, IsHPC, withTrafo, verify );
     end
 );
 

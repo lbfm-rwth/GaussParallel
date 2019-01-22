@@ -19,12 +19,12 @@ fi;
 
 ReadPackage( "GaussPar", "gap/subprograms.g");
 ReadPackage( "GaussPar", "gap/dependencies.g");
+ReadPackage( "GaussPar", "gap/RREF.g");
 
 ReadPackage( "GaussPar", "gap/main.g");
 ReadPackage( "GaussPar", "gap/main.gi");
 ReadPackage( "GaussPar", "gap/timing.g");
 ReadPackage( "GaussPar", "gap/echelon_form.g");
-ReadPackage( "GaussPar", "gap/RREF.g");
 
 if IsHPCGAP then
     ReadPackage( "GaussPar", "gap/measure_contention.g");

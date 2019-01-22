@@ -27,7 +27,7 @@ GAUSS_createHeads := function( pivotrows, pivotcols, width )
     return result;
 end;
 
-Chief := function( galoisField,mat,a,b,IsHPC,withTrafo )
+Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
     ## inputs: a finite field, a matrix, number of vertical blocks, number of horizontal blocks
     local   TaskListPreClearUp,
             TaskListClearDown,
@@ -581,9 +581,12 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo )
         D := TransposedMat( GAUSS_RRF( galoisField,X,
             TransposedMat( GAUSS_CEX( galoisField,v,D )[1] ),v ) );
     fi;
-    
 
     heads := GAUSS_createHeads(v, w, DimensionsMat(mat)[2]);
+    if verify and not IsMatrixInRREF(Concatenation(-B, D) * mat) then
+        Error("Result verification failed! Please report this bug to ",
+              "https://github.com/lbfm-rwth/GaussPar#contact");
+    fi;
     result := rec(vectors := -C, pivotrows := v, pivotcols := w, rank := rank,
                   heads := heads);
     if withTrafo then
