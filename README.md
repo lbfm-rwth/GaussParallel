@@ -67,6 +67,7 @@ To get some benchmark data on
 - how the algorithm performs in relation to the `Gauss` pkg
 - wall and CPU time
 - [lock contention](https://en.wikipedia.org/wiki/Lock_%28computer_science%29#Granularity)
+
 start HPC-GAP and execute
 ```
 Read("read.g");
@@ -75,12 +76,16 @@ A := RandomMat(n, n, GF(q));;
 MeasureContention(numberBlocks, q, A);
 ```
 
-The algorithm will out the statistics.
+The algorithm will print out information and statistics.
 
 ## Contact
 
 Please submit bug reports, suggestions for improvements and patches via
-the [issue tracker](https://github.com/lbfm-rwth/GaussPar/issues).
+the [issue tracker](https://github.com/lbfm-rwth/GaussPar/issues)
+or via email to
+[Sergio Siccha](mailto:sergio@mathb.rwth-aachen.de)
+or
+[Jendrik Brachter](mailto:jendrik.brachter@rwth-aachen.de).
 
 ## License
 
