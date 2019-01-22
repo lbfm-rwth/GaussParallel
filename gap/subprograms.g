@@ -367,7 +367,6 @@ end;
 
 GAUSS_Extend_destructive := function( A,E,i,j )
     local rhoE, nr, rhoA, res;
-    Info(InfoGauss, 1, "Extend_destructive: i ", i, ", j ", j);
 
     if j = 1 then
         rhoE := MakeReadOnlyObj(MakeImmutable([]));
