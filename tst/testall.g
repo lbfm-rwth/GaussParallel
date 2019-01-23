@@ -1,24 +1,16 @@
 LoadPackage("GaussPar");
 SetInfoLevel(InfoGauss, 0);
 
+dirs := [
+    DirectoriesPackageLibrary("GaussPar", "tst/parallel"),
+    DirectoriesPackageLibrary("GaussPar", "tst/standard")
+];
 if IsHPCGAP then
     # timing suite
-    TestDirectory(
-        DirectoriesPackageLibrary("GaussPar", "tst/stats"),
-        rec(exitGAP := false)
-    );
+    Add(dirs, DirectoriesPackageLibrary("GaussPar", "tst/stats"));
 fi;
 
-# parallel
-TestDirectory(
-    DirectoriesPackageLibrary("GaussPar", "tst/parallel"),
-    rec(exitGAP := false)
-);
+TestDirectory(dirs, rec(exitGAP := true));
 
-# standard
-TestDirectory(
-    DirectoriesPackageLibrary("GaussPar", "tst/standard"),
-    rec(exitGAP := true)
-);
-
-FORCE_QUIT_GAP(1); # if we ever get here, there was an error
+# if we ever get here, there was an error in how GAP handles tests
+FORCE_QUIT_GAP(1);
