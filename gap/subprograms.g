@@ -795,3 +795,148 @@ GAUSS_ClearUp_destructive := function( R,X,j,k,l )
         R[j][l] := MakeReadOnlyObj(MakeImmutable(R[j][l] + X*R[k][l]));
     fi;
 end;
+
+# Functions for Step 3
+GAUSS_GlueM := function(rank, v, galoisField, a, b, M, E, mat)
+    local B, rows, i, j, tmpR, tmpC,tmp, w;
+
+    B := NullMat( rank,Length(v),galoisField );
+    rows := [];
+    for j in [ 1 .. b ] do
+        rows[j] := 0;
+        for i in [ 1 .. a ] do
+            if  not IsEmpty(M[j][i]) then
+                rows[j] := DimensionsMat(M[j][i])[1];
+                break;
+            fi;
+        od;
+    od;
+
+    tmpR := 1;
+    for j in [ 1 .. b ] do
+        if rows[j]=0 then
+            continue;
+        fi;
+        tmpC := 1;
+        w := DimensionsMat(mat)[1]/a;
+        for i in [ 1 .. a ] do
+            if IsEmpty(M[j][i]) then
+                if IsEmpty(E[i][b].rho) then
+                    tmp := w;
+                else
+                    tmp := Length( E[i][b].rho );
+                fi;
+                tmpC := tmpC + tmp; continue;
+                #M[j][i] := NullMat( rows[j],tmp,galoisField );
+            else
+                M[j][i] := TransposedMat( GAUSS_RRF( galoisField,
+                NullMat( Length(E[i][b].rho)-
+                DimensionsMat(M[j][i])[2],
+                DimensionsMat(M[j][i])[1],galoisField ),
+                TransposedMat(M[j][i]),E[i][b].rho ) );
+            fi;
+            B{[tmpR .. tmpR + DimensionsMat(M[j][i])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(M[j][i])[2]-1 ]} := M[j][i];
+            tmpC := tmpC + DimensionsMat(M[j][i])[2];
+        od;
+        tmpR := tmpR + rows[j];
+    od;
+
+    return B;
+end;
+
+GAUSS_GlueR := function(rank, ncols, galoisField, nrows, D, R, a, b)
+    local C, rows, w, i, j, tmpR, tmpC;
+
+    C := NullMat( rank,ncols-rank,galoisField );
+    rows := [];
+    w := [];
+    for i in [ 1 .. b ] do
+         rows[i] := 0;
+         if IsEmpty(D[i].bitstring) then
+             w := Concatenation( w,0*[1..nrows[i]] );
+         else
+             w := Concatenation( w,D[i].bitstring );
+         fi;
+         for j in [ 1 .. b ] do
+             if  not IsEmpty(R[i][j]) then
+                 rows[i] := DimensionsMat(R[i][j])[1];
+                 break;
+             fi;
+         od;
+     od;
+
+     tmpR := 1;
+     for i in [ 1 .. b ] do
+         if rows[i]=0 then
+             continue;
+         fi;
+         tmpC := 1;
+         for j in [ 1 .. b ] do
+             if IsEmpty(R[i][j]) then
+                 if not IsEmpty(D[j].bitstring) then
+                     tmpC := tmpC + Sum( 1 - D[j].bitstring );
+                 elif  not IsEmpty(R[1][j]) then
+                     tmpC := tmpC + DimensionsMat(R[1][j])[2];
+                 fi;
+                 continue;
+             fi;
+             C{[tmpR .. tmpR + DimensionsMat(R[i][j])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(R[i][j])[2]-1 ]} := R[i][j];
+            tmpC := tmpC + DimensionsMat(R[i][j])[2];
+        od;
+        tmpR := tmpR + rows[i];
+    od;
+
+    C := TransposedMat( GAUSS_RRF( galoisField,TransposedMat(C), -IdentityMat( rank,galoisField ),w  ) );
+
+    return rec( C := C, w := w );
+end;
+
+GAUSS_GlueK := function(v, rank, galoisField, a, b, E, K, mat)
+    local D, X, rows, i, j, tmpR, tmpC, tmp;
+
+    D := NullMat( Length(v)-rank,Length(v),galoisField );
+    X := IdentityMat( Length(v)-rank,galoisField );
+    rows := [];
+    for j in [ 1 .. a ] do
+        rows[j] := 0;
+        for i in [ 1 .. a ] do
+            if IsEmpty(K[j][i]) then
+                rows[j] := Length(E[j][b].rho) - Sum(E[j][b].rho);
+            else
+                rows[j] := DimensionsMat(K[j][i])[1];
+                break;
+            fi;
+        od;
+    od;
+
+    tmpR := 1;
+    for j in [ 1 .. a ] do
+        if rows[j]=0 then
+            continue;
+        fi;
+        tmpC := 1;
+        for i in [ 1 .. a ] do
+            if IsEmpty(K[j][i]) then
+                if IsEmpty(E[i][b].rho) then
+                    #tmp := b;
+                    tmp := DimensionsMat(mat)[1]/a;
+                else
+                    tmp := Length( E[i][b].rho );
+                fi;
+                tmpC := tmpC + tmp; continue;
+                #K[j][i] := NullMat( rows[j],tmp,galoisField );
+            else
+                K[j][i] := TransposedMat( GAUSS_RRF( galoisField,
+                    NullMat( Length(E[i][b].rho)-DimensionsMat(K[j][i])[2],
+                    DimensionsMat(K[j][i])[1],galoisField ),
+                    TransposedMat(K[j][i]),E[i][b].rho ) );
+            fi;
+            D{[tmpR .. tmpR + DimensionsMat(K[j][i])[1]-1 ]}{[tmpC .. tmpC + DimensionsMat(K[j][i])[2]-1 ]} := K[j][i];
+            tmpC := tmpC + DimensionsMat(K[j][i])[2];
+        od;
+        tmpR := tmpR + rows[j];
+    od;
+
+    return TransposedMat( GAUSS_RRF( galoisField,X,
+        TransposedMat( GAUSS_CEX( galoisField,v,D )[1] ),v ) );
+end;
