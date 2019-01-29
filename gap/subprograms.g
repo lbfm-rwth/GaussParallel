@@ -131,13 +131,7 @@ GAUSS_CRZ := function( galoisField,mat,u,nr )
     if IsEmpty(u) then return mat; fi;
     sum := Sum(u);
     if IsEmpty(mat) then
-        if sum = 0 then
-            return MakeReadOnlyOrImmutableObj([]);
-        else
-            nullMat := NullMat(nr, sum, galoisField);
-            ConvertToMatrixRepNC(nullMat);
-            return MakeReadOnlyOrImmutableObj(nullMat);
-        fi;
+        return MakeReadOnlyOrImmutableObj([]);
     fi;
     nullMat := NullMat(sum, DimensionsMat(mat)[1], galoisField);
     ConvertToMatrixRepNC(nullMat, galoisField);
