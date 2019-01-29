@@ -1,3 +1,4 @@
+gap> START_TEST("standard/chief.tst");
 gap> ReadPackage("GaussPar", "tst/testfunctions.g");;
 gap> GAUSS_BasicTestEchelonMatTransformationBlockwise(200, 8, 8, 5, false);
 true
@@ -13,3 +14,4 @@ gap> GAUSS_BasicTestEchelonMatTransformationBlockwise(180, 1, 3, 17, false);
 true
 gap> GAUSS_BasicTestEchelonMatTransformationBlockwise(180, 2, 1, 17, false);
 true
+gap> STOP_TEST("standard/chief.tst");

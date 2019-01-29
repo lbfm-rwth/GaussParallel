@@ -1,3 +1,4 @@
+gap> START_TEST("standard/main.tst");
 gap> A := NullMat(3, 3, GF(19));;
 gap> result := EchelonMatBlockwise(A);
 rec( heads := [ 0, 0, 0 ], vectors := [  ] )
@@ -39,3 +40,4 @@ gap> "coeffs" in Set( RecNames( result ) );
 true
 gap> "relations" in Set( RecNames( result ) );
 true
+gap> STOP_TEST("standard/main.tst");
