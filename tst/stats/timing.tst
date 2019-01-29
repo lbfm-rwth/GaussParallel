@@ -1,3 +1,4 @@
+gap> START_TEST("stats/timing.tst");
 gap> isParallel := false;;
 gap> dimension := 100;;
 gap> rank := 7;;
@@ -6,3 +7,4 @@ gap> numberBlocks := 5;;
 gap> average := GAUSS_CalculateAverageTime(isParallel, dimension, dimension, rank, ring, numberBlocks, numberBlocks)[3];;
 gap> isParallel := true;;
 gap> average := GAUSS_CalculateAverageTime(isParallel, dimension, dimension, rank, ring, numberBlocks, numberBlocks)[3];;
+gap> STOP_TEST("stats/timing.tst");
