@@ -787,7 +787,6 @@ end;
 
 # Writes into R
 GAUSS_ClearUp_destructive := function( R,X,j,k,l )
-    local threadLocalResult;
     if IsEmpty(R[k][l]) or IsEmpty(X) then return; fi;
     if IsEmpty(R[j][l]) then
         R[j][l] := MakeReadOnlyObj(MakeImmutable(X*R[k][l]));
