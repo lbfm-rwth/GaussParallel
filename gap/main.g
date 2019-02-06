@@ -27,7 +27,7 @@ GAUSS_createHeads := function( pivotrows, pivotcols, width )
     return result;
 end;
 
-Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
+Chief := function( galoisField,mat,a,b,withTrafo,verify )
     ## inputs: a finite field, a matrix, number of vertical blocks, number of horizontal blocks
     local   TaskListPreClearUp,
             TaskListClearDown,
@@ -86,9 +86,6 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
     if not (a in NonnegativeIntegers and b in NonnegativeIntegers) then
         ErrorNoReturn("Wrong argument: The third or fourth parameter is not a nonnegative integer.");
     fi;
-    if not IsBool(IsHPC) then
-        ErrorNoReturn("Wrong argument: The fifth parameter is not a boolean.");
-    fi;
 
     ##Not supported yet
     if ( DimensionsMat(mat)[1] mod a <> 0) then
@@ -101,48 +98,46 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
     C := GAUSS_ChopMatrix( galoisField,mat,a,b );
     ncols := DimensionsMat( mat )[2];
 
-    if IsHPC then
-        TaskListClearDown := List(
-            [ 1 .. a ],
-            x -> List( [ 1 .. b ] )
-        );
-        TaskListE := List(
-            [ 1 .. a ],
-            x -> List( [ 1 .. b ] )
-        );
-        TaskListUpdateR := List(
-            [ 1 .. a ],
-            x -> List(
-                [ 1 .. b ],
-                x -> List( [ 1 .. b ], x -> RunTask( function() return rec( C := [],B:=[] ); end ) )
-            )
-        );
-        TaskListUpdateM := List(
-            [ 1 .. a ],
-            x -> List(
-                [ 1 .. b ],
-                x -> List( [ 1 .. a ], x -> RunTask( function() return rec( M := [],K:=[] ); end ) )
-            )
-        );
-        TaskListPreClearUp := List(
+    TaskListClearDown := List(
+        [ 1 .. a ],
+        x -> List( [ 1 .. b ] )
+    );
+    TaskListE := List(
+        [ 1 .. a ],
+        x -> List( [ 1 .. b ] )
+    );
+    TaskListUpdateR := List(
+        [ 1 .. a ],
+        x -> List(
+            [ 1 .. b ],
+            x -> List( [ 1 .. b ], x -> RunTask( function() return rec( C := [],B:=[] ); end ) )
+        )
+    );
+    TaskListUpdateM := List(
+        [ 1 .. a ],
+        x -> List(
+            [ 1 .. b ],
+            x -> List( [ 1 .. a ], x -> RunTask( function() return rec( M := [],K:=[] ); end ) )
+        )
+    );
+    TaskListPreClearUp := List(
+        [ 1..b ],
+        x -> []
+    );
+    TaskListClearUpR := List(
+        [ 1..b ],
+        x -> List(
             [ 1..b ],
             x -> []
-        );
-        TaskListClearUpR := List(
-            [ 1..b ],
-            x -> List(
-                [ 1..b ],
-                x -> []
-            )
-        );
-        TaskListClearUpM := List(
-            [ 1..b ],
-            x -> List(
-                [ 1..a ],
-                x -> []
-            )
-        );
-    fi;
+        )
+    );
+    TaskListClearUpM := List(
+        [ 1..b ],
+        x -> List(
+            [ 1..a ],
+            x -> []
+        )
+    );
 
     # List dimensions:
     # a x b
@@ -214,91 +209,75 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
     Info(InfoGauss, 2, "Step 1");
     for i in [ 1 .. a ] do
         for j in [ 1 .. b ] do
-            if IsHPC then
-                    Info(InfoGauss, 3, "ClearDownParameters ", i, " ", j);
-                ClearDownInput := GAUSS_ClearDownDependencies(i, j, TaskListClearDown,
-                    TaskListUpdateR );
-                TaskListClearDown[i][j] := ScheduleTask(
-                    ClearDownInput,
-                    GAUSS_ClearDown_destructive,
-                    galoisField,
-                    C,
-                    D,
-                    A,
-                    i,
-                    j
-                );
+                Info(InfoGauss, 3, "ClearDownParameters ", i, " ", j);
+            ClearDownInput := GAUSS_ClearDownDependencies(i, j, TaskListClearDown,
+                TaskListUpdateR );
+            TaskListClearDown[i][j] := ScheduleTask(
+                ClearDownInput,
+                GAUSS_ClearDown_destructive,
+                galoisField,
+                C,
+                D,
+                A,
+                i,
+                j
+            );
 
-                    Info(InfoGauss, 3, "ExtendParameters ", i, " ", j);
-                ExtendInput := GAUSS_ExtendDependencies(i, j, TaskListClearDown, TaskListE);
-                TaskListE[i][j] := ScheduleTask(
-                    ExtendInput,
-                    GAUSS_Extend_destructive,
-                    A,
-                    E,
-                    i,
-                    j
-                );
+                Info(InfoGauss, 3, "ExtendParameters ", i, " ", j);
+            ExtendInput := GAUSS_ExtendDependencies(i, j, TaskListClearDown, TaskListE);
+            TaskListE[i][j] := ScheduleTask(
+                ExtendInput,
+                GAUSS_Extend_destructive,
+                A,
+                E,
+                i,
+                j
+            );
 
-                Info(InfoGauss, 3, "UpdateRowParameters ", i, " ", j);
-            else
-                GAUSS_ClearDown_destructive( galoisField,C,D,A,i,j );
-                GAUSS_Extend_destructive( A,E,i,j );
-            fi;
+            Info(InfoGauss, 3, "UpdateRowParameters ", i, " ", j);
 
             for k in [ j+1 .. b ] do
-                if IsHPC then
-                    UpdateRowInput := GAUSS_UpdateRowDependencies(i, j, k, TaskListClearDown,
-                        TaskListUpdateR );
-                    TaskListUpdateR[i][j][k] := ScheduleTask(
-                        UpdateRowInput,
-                        GAUSS_UpdateRow_destructive,
-                        galoisField,
-                        A,
-                        C,
-                        B,
-                        i,
-                        j,
-                        k
-                    );
-                else
-                        GAUSS_UpdateRow_destructive(  galoisField,A,C,B,i,j,k );
-                fi;
+                UpdateRowInput := GAUSS_UpdateRowDependencies(i, j, k, TaskListClearDown,
+                    TaskListUpdateR );
+                TaskListUpdateR[i][j][k] := ScheduleTask(
+                    UpdateRowInput,
+                    GAUSS_UpdateRow_destructive,
+                    galoisField,
+                    A,
+                    C,
+                    B,
+                    i,
+                    j,
+                    k
+                );
             od;
 
             if withTrafo then
                 Info(InfoGauss, 3, "UpdateRowTrafoParameters ", i, " ", j);
                 for h in [ 1 .. i ] do
-                    if IsHPC then
-                        UpdateRowTrafoInput := GAUSS_UpdateRowTrafoDependencies(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM );
-                        TaskListUpdateM[i][j][h] := ScheduleTask(
-                            UpdateRowTrafoInput,
-                            GAUSS_UpdateRowTrafo_destructive,
-                            galoisField,
-                            A,
-                            K,
-                            M,
-                            E,
-                            i,
-                            h,
-                            j
-                        );
-                    else
-                        GAUSS_UpdateRowTrafo_destructive(  galoisField,A,K,M,E,i,h,j );
-                    fi;
+                    UpdateRowTrafoInput := GAUSS_UpdateRowTrafoDependencies(i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM );
+                    TaskListUpdateM[i][j][h] := ScheduleTask(
+                        UpdateRowTrafoInput,
+                        GAUSS_UpdateRowTrafo_destructive,
+                        galoisField,
+                        A,
+                        K,
+                        M,
+                        E,
+                        i,
+                        h,
+                        j
+                    );
                 od;
             fi;
         od;
     od;
 
-    if IsHPC then
     Info(InfoGauss, 3, "Before WaitTask");
-        WaitTask( Concatenation( TaskListClearDown ) );
-        WaitTask( Concatenation( TaskListE ) );
-        WaitTask( Concatenation( List( TaskListUpdateR,Concatenation ) ) );
-        WaitTask( Concatenation( List( TaskListUpdateM,Concatenation ) ) );
-    fi;
-
+    WaitTask( Concatenation( TaskListClearDown ) );
+    WaitTask( Concatenation( TaskListE ) );
+    WaitTask( Concatenation( List( TaskListUpdateR,Concatenation ) ) );
+    WaitTask( Concatenation( List( TaskListUpdateM,Concatenation ) ) );
     if  withTrafo then
         ## Step 2 ##
         Info(InfoGauss, 2, "Step 2");
@@ -319,93 +298,78 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
     for k_ in [ 1 .. b ] do
         k := b-k_+1;
         for j in [ 1 .. (k - 1) ] do
-            if IsHPC then
-                TaskListPreClearUp[j][k] := RunTask(
-                    GAUSS_PreClearUp,
-                    R, galoisField, D, B, j, k
-                );
-            else
-                X := GAUSS_PreClearUp( R,galoisField,D,B,j,k );
-                if IsEmpty(X) then continue; fi;
-            fi;
+            TaskListPreClearUp[j][k] := RunTask(
+                GAUSS_PreClearUp,
+                R, galoisField, D, B, j, k
+            );
 
             for l in [ k .. b ] do
-                if IsHPC then
-                        Info(InfoGauss, 3, "ClearUpR j, k, l: ", j, " ", k, " ", l);
-                        if l-k = 0 then
-                            TaskListClearUpR[j][l][1] := ScheduleTask(
-                                [ TaskListPreClearUp[j][k] ],
-                                GAUSS_ClearUp_destructive,
-                                R,
-                                TaskResult( TaskListPreClearUp[j][k] ),
-                                j,
-                                k,
-                                l
-                            );
-                        else
-                            TaskListClearUpR[j][l][l-k+1] := ScheduleTask(
-                                [
-                                    TaskListClearUpR[j][l][l-k],
-                                    TaskListClearUpR[k][l][l-k],
-                                    TaskListPreClearUp[j][k]
-                                ],
-                                GAUSS_ClearUp_destructive,
-                                R,
-                                TaskResult( TaskListPreClearUp[j][k] ),
-                                j,
-                                k,
-                                l
-                            );
-                        fi;
-                else
-                    GAUSS_ClearUp_destructive( R,X,j,k,l );
-                fi;
+                    Info(InfoGauss, 3, "ClearUpR j, k, l: ", j, " ", k, " ", l);
+                    if l-k = 0 then
+                        TaskListClearUpR[j][l][1] := ScheduleTask(
+                            [ TaskListPreClearUp[j][k] ],
+                            GAUSS_ClearUp_destructive,
+                            R,
+                            TaskResult( TaskListPreClearUp[j][k] ),
+                            j,
+                            k,
+                            l
+                        );
+                    else
+                        TaskListClearUpR[j][l][l-k+1] := ScheduleTask(
+                            [
+                                TaskListClearUpR[j][l][l-k],
+                                TaskListClearUpR[k][l][l-k],
+                                TaskListPreClearUp[j][k]
+                            ],
+                            GAUSS_ClearUp_destructive,
+                            R,
+                            TaskResult( TaskListPreClearUp[j][k] ),
+                            j,
+                            k,
+                            l
+                        );
+                    fi;
             od;
 
             if  withTrafo then
                 for h in [ 1 .. a ] do
-                    if IsHPC then
-                            Info(InfoGauss, 3, "ClearUpM j, k, h: ", j, " ", k, " ", h);
-                            if k_ = 1 then
-                                TaskListClearUpM[j][h][1] := ScheduleTask(
-                                    [
-                                        TaskListPreClearUp[j][k]
-                                    ],
-                                    GAUSS_ClearUp_destructive,
-                                    M,
-                                    TaskResult( TaskListPreClearUp[j][k] ),
-                                    j,
-                                    k,
-                                    h
-                                );
-                            else
-                                TaskListClearUpM[j][h][k_] := ScheduleTask(
-                                    [   TaskListClearUpM[j][h][k_-1],
-                                        TaskListClearUpM[k][h][k_-1],
-                                        TaskListPreClearUp[j][k]
-                                    ],
-                                    GAUSS_ClearUp_destructive,
-                                    M,
-                                    TaskResult( TaskListPreClearUp[j][k] ),
-                                    j,
-                                    k,
-                                    h
-                                );
-                            fi;
-                    else
-                                GAUSS_ClearUp_destructive( M,X,j,k,h );
-                    fi;
+                        Info(InfoGauss, 3, "ClearUpM j, k, h: ", j, " ", k, " ", h);
+                        if k_ = 1 then
+                            TaskListClearUpM[j][h][1] := ScheduleTask(
+                                [
+                                    TaskListPreClearUp[j][k]
+                                ],
+                                GAUSS_ClearUp_destructive,
+                                M,
+                                TaskResult( TaskListPreClearUp[j][k] ),
+                                j,
+                                k,
+                                h
+                            );
+                        else
+                            TaskListClearUpM[j][h][k_] := ScheduleTask(
+                                [   TaskListClearUpM[j][h][k_-1],
+                                    TaskListClearUpM[k][h][k_-1],
+                                    TaskListPreClearUp[j][k]
+                                ],
+                                GAUSS_ClearUp_destructive,
+                                M,
+                                TaskResult( TaskListPreClearUp[j][k] ),
+                                j,
+                                k,
+                                h
+                            );
+                        fi;
                 od;
             fi;
         od;
     od;
 
-    if IsHPC then
-        WaitTask( Concatenation( TaskListPreClearUp ) );
-        WaitTask( Concatenation( List( TaskListClearUpR,Concatenation ) ) );
-        if  withTrafo then
-            WaitTask( Concatenation( List( TaskListClearUpM,Concatenation ) ) );
-        fi;
+    WaitTask( Concatenation( TaskListPreClearUp ) );
+    WaitTask( Concatenation( List( TaskListClearUpR,Concatenation ) ) );
+    if  withTrafo then
+        WaitTask( Concatenation( List( TaskListClearUpM,Concatenation ) ) );
     fi;
 
     ###############################

@@ -3,9 +3,9 @@
 InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
     function ( mat, options )
     # options is a record that can optionally specify
-    # galoisField, IsHPC, numberBlocksHeight, numberBlocksWidth,
+    # galoisField, IsHPC(removed for now), numberBlocksHeight, numberBlocksWidth,
     # withTrafo and verify
-        local galoisField, IsHPC, numberBlocksHeight, numberBlocksWidth,
+        local galoisField, numberBlocksHeight, numberBlocksWidth,
             dim, recnames, withTrafo, verify;
 
         recnames := Set( RecNames( options ) );
@@ -19,16 +19,6 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
             numberBlocksWidth := GAUSS_calculateBlocks( dim[2] );
         fi;
 
-        if "IsHPC" in recnames then
-            IsHPC := options.IsHPC;
-        else
-            if not IsHPCGAP then
-                IsHPC := false;
-            else
-                IsHPC := true;
-            fi;
-        fi;
-        
         if "withTrafo" in recnames then
             withTrafo := options.withTrafo;
         else
@@ -57,14 +47,8 @@ InstallGlobalFunction( DoEchelonMatTransformationBlockwise,
 
         Info(InfoGauss, 1, "The matrix is split into ", numberBlocksHeight,
             " blocks vertically and ", numberBlocksWidth, " horizontally.");
-        if ((numberBlocksHeight = 1) or (numberBlocksWidth = 1)
-            and (IsHPC = true)) then
-            Info(InfoGauss, 1, "Warning: The size of the blocks is so small",
-                " that the parallel version is unlikely to bring benefits",
-                " in terms of runtime.");
-        fi;
 
-        return Chief( galoisField, mat, numberBlocksHeight, numberBlocksWidth, IsHPC, withTrafo, verify );
+        return Chief( galoisField, mat, numberBlocksHeight, numberBlocksWidth, withTrafo, verify );
     end
 );
 
