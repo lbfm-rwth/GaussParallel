@@ -1,3 +1,4 @@
+Read("compatibility-old-hpc/read.g");
 Read("tst/testfunctions.g");
 
 success := true;
