@@ -313,7 +313,7 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
     Info(InfoGauss, 2, "Step 3");
     for k in [ 1 .. b ] do
         R[k][k] := ShallowCopy(D[k].vectors);
-        MakeReadOnlyOrImmutableObj(R[k][k]); # FIXME: do we need to do this?
+        MakeReadOnlyOrImmutableObj(R[k][k]);
     od;
     Info(InfoGauss, 2, "ClearUpR and possibly ClearUpM");
     for k_ in [ 1 .. b ] do
@@ -361,7 +361,7 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
                     GAUSS_ClearUp_destructive( R,X,j,k,l );
                 fi;
             od;
-            
+
             if  withTrafo then
                 for h in [ 1 .. a ] do
                     if IsHPC then
@@ -430,7 +430,7 @@ Chief := function( galoisField,mat,a,b,IsHPC,withTrafo,verify )
     if  withTrafo then
         B := GAUSS_GlueM(rank, v, galoisField, a, b, M, E, mat);
     fi;
-    
+
     GlueR := GAUSS_GlueR(rank, ncols, galoisField, nrows, D, R, a, b);
     C := GlueR.C;
     w := GlueR.w;
