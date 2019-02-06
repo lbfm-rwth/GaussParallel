@@ -10,3 +10,4 @@ success := success
 if not success then
     FORCE_QUIT_GAP(1);
 fi;
+QUIT_GAP(0);
