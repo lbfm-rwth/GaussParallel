@@ -14,7 +14,7 @@ fi;
 LoadPackage("IO");
 
 if not IsHPCGAP then
-    ReadPackage( "GaussPar", "gap/overload-hpcgap-functions-in-gap.g");
+    ReadPackage( "GaussPar", "gap/hpcgap-mockups.g");
 fi;
 
 ReadPackage( "GaussPar", "gap/RREF.g");
@@ -22,12 +22,11 @@ ReadPackage( "GaussPar", "gap/subprograms.g");
 ReadPackage( "GaussPar", "gap/dependencies.g");
 
 ReadPackage( "GaussPar", "gap/main.gi");
-ReadPackage( "GaussPar", "gap/timing.g");
-ReadPackage( "GaussPar", "gap/echelon_form.g");
+ReadPackage( "GaussPar", "gap/echelon-form.g");
 
 if IsHPCGAP then
-    ReadPackage( "GaussPar", "gap/measure_contention.g");
-    ReadPackage( "GaussPar", "gap/stats/timing.g");
+    ReadPackage( "GaussPar", "gap/benchmarking/timing.g");
+    ReadPackage( "GaussPar", "gap/benchmarking/measure_contention.g");
 fi;
 
 Info(InfoGauss, 1, "<< The package \"GaussPar\" is still in alpha stage! >>");

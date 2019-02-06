@@ -16,13 +16,12 @@ Read("gap/main.gd");
 Read("compatibility-old-hpc/gauss-upwards.gd");
 Read("compatibility-old-hpc/gauss-upwards.gi");
 
+Read("gap/RREF.g");
 Read("gap/subprograms.g");
 Read("gap/dependencies.g");
-Read("gap/RREF.g");
 
-Read("gap/main.g");
 Read("gap/main.gi");
-Read("gap/echelon_form.g");
+Read("gap/echelon-form.g");
 
 # HACK
 # We need to overwrite MakeReadOnlyOrImmutableObj
