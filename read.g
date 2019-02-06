@@ -18,8 +18,10 @@ if not IsHPCGAP then
 fi;
 
 ReadPackage( "GaussPar", "gap/RREF.g");
-ReadPackage( "GaussPar", "gap/subprograms.g");
 ReadPackage( "GaussPar", "gap/dependencies.g");
+ReadPackage( "GaussPar", "gap/thread-local.g");
+ReadPackage( "GaussPar", "gap/utils.g");
+ReadPackage( "GaussPar", "gap/tasks.g");
 
 ReadPackage( "GaussPar", "gap/main.gi");
 ReadPackage( "GaussPar", "gap/echelon-form.g");

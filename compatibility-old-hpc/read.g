@@ -17,8 +17,10 @@ Read("compatibility-old-hpc/gauss-upwards.gd");
 Read("compatibility-old-hpc/gauss-upwards.gi");
 
 Read("gap/RREF.g");
-Read("gap/subprograms.g");
 Read("gap/dependencies.g");
+Read("gap/thread-local.g");
+Read("gap/utils.g");
+Read("gap/tasks.g");
 
 Read("gap/main.gi");
 Read("gap/echelon-form.g");

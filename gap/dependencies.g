@@ -2,25 +2,6 @@
 # algorithm. In particular, the functions in this file manage the dependencies
 # of the algorithm's subprograms between each other.
 
-# This function is temporary until it is not necessary anymore to find
-# a number of blocks that divides the width or height.
-# When different chop sizes are possible, we will presumably find the perfect
-# chop size and divide in blocks of this size.
-GAUSS_calculateBlocks := function( a )
-    # a is either height or width of the matrix
-    local i;
-    i := 13;
-
-    while (i > 1) do
-        if (a mod i = 0) then
-            return a/i;
-        fi;
-        i := i - 1;
-    od;
-
-    return 1;
-end;
-
 # Function in step 1
 GAUSS_ClearDownDependencies := function( i, j, TaskListClearDown, TaskListUpdateR )
     local list; 
