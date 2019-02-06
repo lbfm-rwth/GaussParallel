@@ -4,8 +4,6 @@
 
 IsHPCGAP := true;
 MakeReadOnlyObj(MakeImmutable(IsHPCGAP));
-# Compatibility hack for old HPC-GAP
-ErrorNoReturn := Error;
 
 # Content from init.g
 DeclareInfoClass("InfoGauss");
@@ -20,6 +18,7 @@ Read("compatibility-old-hpc/gauss-upwards.gi");
 
 Read("gap/subprograms.g");
 Read("gap/dependencies.g");
+Read("gap/RREF.g");
 
 Read("gap/main.g");
 Read("gap/main.gi");
