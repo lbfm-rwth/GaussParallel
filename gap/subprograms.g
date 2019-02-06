@@ -595,6 +595,31 @@ GAUSS_ClearUp_destructive := function( R,X,j,k,l )
 end;
 
 # Functions for Step 3
+GAUSS_createHeads := function( pivotrows, pivotcols, width )
+    # inputs: list that contains the row numbers of the pivot rows and
+    # list that contains the column numbers of the pivot cols and
+    # width of matrix
+    local result, i, currentPivot;
+
+    if not Length(pivotrows) = Length(pivotcols) then
+        return [];
+    fi;
+
+    currentPivot := 0;
+    result := ListWithIdenticalEntries( width, 0 );
+
+    for i in [1 .. width] do
+        if i in pivotcols then
+            currentPivot := currentPivot + 1;
+            result[i] := pivotrows[currentPivot];
+        else
+            result[i] := 0;
+        fi;
+    od;
+
+    return result;
+end;
+
 GAUSS_GlueM := function(rank, v, galoisField, a, b, M, E, mat)
     local B, rows, i, j, tmpR, tmpC, tmp, nullMat, w;
 
@@ -766,4 +791,47 @@ GAUSS_GlueK := function(v, rank, galoisField, a, b, E, K, mat)
     # ConvertToMatrixRepNC(X, galoisField);
     return TransposedMat( GAUSS_RRF( galoisField,X,
         TransposedMat( GAUSS_CEX( galoisField,v,D )[1] ),v ) );
+end;
+
+GAUSS_WriteOutput := function( mat,a,b,ncols,nrows,galoisField,D,R,M,E,K,withTrafo )
+    local v, w, rank, tmp, B, C, heads, i, j, GlueR, result;
+
+    ## Write output
+    Info(InfoGauss, 2, "Write output");
+    # Begin with row-select bitstring named v
+    v := [];
+    rank := 0;
+    w := 0*[1..(DimensionsMat(mat)[1]/a) ];
+    for i in [ 1 .. a ] do
+        if IsEmpty(E[i][b].rho) then
+            tmp := w;
+        else
+            tmp := E[i][b].rho;
+        fi;
+        v := Concatenation( v,tmp );
+        rank := rank + Sum( tmp );
+    od;
+
+    if  withTrafo then
+        B := GAUSS_GlueM(rank, v, galoisField, a, b, M, E, mat);
+    fi;
+
+    GlueR := GAUSS_GlueR(rank, ncols, galoisField, nrows, D, R, a, b);
+    C := GlueR.C;
+    w := GlueR.w;
+
+    if withTrafo then
+        ## Glue the blocks of K
+        D := GAUSS_GlueK(v, rank, galoisField, a, b, E, K, mat);
+    fi;
+
+    heads := GAUSS_createHeads(v, w, DimensionsMat(mat)[2]);
+    result := rec(vectors := -C, pivotrows := v, pivotcols := w, rank := rank,
+                  heads := heads);
+    if withTrafo then
+        result.coeffs := -B;
+        result.relations := D;
+    fi;
+    
+    return result;
 end;

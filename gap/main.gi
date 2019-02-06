@@ -355,51 +355,16 @@ function ( mat, options )
     if  withTrafo then
         WaitTask( Concatenation( List( TaskListClearUpM,Concatenation ) ) );
     fi;
-
     ###############################
     ###############################
+    result := GAUSS_WriteOutput( mat,a,b,ncols,nrows,galoisField,D,R,M,E,K,withTrafo );
 
-    ## Write output
-    Info(InfoGauss, 2, "Write output");
-    # Begin with row-select bitstring named v
-    v := [];
-    rank := 0;
-    w := 0*[1..(DimensionsMat(mat)[1]/a) ];
-    for i in [ 1 .. a ] do
-        if IsEmpty(E[i][b].rho) then
-            tmp := w;
-        else
-            tmp := E[i][b].rho;
-        fi;
-        v := Concatenation( v,tmp );
-        rank := rank + Sum( tmp );
-    od;
-
-    if  withTrafo then
-        B := GAUSS_GlueM(rank, v, galoisField, a, b, M, E, mat);
-    fi;
-
-    GlueR := GAUSS_GlueR(rank, ncols, galoisField, nrows, D, R, a, b);
-    C := GlueR.C;
-    w := GlueR.w;
-
-    if withTrafo then
-        ## Glue the blocks of K
-        D := GAUSS_GlueK(v, rank, galoisField, a, b, E, K, mat);
-    fi;
-
-    heads := GAUSS_createHeads(v, w, DimensionsMat(mat)[2]);
-    if verify and not IsMatrixInRREF(Concatenation(-B, D) * mat) then
+    if verify and not IsMatrixInRREF(Concatenation(result.coeffs, result.relations) * mat) then
         Error("Result verification failed! Please report this bug to ",
               "https://github.com/lbfm-rwth/GaussPar#contact");
     fi;
-    result := rec(vectors := -C, pivotrows := v, pivotcols := w, rank := rank,
-                  heads := heads);
-    if withTrafo then
-        result.coeffs := -B;
-        result.relations := D;
-    fi;
-    return result;
+
+    return result; 
 end
 );
 
