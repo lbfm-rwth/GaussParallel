@@ -1,3 +1,8 @@
+# The Algorithm
+
+This is an implementation of a parallel Gaussian algorithm as described in
+[A parallel algorihtm for Gaussian elemination over finite fields](https://arxiv.org/abs/1806.04211).
+
 # How to use
 
 There are two different ways to use our package. You can either use the
