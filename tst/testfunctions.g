@@ -4,7 +4,7 @@ GAUSS_testMatrix := function(
         matrix, q, numberBlocksHeight, numberBlocksWidth, IsHPC)
     local result, result_std;
 
-    result := DoEchelonMatTransformationBlockwise(matrix, rec( galoisField := GF(q), IsHPC := IsHPC, numberBlocksHeight := numberBlocksHeight, numberBlocksWidth := numberBlocksWidth ));;
+    result := DoEchelonMatTransformationBlockwise(matrix, rec( galoisField := GF(q), numberBlocksHeight := numberBlocksHeight, numberBlocksWidth := numberBlocksWidth ));;
     result_std := EchelonMatTransformation(matrix);;
 
     return (result.vectors = result_std.vectors)
@@ -15,7 +15,7 @@ GAUSS_doubleTestMatrix := function(
         matrix, echelon, q, numberBlocksHeight, numberBlocksWidth, IsHPC)
     local result, result_std;
 
-    result := DoEchelonMatTransformationBlockwise(matrix, rec( galoisField := GF(q), IsHPC := IsHPC, numberBlocksHeight := numberBlocksHeight, numberBlocksWidth := numberBlocksWidth ));;
+    result := DoEchelonMatTransformationBlockwise(matrix, rec( galoisField := GF(q), numberBlocksHeight := numberBlocksHeight, numberBlocksWidth := numberBlocksWidth ));;
     result_std := EchelonMatTransformation(matrix);;
 
     return (result.vectors = result_std.vectors)

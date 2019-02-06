@@ -30,7 +30,7 @@ GAUSS_compute := function(A, q, numberBlocks, showOutput)
     fi;
     res := GAUSS_GET_REAL_TIME_OF_FUNCTION_CALL(
         DoEchelonMatTransformationBlockwise,
-        [A, rec( galoisField := GF(q), IsHPC := true,
+        [A, rec( galoisField := GF(q), 
                  numberBlocksHeight := numberBlocks,
                  numberBlocksWidth := numberBlocks )]);
     # The variable `time` stores the cpu time that was used by the execution
