@@ -47,7 +47,6 @@ GAUSS_ClearDown_destructive := function(galoisField, C, D, A, i, j)
     else
         H := tmp + A_*D[j].vectors;
     fi;
-    MakeReadOnlyOrImmutableObj(H);
     ech := GAUSS_ECH(galoisField, H);
 
     tmp := GAUSS_CEX(galoisField, ech[5], D[j].vectors);
@@ -56,7 +55,6 @@ GAUSS_ClearDown_destructive := function(galoisField, C, D, A, i, j)
     if not IsEmpty(ech[3]) and not IsEmpty(E) then
         vectors_ := vectors_ + E*ech[3];
     fi;
-    MakeReadOnlyOrImmutableObj(vectors_);
     tmp := GAUSS_PVC(D[j].bitstring, ech[5]);
     bitstring := tmp[1];
     riffle := tmp[2];
