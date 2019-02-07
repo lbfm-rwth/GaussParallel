@@ -128,7 +128,7 @@ GAUSS_RRF := function(galoisField, rows0, rows1, u)
     l := Length(u);
     index0 := 1;
     index1 := 1;
-    new := [];
+    new := NullMat(l,NrCols(rows0));
     index := 0;
     while (index0 + index1 -1 <= l) do
         index := index0 + index1 -1;
@@ -227,9 +227,9 @@ end;
 # the row reduced echelon form of H.
 # The other return values encode the transformation to get there.
 # For a definition of these objects refer to the paper.
-# TODO FIXME: rename s, t to rho, gamma; f to galoisField.
-GAUSS_ECH := function(f, H)
-    local sct, Mct, Kct, tct, Rct, EMT, m, k, M, K, R, S, N, r, s, t, i, ind,
+# TODO Use SubMatrix in ECH
+GAUSS_ECH := function(galoisField, H)
+    local sCnt, MCnt, KCnt, tCnt, RCnt, EMT, m, k, M, K, R, S, N, r, rho, gamma, i, ind,
     Id, one, zero, dims, dimId;
 
     if IsEmpty(H) then
@@ -243,36 +243,36 @@ GAUSS_ECH := function(f, H)
     fi;
     r := TransposedMat(EMT.vectors);
     k := TransposedMat(EMT.relations);
-    s := [];
-    t := [];
+    rho := [];
+    gamma := [];
     R := [];
     M := [];
     K := [];
-    one := One(f);
-    zero := Zero(f);
-    Id := IdentityMat(Length(EMT.vectors), f);
-    ConvertToMatrixRepNC(Id, f);
-    sct := 1;
-    Mct := 1;
-    Kct := 1;
-    Rct := 1;
-    tct := 1;
+    one := One(galoisField);
+    zero := Zero(galoisField);
+    Id := IdentityMat(Length(EMT.vectors), galoisField);
+    ConvertToMatrixRepNC(Id, galoisField);
+    sCnt := 1;
+    MCnt := 1;
+    KCnt := 1;
+    RCnt := 1;
+    tCnt := 1;
 
     ind := 1;
     dims := DimensionsMat(m);
     for i in [1..dims[1]] do
         if m[i] = zero*[1..dims[2]] then
-            s[sct] := 0;
-            sct := sct + 1;
+            rho[sCnt] := 0;
+            sCnt := sCnt + 1;
         else
-            M[Mct] := m[i];
-            Mct := Mct + 1;
+            M[MCnt] := m[i];
+            MCnt := MCnt + 1;
             if not IsEmpty(k) then
-                K[Kct] := k[i];
-                Kct := Kct + 1;
+                K[KCnt] := k[i];
+                KCnt := KCnt + 1;
             fi;
-            s[sct] := 1;
-            sct := sct + 1;
+            rho[sCnt] := 1;
+            sCnt := sCnt + 1;
         fi;
     od;
 
@@ -280,44 +280,44 @@ GAUSS_ECH := function(f, H)
     dimId := DimensionsMat(Id);
     for i in [1..DimensionsMat(r)[1]] do
         if ind > dimId[1] then
-            t[tct] := 0;
-            tct := tct + 1;
-            R[Rct] := r[i];
-            Rct := Rct + 1;
+            gamma[tCnt] := 0;
+            tCnt := tCnt + 1;
+            R[RCnt] := r[i];
+            RCnt := RCnt + 1;
             continue;
         fi;
         if r[i] = Id[ind] then
-            t[tct] := 1;
-            tct := tct + 1;
+            gamma[tCnt] := 1;
+            tCnt := tCnt + 1;
             ind := ind + 1;
         else
-            t[tct] := 0;
-            tct := tct + 1;
-            R[Rct] := r[i];
-            Rct := Rct + 1;
+            gamma[tCnt] := 0;
+            tCnt := tCnt + 1;
+            R[RCnt] := r[i];
+            RCnt := RCnt + 1;
         fi;
     od;
 
     M := -TransposedMat(M);
-    ConvertToMatrixRepNC(M, f);
+    ConvertToMatrixRepNC(M, galoisField);
     K := TransposedMat(K);
-    ConvertToMatrixRepNC(K, f);
+    ConvertToMatrixRepNC(K, galoisField);
     R := -TransposedMat(R);
-    ConvertToMatrixRepNC(R, f);
-    return [M, K, R, s, t];
+    ConvertToMatrixRepNC(R, galoisField);
+    return [M, K, R, rho, gamma];
  end;
 
 # RowLengthen:
 # mat is a matrix
-# Einter is a subBitstring of Efin as in the sense of GAUSS_MKR.
-# The columns of mat correspond to 1s in Einter
+# SubBitstring is a sub-bitstring of Bitstring as in the sense of GAUSS_MKR.
+# The columns of mat correspond to 1s in SubBitstring
 # The function creates a new matrix by
 #   placing zero-columns in mat according to the positions which are
-#   1 in Efin but not in Einter (using GAUSS_CRZ)
+#   1 in Bitstring but not in SubBitstring (using GAUSS_CRZ)
 # This is used to restore zero-columns in the transformation matrix that we
 # didn't store explicitly during the algorithm.
-GAUSS_RowLengthen := function(galoisField, mat, Einter, Efin)
+GAUSS_RowLengthen := function(galoisField, mat, SubBitstring, Bitstring)
     local lambda;
-    lambda := GAUSS_MKR(Efin.rho, Einter.rho);
-    return GAUSS_CRZ(galoisField, mat, lambda, Einter.nr);
+    lambda := GAUSS_MKR(Bitstring.rho, SubBitstring.rho);
+    return GAUSS_CRZ(galoisField, mat, lambda, SubBitstring.nr);
 end;
