@@ -20,46 +20,37 @@ end;
 ##############################################################################
 # Larger high-level functions.
 GAUSS_ChopMatrix := function( f,A,nrows,ncols )
-    local   i,
-            j,
-            rrem,
-            crem,
-            AA,
-            a,
-            b;
+    local   i, j, rrem, crem, rowCnt, rowOverhead, colOverhead, colCnt, AA, a,
+    b;
+
     rrem := DimensionsMat(A)[1] mod nrows;
     crem := DimensionsMat(A)[2] mod ncols;
     a := ( DimensionsMat(A)[1] - rrem ) / nrows; 
     b := ( DimensionsMat(A)[2] - crem ) / ncols; 
     ## the alogirthm tries to chop the matrix A in equally sized submatrices
+    ## the basic size of each block will be axb, the remainder of the above division is then
+    ## spread among the frist rrem rows/cram cols respectively, giving each block 1 addiitonal row and/or column
+
     ## create a matrix AA of size 'nrows x ncols' which stores all submatrices
     AA := FixedAtomicList(nrows, 0);
- 
-    ## these submatrices in AA have all equal dimensions 'a x b'
-    for  i  in [ 1 .. nrows-1] do
+    
+    rowCnt := 0;
+    rowOverhead := 1;
+    for i in [ 1 .. nrows ] do
+        colCnt := 0;
+        colOverhead := 1;
+        if  i > rrem then rowOverhead := 0; fi;
         AA[i] := FixedAtomicList(ncols, 0);
-        for j in [ 1 .. ncols-1 ] do
-            AA[i][j] := A{[(i-1)*a+1 .. i*a]}{[(j-1)*b+1 .. j*b]};
+        for j in [ 1 .. ncols ] do
+            if  j > crem then colOverhead := 0; fi;
+            AA[i][j] := A{[rowCnt+1 .. rowCnt+a+rowOverhead]}{[colCnt+1 .. colCnt+b+colOverhead]};
             ConvertToMatrixRepNC(AA[i][j],f);
             MakeReadOnlyOrImmutableObj(AA[i][j]);
+            colCnt := colCnt + b + colOverhead;
         od;
+        rowCnt := rowCnt + a + rowOverhead;
     od;
 
-    ## to add the remaining submatrices we need to cut the submatrix dimensions if necessary
-    AA[nrows] := FixedAtomicList(ncols, 0);
-    for i in [ 1 .. nrows-1 ] do
-        AA[i][ncols] := A{[(i-1)*a+1 .. i*a]}{[(ncols-1)*b+1 .. DimensionsMat(A)[2]]};
-        ConvertToMatrixRepNC(AA[i][ncols],f);
-        MakeReadOnlyOrImmutableObj(AA[i][ncols]);
-    od;
-    for j in [ 1 .. ncols-1 ] do
-        AA[nrows][j] := A{[(nrows-1)*a+1 .. DimensionsMat(A)[1]]}{[(j-1)*b+1 .. j*b]};
-        ConvertToMatrixRepNC(AA[nrows][j],f);
-        MakeReadOnlyOrImmutableObj(AA[nrows][j]);
-    od;
-    AA[nrows][ncols] := A{[(nrows-1)*a+1 .. DimensionsMat(A)[1]]}{[(ncols-1)*b+1 .. DimensionsMat(A)[2]]};    
-    ConvertToMatrixRepNC(AA[nrows][ncols],f);
-    MakeReadOnlyOrImmutableObj(AA[nrows][ncols]);
     return AA;
 end;
 
