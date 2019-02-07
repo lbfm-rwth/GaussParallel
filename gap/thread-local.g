@@ -1,5 +1,9 @@
-##############################################################################
-# Small low-level functions.
+# This file contains functions that are called by functions from "gap/tasks.g".
+# In principle, these functions only work in a single thread-local region and
+# don't need to know anything about other threads.
+# These functions may only access read-only objects or objects from the
+# executing thread's thread-local region. They may only emit or write into
+# thread-local objects.
 GAUSS_REX := function( galoisField,positionsBitstring,mat )
     local   i,
             up,
