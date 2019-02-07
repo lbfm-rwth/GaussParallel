@@ -4,13 +4,21 @@
 # These functions may only access read-only objects or objects from the
 # executing thread's thread-local region. They may only emit or write into
 # thread-local objects.
+
+# REX: RowEXtract
+# Generates two new matrices [up, down] from the rows of mat. The rows of `up`
+# and `down` are copies of the rows of mat.
+# positionsBitstring is a list of 0s or 1s.  0 means a row goes into `down`, 1
+# means `up`.
 GAUSS_REX := function(galoisField, positionsBitstring, mat)
     local i, up, down, upCount, downCount, numrows, row;
     if IsEmpty (mat) then
         return [[], []];
     fi;
     if IsEmpty (positionsBitstring) then
-        return [[], mat];
+        down := MutableCopyMat(mat);
+        ConvertToMatrixRepNC(down, galoisField);
+        return [[], down];
     fi;
     numrows := Length(positionsBitstring);
     upCount := 1;
@@ -30,19 +38,28 @@ GAUSS_REX := function(galoisField, positionsBitstring, mat)
     return [up, down];
 end;
 
+# CEX: ColumnEXtract
+# Does the same as REX but on the columns of mat.
+# FIXME: rewrite using CopySubMatrix
 GAUSS_CEX := function(galoisField, positionsBitstring, mat)
     local transposed;
     transposed := TransposedMat(mat);
-    transposed := ShallowCopy(
-        GAUSS_REX(galoisField, positionsBitstring, transposed)
-    );
+    transposed := GAUSS_REX(galoisField, positionsBitstring, transposed);
     transposed[1] := TransposedMat(transposed[1]);
     transposed[2] := TransposedMat(transposed[2]);
     return transposed;
 end;
 
+# PVC: PiVotCombine
+# s, t are bitstrings.
+# s is a bitstring of pivot rows or columns
+# t is a shorter bitstring of pivots that we want merge into s.
+# The entries of t overwrite the 0-entries of s
+# Returns
+# - newBitstring: an updated copy of s.
+# - u: a bitstring of length "number 1's in newBitstring" that indicates which
+#      1's come from s or t respectively
 GAUSS_PVC := function (s, t)
-    #We assume that positions of t correspond to zeroes in s
     local newBitstring, u, positionU, positionT, i;
     #Case s is empty
     if IsEmpty(s) then
@@ -77,6 +94,12 @@ GAUSS_PVC := function (s, t)
     return [newBitstring, u];
 end;
 
+# RRF: RowRiFfle
+# u is a list of 0s and 1s
+# rows0, rows1 are matrices
+# Number of rows of rows0 is number of 0s in u
+# Number of rows of rows1 is number of 1s in u
+# Generates a new matrix by combining the rows of row0 and row1 according to u
 GAUSS_RRF := function(galoisField, rows0, rows1, u)
     local l, dim, index, index0, index1, new;
     if IsEmpty(rows0) then
@@ -107,6 +130,13 @@ GAUSS_RRF := function(galoisField, rows0, rows1, u)
     return new;
 end;
 
+# CRZ: ColumnRiffleZero
+# nr is a positive integer
+# mat is a matrix, empty or with nr many rows
+# u is a list of 0s and 1s
+# Generates a new matrix by combining the columns of mat and zero-columns
+#   according to u. For each 1 in u a zero-column is added to mat.
+# Uses RRF on the Transposed input as a subroutine
 GAUSS_CRZ := function(galoisField, mat, u, nr)
     local nullMat, numZero, tmp, sum;
     if IsEmpty(u) then return mat; fi;
@@ -120,6 +150,13 @@ GAUSS_CRZ := function(galoisField, mat, u, nr)
     u));
 end;
 
+# ADI: ADdIdentity
+# mat is a matrix
+# bitstring is a list of 0s and 1s
+# Writes 1s into the columns of mat indexed by the positions of bitstring that
+# contain a 1.
+# Is used together with CRZ. Calling CRZ and ADI inserts columns of the
+# identity matrix into mat.
 GAUSS_ADI := function(galoisField, mat, bitstring)
     local one, posOfNewOnes, i, copy, l;
     if IsEmpty(mat) then
@@ -128,23 +165,21 @@ GAUSS_ADI := function(galoisField, mat, bitstring)
         return copy;
     fi;
     copy := MutableCopyMat(mat);
-    l := Length(bitstring);
-    one := One(galoisField);
-    posOfNewOnes := [];
-    for i in [1 .. l] do
-        if bitstring[i] = 0 then
-            continue;
-        fi;
-        Add(posOfNewOnes, i);
-    od;
-    l := Length(posOfNewOnes);
-    for i in [1 .. l] do
-        copy[i][posOfNewOnes[i]] := one;
-    od;
     ConvertToMatrixRepNC(copy, galoisField);
+    colIndices := Positions(bitstring, 1);
+    one := One(galoisField);
+    for i in [1 .. Length(colIndices)] do
+        copy[i][colIndices[i]] := one;
+    od;
     return copy;
 end;
 
+# MKR: MaKeRiffle
+# bitstring, subBitstring are lists of 0s and 1s of the same length
+# An entry subBitstring[i] can only be 1, if bitstring[i] is 1.
+# Returns a new list newBitstring of length "number of 1s in bitstring"
+#   indicating if subBitstring is 1 or 0 for the positions of bitstring equal
+#   to 1
 GAUSS_MKR := function(bitstring, subBitstring)
     local newBitstring, current, i, l;
     if IsEmpty(subBitstring) then
@@ -168,6 +203,16 @@ GAUSS_MKR := function(bitstring, subBitstring)
     return newBitstring;
 end;
 
+
+# ECH: Echelonize
+# f is a finite field
+# H is a matrix
+# Creates 3 new matrices: M, K, R and 2 new lists of 0s and 1s: rho, gamma
+# R encodes the remnant of a row reduced echelon form of H, i.e. (Id | R ) is
+# the row reduced echelon form of H.
+# The other return values encode the transformation to get there.
+# For a definition of these objects refer to the paper.
+# TODO FIXME: rename s, t to rho, gamma; f to galoisField.
 GAUSS_ECH := function(f, H)
     local sct, Mct, Kct, tct, Rct, EMT, m, k, M, K, R, S, N, r, s, t, i, ind,
     Id, one, zero, dims, dimId;
@@ -247,6 +292,15 @@ GAUSS_ECH := function(f, H)
     return [M, K, R, s, t];
  end;
 
+# RowLengthen:
+# mat is a matrix
+# Einter is a subBitstring of Efin as in the sense of GAUSS_MKR.
+# The columns of mat correspond to 1s in Einter
+# The function creates a new matrix by
+#   placing zero-columns in mat according to the positions which are
+#   1 in Efin but not in Einter (using GAUSS_CRZ)
+# This is used to restore zero-columns in the transformation matrix that we
+# didn't store explicitly during the algorithm.
 GAUSS_RowLengthen := function(galoisField, mat, Einter, Efin)
     local lambda;
     lambda := GAUSS_MKR(Efin.rho, Einter.rho);
