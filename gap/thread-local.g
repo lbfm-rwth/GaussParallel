@@ -77,6 +77,12 @@ GAUSS_PVC := function (s, t)
     return [newBitstring, u];
 end;
 
+# RowRiFfle
+# u is a list of 0s and 1s
+# rows0, rows1 are matrices
+# Number of rows of rows0 is number of 0s in u
+# Number of rows rows1 is number of 1s in u
+# Generates a new matrix by combining the rows of row0 and row1 according to u
 GAUSS_RRF := function(galoisField, rows0, rows1, u)
     local l, dim, index, index0, index1, new;
     if IsEmpty(rows0) then
@@ -107,6 +113,13 @@ GAUSS_RRF := function(galoisField, rows0, rows1, u)
     return new;
 end;
 
+# ColumnRifleZero
+# nr is positive integer
+# mat is a matrix, empty or with nr many rows
+# u is a list of 0s and 1s
+# Generates a new matrix by combining the columns of mat and zero-columns
+#   according to u
+# Uses RRF on the Transposed input as a subroutine
 GAUSS_CRZ := function(galoisField, mat, u, nr)
     local nullMat, numZero, tmp, sum;
     if IsEmpty(u) then return mat; fi;
@@ -120,6 +133,12 @@ GAUSS_CRZ := function(galoisField, mat, u, nr)
     u));
 end;
 
+# ADdIdentity
+# mat is a matrix
+# bitstring is a list of 0s and 1s
+# If we interpret bitstring as a sublist of B:=[1..#Rows(mat)] where i in B iff
+#   bitstring[i] = 1, then this function creates a new matrix which is a copy of mat
+#   but with 1s in all the positions mat[i,B[i]]
 GAUSS_ADI := function(galoisField, mat, bitstring)
     local one, posOfNewOnes, i, copy, l;
     if IsEmpty(mat) then
@@ -145,6 +164,11 @@ GAUSS_ADI := function(galoisField, mat, bitstring)
     return copy;
 end;
 
+# MakeRiFfle
+# bitstring, subBitstring are lists of 0s and 1s of the same length
+# When bitstring[i] is 0, so is subBitstring[i]
+# Outputs a new list newBitstring of length "number of 1s in bitstring"
+#   indicating if subBitstring is 1 or 0 for the positions of bitstring equal to 1
 GAUSS_MKR := function(bitstring, subBitstring)
     local newBitstring, current, i, l;
     if IsEmpty(subBitstring) then
@@ -168,6 +192,11 @@ GAUSS_MKR := function(bitstring, subBitstring)
     return newBitstring;
 end;
 
+
+# f is a finite field
+# H is a matrix
+# Creates 3 new matrices: M, K, R and 2 new lists of 0s and 1s: s, t
+# For a Definition of these objects we refer to the paper.
 GAUSS_ECH := function(f, H)
     local sct, Mct, Kct, tct, Rct, EMT, m, k, M, K, R, S, N, r, s, t, i, ind,
     Id, one, zero, dims, dimId;
@@ -247,6 +276,12 @@ GAUSS_ECH := function(f, H)
     return [M, K, R, s, t];
  end;
 
+# mat is a matrix
+# Einter is a subBitstring of Efin (see GAUSS_MKR)
+# The columns of mat correspond to 1s in Einter
+# Efin has >= many 1s, the function creates a new matrix by
+#   placing zero-columns in mat according to the positions which are
+#   1 in Efin but not in Einter (using GAUSS_CRZ)
 GAUSS_RowLengthen := function(galoisField, mat, Einter, Efin)
     local lambda;
     lambda := GAUSS_MKR(Efin.rho, Einter.rho);
