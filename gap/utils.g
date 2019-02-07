@@ -113,11 +113,11 @@ GAUSS_GlueM := function(rank, v, galoisField, a, b, M, E, mat)
                 tmpC := tmpC + tmp; continue;
                 #M[j][i] := NullMat( rows[j],tmp,galoisField );
             else
-                # FIXME convert?
                 nullMat := NullMat(Length(E[i][b].rho)
                                    - DimensionsMat(M[j][i])[2],
                                    DimensionsMat(M[j][i])[1],
                                    galoisField);
+                ConvertToMatrixRepNC(nullMat, galoisField);
                 M[j][i] := TransposedMat(
                     GAUSS_RRF(galoisField, nullMat, TransposedMat(M[j][i]),
                               E[i][b].rho)
@@ -192,6 +192,9 @@ end;
 GAUSS_GlueK := function(v, rank, galoisField, a, b, E, K, mat)
     local D, X, rows, i, j, tmpR, tmpC, tmp, nullMat;
 
+    if Length(v)=rank then
+        return [];
+    fi;
     # We can't convert D and X since `D{list1}{list2} := ..` is not valid for
     # compressed matrices. We need to use CopySubMatrix instead.
     D := NullMat( Length(v)-rank,Length(v),galoisField );
@@ -226,11 +229,11 @@ GAUSS_GlueK := function(v, rank, galoisField, a, b, E, K, mat)
                 tmpC := tmpC + tmp; continue;
                 #K[j][i] := NullMat( rows[j],tmp,galoisField );
             else
-                # FIXME convert?
                 nullMat := NullMat(Length(E[i][b].rho)
                                    - DimensionsMat(K[j][i])[2],
                                    DimensionsMat(K[j][i])[1],
                                    galoisField);
+                ConvertToMatrixRepNC(nullMat, galoisField);
                 K[j][i] := TransposedMat(
                     GAUSS_RRF(galoisField, nullMat, TransposedMat(K[j][i]),
                               E[i][b].rho)
@@ -244,11 +247,8 @@ GAUSS_GlueK := function(v, rank, galoisField, a, b, E, K, mat)
         tmpR := tmpR + rows[j];
     od;
 
-    # FIXME: Is it safe to call ConvertToMatrixRepNC(.., galoisField) on D and
-    # X here?
-    # D and X may contain empty lists as rows.
-    # ConvertToMatrixRepNC(D, galoisField);
-    # ConvertToMatrixRepNC(X, galoisField);
+    ConvertToMatrixRepNC(D, galoisField);
+    ConvertToMatrixRepNC(X, galoisField);
     return TransposedMat( GAUSS_RRF( galoisField,X,
         TransposedMat( GAUSS_CEX( galoisField,v,D )[1] ),v ) );
 end;
