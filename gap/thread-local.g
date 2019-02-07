@@ -158,7 +158,7 @@ end;
 # Is used together with CRZ. Calling CRZ and ADI inserts columns of the
 # identity matrix into mat.
 GAUSS_ADI := function(galoisField, mat, bitstring)
-    local one, posOfNewOnes, i, copy, l;
+    local copy, colIndices, one, i;
     if IsEmpty(mat) then
         copy := IdentityMat(Length(bitstring), galoisField);
         ConvertToMatrixRepNC(copy, galoisField);
