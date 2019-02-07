@@ -300,6 +300,8 @@ GAUSS_WriteOutput := function( mat,a,b,ncols,nrows,galoisField,D,R,M,E,K,withTra
     if withTrafo then
         result.coeffs := -B;
         result.relations := D;
+        result.transformation := Concatenation(result.coeffs,
+                                               result.relations);
     fi;
     
     return result;
