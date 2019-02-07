@@ -74,9 +74,9 @@ GAUSS_UpdateRow_destructive := function(galoisField, A, C, B, i, j, k)
     if IsEmpty(A[i][j].A) or IsEmpty(B[j][k]) then
         Z := C[i][k];
     elif IsEmpty(C[i][k]) then
-        Z := A[i][j].A*B[j][k];
+        Z := A[i][j].A * B[j][k];
     else
-        Z := C[i][k] + A[i][j].A*B[j][k];
+        Z := C[i][k] + A[i][j].A * B[j][k];
     fi;
 
     tmp := GAUSS_REX(galoisField, A[i][j].rho, Z);
@@ -84,15 +84,15 @@ GAUSS_UpdateRow_destructive := function(galoisField, A, C, B, i, j, k)
     W := tmp[2];
     X := [];
     if not IsEmpty(A[i][j].M) and not IsEmpty(V) then
-        X := A[i][j].M*V;
+        X := A[i][j].M * V;
     fi;
     if i > 1 then
         if IsEmpty(A[i][j].E) or IsEmpty(X) then
             S := B[j][k];
         elif IsEmpty(B[j][k]) then
-            S := A[i][j].E*X;
+            S := A[i][j].E * X;
         else
-            S := B[j][k] + A[i][j].E*X;
+            S := B[j][k] + A[i][j].E * X;
         fi;
         B_ := GAUSS_RRF(galoisField, S, X, A[i][j].lambda);
     else
@@ -102,9 +102,9 @@ GAUSS_UpdateRow_destructive := function(galoisField, A, C, B, i, j, k)
     if IsEmpty(A[i][j].K) or IsEmpty(V)   then
         C_ := W;
     elif IsEmpty(W) then
-        C_ := A[i][j].K*V;
+        C_ := A[i][j].K * V;
     else
-        C_ := W + A[i][j].K*V;
+        C_ := W + A[i][j].K * V;
     fi;
 
     C[i][k] := MakeReadOnlyOrImmutableObj(C_);
@@ -136,15 +136,15 @@ GAUSS_UpdateRowTrafo_destructive := function(galoisField, A, K, M, E, i, h, j)
         if IsEmpty(M[j][h]) or IsEmpty(A[i][j].A) then
             Z := K_;
         elif IsEmpty(K_) then
-            Z := A[i][j].A*M[j][h];
+            Z := A[i][j].A * M[j][h];
         else
-            Z := K_ + A[i][j].A*M[j][h];
+            Z := K_ + A[i][j].A * M[j][h];
         fi;
     elif (not h=i) then
         if IsEmpty(M[j][h]) then
-            Z := Zero(galoisField)*A[i][j].A;
+            Z := Zero(galoisField) * A[i][j].A;
         else
-            Z := A[i][j].A*M[j][h];
+            Z := A[i][j].A * M[j][h];
         fi;
     elif j>1 then
         Z := K_;
@@ -164,7 +164,7 @@ GAUSS_UpdateRowTrafo_destructive := function(galoisField, A, K, M, E, i, h, j)
         if IsEmpty(V) or IsEmpty(A[i][j].M) then
             X := A[i][j].M;
         else
-            X := A[i][j].M*V;
+            X := A[i][j].M * V;
         fi;
     else
         X := A[i][j].M;
@@ -174,7 +174,7 @@ GAUSS_UpdateRowTrafo_destructive := function(galoisField, A, K, M, E, i, h, j)
         if IsEmpty(X) or IsEmpty(A[i][j].E) then
             S := M[j][h];
         else
-            S := M[j][h]+A[i][j].E*X;
+            S := M[j][h] + A[i][j].E * X;
         fi;
     elif not i=1 then
         if IsEmpty(X) or IsEmpty(A[i][j].E) then
@@ -194,9 +194,9 @@ GAUSS_UpdateRowTrafo_destructive := function(galoisField, A, K, M, E, i, h, j)
         if IsEmpty(V) or IsEmpty(A[i][j].K) then
             K_ := W;
         elif IsEmpty(W) then
-            K_ := A[i][j].K*V;
+            K_ := A[i][j].K * V;
         else
-            K_ := W + A[i][j].K*V;
+            K_ := W + A[i][j].K * V;
         fi;
     else
         K_ := A[i][j].K;
@@ -210,8 +210,8 @@ end;
 GAUSS_ClearUp_destructive := function(R, X, j, k, l)
     if IsEmpty(R[k][l]) or IsEmpty(X) then return; fi;
     if IsEmpty(R[j][l]) then
-        R[j][l] := MakeReadOnlyOrImmutableObj(X*R[k][l]);
+        R[j][l] := MakeReadOnlyOrImmutableObj(X * R[k][l]);
     else
-        R[j][l] := MakeReadOnlyOrImmutableObj(R[j][l] + X*R[k][l]);
+        R[j][l] := MakeReadOnlyOrImmutableObj(R[j][l] + X * R[k][l]);
     fi;
 end;
