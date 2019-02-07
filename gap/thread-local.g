@@ -17,13 +17,18 @@ GAUSS_REX := function(galoisField, positionsBitstring, mat)
     if IsEmpty(mat) then
         return [[], []];
     fi;
-    if IsEmpty(positionsBitstring) then
+    upIndices := Positions(positionsBitstring, 1);
+    downIndices := Positions(positionsBitstring, 0);
+    if IsEmpty(upIndices) then
         down := MutableCopyMat(mat);
         ConvertToMatrixRepNC(down, galoisField);
         return [[], down];
     fi;
-    upIndices := Positions(positionsBitstring, 1);
-    downIndices := Positions(positionsBitstring, 0);
+    if IsEmpty(downIndices) then
+        up := MutableCopyMat(mat);
+        ConvertToMatrixRepNC(up, galoisField);
+        return [up, []];
+    fi;
     allCols := [1..NrCols(mat)];
     up := ExtractSubMatrix(mat, upIndices, allCols);
     down := ExtractSubMatrix(mat, downIndices, allCols);
@@ -34,14 +39,30 @@ end;
 
 # CEX: ColumnEXtract
 # Does the same as REX but on the columns of mat.
-# FIXME: rewrite using CopySubMatrix
 GAUSS_CEX := function(galoisField, positionsBitstring, mat)
-    local transposed;
-    transposed := TransposedMat(mat);
-    transposed := GAUSS_REX(galoisField, positionsBitstring, transposed);
-    transposed[1] := TransposedMat(transposed[1]);
-    transposed[2] := TransposedMat(transposed[2]);
-    return transposed;
+    local right, allRows, leftIndices, rightIndices, left,
+        transposed;
+    if IsEmpty(mat) then
+        return [[], []];
+    fi;
+    leftIndices := Positions(positionsBitstring, 1);
+    rightIndices := Positions(positionsBitstring, 0);
+    if IsEmpty(leftIndices) then
+        right := MutableCopyMat(mat);
+        ConvertToMatrixRepNC(right, galoisField);
+        return [[], right];
+    fi;
+    if IsEmpty(rightIndices) then
+        left := MutableCopyMat(mat);
+        ConvertToMatrixRepNC(left, galoisField);
+        return [left, []];
+    fi;
+    allRows := [1..NrRows(mat)];
+    left := ExtractSubMatrix(mat, allRows, leftIndices);
+    right := ExtractSubMatrix(mat, allRows, rightIndices);
+    ConvertToMatrixRepNC(left, galoisField);
+    ConvertToMatrixRepNC(right, galoisField);
+    return [left, right];
 end;
 
 # PVC: PiVotCombine
