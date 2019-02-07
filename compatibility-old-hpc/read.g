@@ -2,8 +2,16 @@
 # use the old version to test whether we place objects in the right regions.
 # We do not support the timing functions with older HPC-GAP versions.
 
+# Things that are missing in older versions
 IsHPCGAP := true;
 MakeReadOnlyObj(MakeImmutable(IsHPCGAP));
+NrRows := x -> DimensionsMat(x)[1];
+NrCols := x -> DimensionsMat(x)[2];
+InstallOtherMethod(ExtractSubMatrix, "fallback for a plist and two lists",
+  [ IsPlistMatrixRep, IsList, IsList ],
+function( m, p, q )
+    return m{p}{q};
+end);
 
 # Content from init.g
 DeclareInfoClass("InfoGauss");
