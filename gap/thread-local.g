@@ -6,33 +6,27 @@
 # thread-local objects.
 
 # REX: RowEXtract
-# Generates two new matrices [up, down] from the rows of mat. The rows of `up`
-# and `down` are copies of the rows of mat.
-# positionsBitstring is a list of 0s or 1s.  0 means a row goes into `down`, 1
-# means `up`.
+# mat is a matrix or an empty list
+# positionsBitstring is a list of 0s or 1s.
+# Generates two new matrices or possibly empty lists up, down from the rows of
+# mat.
+# The rows of `up` and `down` are copies of the rows of mat.
+# 0 means a row goes into `down`, 1 means `up`.
 GAUSS_REX := function(galoisField, positionsBitstring, mat)
-    local i, up, down, upCount, downCount, numrows, row;
-    if IsEmpty (mat) then
+    local down, allCols, upIndices, downIndices, up;
+    if IsEmpty(mat) then
         return [[], []];
     fi;
-    if IsEmpty (positionsBitstring) then
+    if IsEmpty(positionsBitstring) then
         down := MutableCopyMat(mat);
         ConvertToMatrixRepNC(down, galoisField);
         return [[], down];
     fi;
-    numrows := Length(positionsBitstring);
-    upCount := 1;
-    downCount := 1;
-    up := [];
-    down := [];
-    for i in [1 .. numrows] do
-        row := ShallowCopy(mat[i]);
-        if positionsBitstring[i] = 1 then
-            up[upCount] := row; upCount := upCount + 1;
-        else
-            down[downCount] := row; downCount := downCount + 1;
-        fi;
-    od;
+    upIndices := Positions(positionsBitstring, 1);
+    downIndices := Positions(positionsBitstring, 0);
+    allCols := [1..NrCols(mat)];
+    up := ExtractSubMatrix(mat, upIndices, allCols);
+    down := ExtractSubMatrix(mat, downIndices, allCols);
     ConvertToMatrixRepNC(up, galoisField);
     ConvertToMatrixRepNC(down, galoisField);
     return [up, down];
