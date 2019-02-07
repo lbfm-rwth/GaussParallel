@@ -7,10 +7,10 @@
 GAUSS_REX := function(galoisField, positionsBitstring, mat)
     local i, up, down, upCount, downCount, numrows, row;
     if IsEmpty (mat) then
-        return MakeReadOnlyOrImmutableObj([[], []]);
+        return [[], []];
     fi;
     if IsEmpty (positionsBitstring) then
-        return MakeReadOnlyOrImmutableObj([[], mat]);
+        return [[], mat];
     fi;
     numrows := Length(positionsBitstring);
     upCount := 1;
@@ -27,7 +27,7 @@ GAUSS_REX := function(galoisField, positionsBitstring, mat)
     od;
     ConvertToMatrixRepNC(up, galoisField);
     ConvertToMatrixRepNC(down, galoisField);
-    return MakeReadOnlyOrImmutableObj([up, down]);
+    return [up, down];
 end;
 
 GAUSS_CEX := function(galoisField, positionsBitstring, mat)
@@ -38,7 +38,7 @@ GAUSS_CEX := function(galoisField, positionsBitstring, mat)
     );
     transposed[1] := TransposedMat(transposed[1]);
     transposed[2] := TransposedMat(transposed[2]);
-    return MakeReadOnlyOrImmutableObj(transposed);
+    return transposed;
 end;
 
 GAUSS_PVC := function (s, t)
@@ -47,11 +47,11 @@ GAUSS_PVC := function (s, t)
     #Case s is empty
     if IsEmpty(s) then
         u := ListWithIdenticalEntries(Sum(t), 1);
-        return MakeReadOnlyOrImmutableObj([t, u]);
+        return [t, u];
     fi;
     if IsEmpty(t) then
         u := ListWithIdenticalEntries(Sum(s), 0);
-        return MakeReadOnlyOrImmutableObj([s, u]);
+        return [s, u];
     fi;
     #Case otherwise
     u := [];
@@ -74,18 +74,18 @@ GAUSS_PVC := function (s, t)
             positionT := positionT + 1;
         fi;
     od;
-    return MakeReadOnlyOrImmutableObj([newBitstring, u]);
+    return [newBitstring, u];
 end;
 
 GAUSS_RRF := function(galoisField, rows0, rows1, u)
     local l, dim, index, index0, index1, new;
     if IsEmpty(rows0) then
         ConvertToMatrixRepNC(rows1, galoisField);
-        return MakeReadOnlyOrImmutableObj(rows1);
+        return rows1;
     fi;
     if IsEmpty(rows1) then
         ConvertToMatrixRepNC(rows0, galoisField);
-        return MakeReadOnlyOrImmutableObj(rows0);
+        return rows0;
     fi;
     l := Length(u);
     index0 := 1;
@@ -104,7 +104,7 @@ GAUSS_RRF := function(galoisField, rows0, rows1, u)
     od;
 
     ConvertToMatrixRepNC(new, galoisField);
-    return MakeReadOnlyOrImmutableObj(new);
+    return new;
 end;
 
 GAUSS_CRZ := function(galoisField, mat, u, nr)
@@ -112,14 +112,12 @@ GAUSS_CRZ := function(galoisField, mat, u, nr)
     if IsEmpty(u) then return mat; fi;
     sum := Sum(u);
     if IsEmpty(mat) then
-        return MakeReadOnlyOrImmutableObj([]);
+        return [];
     fi;
     nullMat := NullMat(sum, DimensionsMat(mat)[1], galoisField);
     ConvertToMatrixRepNC(nullMat, galoisField);
-    MakeReadOnlyOrImmutableObj(nullMat);
-    return MakeReadOnlyOrImmutableObj(
-        TransposedMat(GAUSS_RRF(galoisField, TransposedMat(mat), nullMat, u))
-    );
+    return TransposedMat(GAUSS_RRF(galoisField, TransposedMat(mat), nullMat,
+    u));
 end;
 
 GAUSS_ADI := function(galoisField, mat, bitstring)
@@ -127,7 +125,7 @@ GAUSS_ADI := function(galoisField, mat, bitstring)
     if IsEmpty(mat) then
         copy := IdentityMat(Length(bitstring), galoisField);
         ConvertToMatrixRepNC(copy, galoisField);
-        return MakeReadOnlyOrImmutableObj(copy);
+        return copy;
     fi;
     copy := MutableCopyMat(mat);
     l := Length(bitstring);
@@ -144,15 +142,13 @@ GAUSS_ADI := function(galoisField, mat, bitstring)
         copy[i][posOfNewOnes[i]] := one;
     od;
     ConvertToMatrixRepNC(copy, galoisField);
-    return MakeReadOnlyOrImmutableObj(copy);
+    return copy;
 end;
 
 GAUSS_MKR := function(bitstring, subBitstring)
     local newBitstring, current, i, l;
     if IsEmpty(subBitstring) then
-        return MakeReadOnlyOrImmutableObj(
-            ListWithIdenticalEntries(Sum(bitstring), 1)
-        );
+        return ListWithIdenticalEntries(Sum(bitstring), 1);
     fi;
     l := Length(bitstring);
     newBitstring := [];
@@ -169,7 +165,7 @@ GAUSS_MKR := function(bitstring, subBitstring)
         current := current + 1;
         fi;
     od;
-    return MakeReadOnlyOrImmutableObj(newBitstring);
+    return newBitstring;
 end;
 
 GAUSS_ECH := function(f, H)
@@ -177,13 +173,13 @@ GAUSS_ECH := function(f, H)
     Id, one, zero, dims, dimId;
 
     if IsEmpty(H) then
-        return MakeReadOnlyOrImmutableObj(ListWithIdenticalEntries(5, []));
+        return ListWithIdenticalEntries(5, []);
     fi;
 
     EMT := EchelonMatTransformation(H);
     m := TransposedMat(EMT.coeffs);
     if IsEmpty(m) then
-        return MakeReadOnlyOrImmutableObj(ListWithIdenticalEntries(5, []));
+        return ListWithIdenticalEntries(5, []);
     fi;
     r := TransposedMat(EMT.vectors);
     k := TransposedMat(EMT.relations);
@@ -248,7 +244,7 @@ GAUSS_ECH := function(f, H)
     ConvertToMatrixRepNC(K, f);
     R := -TransposedMat(R);
     ConvertToMatrixRepNC(R, f);
-    return MakeReadOnlyOrImmutableObj([M, K, R, s, t]);
+    return [M, K, R, s, t];
  end;
 
 GAUSS_RowLengthen := function(galoisField, mat, Einter, Efin)
