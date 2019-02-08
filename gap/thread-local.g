@@ -230,9 +230,29 @@ end;
 # The other return values encode the transformation to get there.
 # For a definition of these objects refer to the paper. They satisfy the
 # equality:
-# ( M | 0 )  ( rho)                        ( -1  | R )
-# ( K | 1 )  (!rho)  H  (gamma | !gamma) = (  0  | 0 )
+# ( M | 0 )  ( rho)                            ( -1  | R )
+# ( K | 1 )  (!rho)  H  (gamma^T | !gamma^T) = (  0  | 0 )
+#
+# EchelonMatTransformation computes the RREF of H and a transformation to
+# get there. We need to transform this output into M, K, R, rho, gamma.
+# The return values of EchelonMatTransformation satisfy:
+# (   coeffs  )       ( vectors )
+# ( relations )  H  = (    0    )
+#
+# This means:
+# ( M | 0 )  ( rho)   (   coeffs  )
+# ( K | 1 )  (!rho) = ( relations )
+#
+# and
+#
+# ( -1  | R ) ( gamma)   ( vectors )
+# (  0  | 0 ) (!gamma) = (    0    )
+#
+# (note that permutation matrices are orthogonal).
+#
+# We only need to reorder and throw away columns.
 # TODO Use SubMatrix in ECH
+# TODO Get rid of the TransposedMat calls
 GAUSS_ECH := function(galoisField, H)
     local EMT, R, vectors, M, coeffs, K, relations, rho, gamma, one, zero,
     sCnt, MCnt, KCnt, RCnt, tCnt, Id, dims, ind, dimId, i;
@@ -241,9 +261,6 @@ GAUSS_ECH := function(galoisField, H)
         return ListWithIdenticalEntries(5, []);
     fi;
 
-    # EchelonMatTransformation computes the RREF of H and a transformation to
-    # get there. We need to transform this output into something usable by our
-    # algorithm. We mostly need to reorder rows or columns.
     EMT := EchelonMatTransformation(H);
     # R remnant
     # We create this from vectors
