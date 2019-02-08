@@ -1,5 +1,11 @@
 # This file contains the submodules of the parallel Gaussian algorithm.
 
+# E[i] contains information about the location of pivot-rows in block-row i
+# Information in E[i,j] is based on information in E[i,j-1].
+# Extend_destructive assembles the information in E[i,j] combining information
+# from E[i][j-1] and the new generated infromation for block [i,j] which
+# is contained in A[i,j]. 
+# Writes into E[i,j]
 GAUSS_Extend_destructive := function(A, E, i, j)
     local rhoE, nr, rhoA, res;
     if j = 1 then
@@ -15,6 +21,13 @@ GAUSS_Extend_destructive := function(A, E, i, j)
     E[i][j] := MakeReadOnlyOrImmutableObj(res);
 end;
 
+
+# ClearDown_destructive is used to perform a local echelonization process in a
+# singe block C[i,j] and to collect information about this process that is used
+# by other tastks (e.g. location of pivot-rows/-cols, transformations, echelon
+# form of block, ...)
+# Writes into A[i,j] (information about pivot-rows and trafo) and 
+#   D[j] (information about pivot-cols and the remnant in block-column j)
 GAUSS_ClearDown_destructive := function(galoisField, C, D, A, i, j)
     local A_, M, K, bitstring, E, riffle, vectors_, vectors, H, tmp, ech;
     if IsEmpty(C[i][j]) then
@@ -69,6 +82,13 @@ GAUSS_ClearDown_destructive := function(galoisField, C, D, A, i, j)
     );
 end;
 
+# UpdateRow_destructive takes information from ClearDown(i,j) about 
+# row transformations that are used to echolonize C[i,j]i and propagates it to
+# matrices to the right (i.e C[i,k] for a k > j).  The function basically
+# copies these transformations and splits up C[i,k] into pivot-rows (going into
+# B, not processed any further) and non-pivot-rows (staying in C) processed by
+# other tasks later on.  
+# Writes into C[i,j], B[j,k]
 GAUSS_UpdateRow_destructive := function(galoisField, A, C, B, i, j, k)
     local tmp, B_, C_, S, V, W, X, Z;
     if IsEmpty(A[i][j].A) or IsEmpty(B[j][k]) then
@@ -111,7 +131,9 @@ GAUSS_UpdateRow_destructive := function(galoisField, A, C, B, i, j, k)
     B[j][k] := MakeReadOnlyOrImmutableObj(B_);
 end;
 
-# Calls GAUSS_CEX but writes into R and returns X
+# Calls GAUSS_CEX but writes into R[j,k] and returns X
+# PreClearUp and ClearUp_destructive peform a classical backwards-elimination
+# process.
 GAUSS_PreClearUp := function(R, galoisField, D, B, j, k)
     local tmp;
     tmp := GAUSS_CEX(galoisField, D[k].bitstring, B[j][k]);
@@ -121,6 +143,8 @@ GAUSS_PreClearUp := function(R, galoisField, D, B, j, k)
     return tmp[1];
 end;
 
+# See documentation of UpdateRow_destructive and refer to paper for changes.
+# Writes into M[j,h] and K[i,h]
 GAUSS_UpdateRowTrafo_destructive := function(galoisField, A, K, M, E, i, h, j)
     local tmp, K_, M_, S, V, W, X, Z;
     # for the or delta empty part, cf. paper: want to know if beta' in the
@@ -206,7 +230,7 @@ GAUSS_UpdateRowTrafo_destructive := function(galoisField, A, K, M, E, i, h, j)
     M[j][h] := MakeReadOnlyOrImmutableObj(M_);
 end;
 
-# Writes into R
+# Writes into R[j,l]
 GAUSS_ClearUp_destructive := function(R, X, j, k, l)
     if IsEmpty(R[k][l]) or IsEmpty(X) then return; fi;
     if IsEmpty(R[j][l]) then
