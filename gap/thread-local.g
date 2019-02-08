@@ -268,6 +268,7 @@ GAUSS_ECH := function(galoisField, H)
     # We create this from vectors
     R := [];
     vectors := TransposedMat(EMT.vectors);
+    ConvertToMatrixRepNC(vectors, galoisField);
     # M is the transformation to get the non-zero rows of the RREF
     # We create this from coeffs
     M := [];
@@ -294,6 +295,7 @@ GAUSS_ECH := function(galoisField, H)
     nrRowsCoeffs := NrRows(coeffs);
     nrColsCoeffs := NrCols(coeffs);
     nrRowsVectors := NrRows(vectors);
+    nrColsVectors := NrCols(vectors);
     Id := IdentityMat(nrPivots, galoisField);
     ConvertToMatrixRepNC(Id, galoisField);
     # FIXME use heads?
@@ -325,21 +327,13 @@ GAUSS_ECH := function(galoisField, H)
         fi;
     od;
     Append(gamma, ListWithIdenticalEntries(nrRowsVectors - Length(gamma), 0));
-    currentPivot := 1;
-    RCnt := 1;
-    for i in [1..nrRowsVectors] do
-        if currentPivot > nrPivots then
-            R[RCnt] := vectors[i];
-            RCnt := RCnt + 1;
-            continue;
-        fi;
-        if vectors[i] = Id[currentPivot] then
-            currentPivot := currentPivot + 1;
-        else
-            R[RCnt] := vectors[i];
-            RCnt := RCnt + 1;
-        fi;
-    od;
+    # R empty iff H full column rank
+    nonSelectedGamma := Positions(gamma, 0);
+    if IsEmpty(nonSelectedGamma) then
+        R := [];
+    else
+        R := ExtractSubMatrix(vectors, nonSelectedGamma, [1..nrColsVectors]);
+    fi;
 
     M := -TransposedMat(M);
     ConvertToMatrixRepNC(M, galoisField);
