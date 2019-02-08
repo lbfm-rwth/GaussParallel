@@ -1,4 +1,5 @@
-# This file contains the submodules of the parallel Gaussian algorithm.
+# These functions are scheduled as tasks by the main routine. They need to make
+# sure that they only write read-only objects into the "shared" atomic lists.
 
 # E[i] contains information about the location of pivot-rows in block-row i
 # Information in E[i,j] is based on information in E[i,j-1].
