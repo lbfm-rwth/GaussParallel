@@ -251,8 +251,6 @@ end;
 # (note that permutation matrices are orthogonal).
 #
 # We only need to reorder and throw away columns.
-# TODO Use SubMatrix in ECH
-# TODO Get rid of the TransposedMat calls
 GAUSS_ECH := function(galoisField, H)
     local EMT, R, vectors, M, coeffs, K, relations, rho, gamma, nrPivots, Id,
     selectedRho, currentPivot, nonSelectedGamma, i;
@@ -285,7 +283,6 @@ GAUSS_ECH := function(galoisField, H)
     # gamma is a column-select list. Is used to select the pivot columns.
     gamma := [];
     # Our identity matrix has as many rows as R.
-    # FIXME vectors was transposed
     nrPivots := NrCols(vectors);
     Id := IdentityMat(nrPivots, galoisField);
     ConvertToMatrixRepNC(Id, galoisField);
