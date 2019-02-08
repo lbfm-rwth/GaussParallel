@@ -220,13 +220,18 @@ end;
 
 
 # ECH: Echelonize
-# f is a finite field
+# galoisField is a finite field
 # H is a matrix
 # Creates 3 new matrices: M, K, R and 2 new lists of 0s and 1s: rho, gamma
-# R encodes the remnant of a row reduced echelon form of H, i.e. (Id | R ) is
-# the row reduced echelon form of H.
+# R encodes the remnant of a row reduced echelon form (RREF) of H, i.e.
+# ( -1  | R )
+# (  0  | 0 )
+# is the row reduced echelon form of H.
 # The other return values encode the transformation to get there.
-# For a definition of these objects refer to the paper.
+# For a definition of these objects refer to the paper. They satisfy the
+# equality:
+# ( M | 0 )  ( rho)                        ( -1  | R )
+# ( K | 1 )  (!rho)  H  (gamma | !gamma) = (  0  | 0 )
 # TODO Use SubMatrix in ECH
 GAUSS_ECH := function(galoisField, H)
     local sCnt, MCnt, KCnt, tCnt, RCnt, EMT, m, k, M, K, R, S, N, r, rho, gamma, i, ind,
@@ -236,20 +241,33 @@ GAUSS_ECH := function(galoisField, H)
         return ListWithIdenticalEntries(5, []);
     fi;
 
+    # EchelonMatTransformation computes the RREF of H and a transformation to
+    # get there. We need to transform this output into something usable by our
+    # algorithm. We mostly need to reorder rows or columns.
     EMT := EchelonMatTransformation(H);
     m := TransposedMat(EMT.coeffs);
     if IsEmpty(m) then
         return ListWithIdenticalEntries(5, []);
     fi;
-    r := TransposedMat(EMT.vectors);
-    k := TransposedMat(EMT.relations);
-    rho := [];
-    gamma := [];
+    # R remnant
+    # We create this from r
     R := [];
+    r := TransposedMat(EMT.vectors);
+    # M is the transformation to get the non-zero rows of the RREF
+    # We create this from m
     M := [];
+    m := TransposedMat(EMT.coeffs);
+    # K is the transformation to get the zero rows of the RREF
+    # We create this from k
     K := [];
+    k := TransposedMat(EMT.relations);
+    # rho is a row-select list. Is used to select the pivot, here non-zero, rows.
+    rho := [];
+    # gamma is a column-select list. Is used to select the pivot columns.
+    gamma := [];
     one := One(galoisField);
     zero := Zero(galoisField);
+    # Our identity matrix has as many rows as R
     Id := IdentityMat(Length(EMT.vectors), galoisField);
     ConvertToMatrixRepNC(Id, galoisField);
     sCnt := 1;
