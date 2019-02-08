@@ -115,8 +115,8 @@ end;
 GAUSS_PreClearUp := function(R, galoisField, D, B, j, k)
     local tmp;
     tmp := GAUSS_CEX(galoisField, D[k].bitstring, B[j][k]);
-    MakeReadOnlyObj(tmp[1]);
-    MakeReadOnlyObj(tmp[2]);
+    MakeReadOnlyOrImmutableObj(tmp[1]);
+    MakeReadOnlyOrImmutableObj(tmp[2]);
     R[j][k] := tmp[2];
     return tmp[1];
 end;
