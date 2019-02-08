@@ -80,15 +80,23 @@ GAUSS_createHeads := function( pivotrows, pivotcols, width )
     return result;
 end;
 
-GAUSS_GlueM := function(rank, v, galoisField, a, b, M, E, mat)
-    local B, rows, i, j, tmpR, tmpC, tmp, nullMat, w;
+GAUSS_GlueMorK := function( galoisField, blockMat, nrBlocksHeigth, nrBlocksWidth, mat, E, v, destinationRows, destinationCols, flag)
+    local destination, a, b, X, rows, i, j, tmpR, tmpC, tmp, nullMat, w, M;
+    M := blockMat;
+    if   destinationRows = 0  or destinationCols = 0 then
+        return [];
+    fi;
+    a := nrBlocksHeigth;
+    b := nrBlocksWidth;
+    
+    destination := NullMat(destinationRows, destinationCols, galoisField);
+    ConvertToMatrixRepNC(destination, galoisField);
 
-    B := NullMat( rank,Length(v),galoisField );
-    ConvertToMatrixRepNC(B, galoisField);
+    ## TODO The following info could be rank(blockCol[j]) ??
     rows := [];
-    for j in [ 1 .. b ] do
+    for j in [ 1 .. a ] do
         rows[j] := 0;
-        for i in [ 1 .. a ] do
+        for i in [ 1 .. b ] do
             if  not IsEmpty(M[j][i]) then
                 rows[j] := NrRows(M[j][i]);
                 break;
@@ -97,33 +105,35 @@ GAUSS_GlueM := function(rank, v, galoisField, a, b, M, E, mat)
     od;
 
     tmpR := 1;
-    for j in [ 1 .. b ] do
+    for j in [ 1 .. a ] do
         if rows[j]=0 then
             continue;
         fi;
         tmpC := 1;
-        w := NrRows(mat)/a;
-        for i in [ 1 .. a ] do
+
+        # TODO NrRows(mat) = Length(v) ??;
+        w := NrRows(mat)/b;
+        for i in [ 1 .. b ] do
             if IsEmpty(M[j][i]) then
-                if IsEmpty(E[i][b].rho) then
+                if IsEmpty(E[i][Length(E[i])].rho) then
                     tmp := w;
                 else
-                    tmp := Length( E[i][b].rho );
+                    tmp := Length( E[i][Length(E[i])].rho );
                 fi;
                 tmpC := tmpC + tmp; continue;
                 #M[j][i] := NullMat( rows[j],tmp,galoisField );
             else
                 nullMat := NullMat(
-                    Length(E[i][b].rho) - NrCols(M[j][i]),
+                    Length(E[i][Length(E[i])].rho) - NrCols(M[j][i]),
                     NrRows(M[j][i]), galoisField
                 );
                 ConvertToMatrixRepNC(nullMat, galoisField); 
                 M[j][i] := TransposedMat(
                     GAUSS_RRF(galoisField, nullMat, TransposedMat(M[j][i]),
-                              E[i][b].rho)
+                              E[i][Length(E[i])].rho)
                 );
             fi;
-            B{[tmpR .. tmpR + NrRows(M[j][i])-1 ]}
+            destination{[tmpR .. tmpR + NrRows(M[j][i])-1 ]}
                 {[tmpC .. tmpC + NrCols(M[j][i])-1 ]}
                 := M[j][i];
             tmpC := tmpC + NrCols(M[j][i]);
@@ -132,8 +142,72 @@ GAUSS_GlueM := function(rank, v, galoisField, a, b, M, E, mat)
     od;
 
     # FIXME: convert?
-    return B;
+    ConvertToMatrixRepNC(destination, galoisField);
+    if flag = 1 then
+        X := IdentityMat( destinationRows,galoisField );
+        ConvertToMatrixRepNC(X, galoisField);
+        return TransposedMat( GAUSS_RRF( galoisField,X,
+            TransposedMat( GAUSS_CEX( galoisField,v,destination )[1] ),v ) );
+    fi;
+    return destination;
 end;
+
+GAUSS_GlueFromBlocks := function( galoisField, blockMat, LocalSizeInfo, LocalColInfo, riffle, flag, hack )
+    local i, j, a, b, nullMat, newRows, newCols, newMat, rowCnt, colCnt, tmp;
+
+    a := Length(blockMat); # NrRows of blockMat
+    b := Length(blockMat[1]); # NrCols of Blockmat
+    
+    # create a new matrix into which the blocks are glued 
+    # compute its size first
+    newRows := Sum(Concatenation(LocalSizeInfo));
+    newCols := Length(Concatenation(LocalSizeInfo));
+    if flag = 1 then
+        newRows := newCols - newRows;
+    fi;
+    if  newRows = 0 or newCols = 0 then
+        return [];
+    fi;
+    newMat := NullMat(newRows, newRows, galoisField);
+    
+    rowCnt := 1;
+    for i in [ 1 .. a ] do
+        colCnt := 1;
+        if Sum(LocalColInfo[i])=0 then
+            continue; 
+        fi; 
+        for j in [ 1 .. b ] do
+            if  IsEmpty(blockMat[i][j]) then       
+                if  IsEmpty(LocalSizeInfo[j]) then
+                    tmp := 0;
+                else
+                    tmp := Sum(LocalSizeInfo[j]);
+                fi;
+                colCnt := colCnt + tmp;
+                continue;
+            else
+                newMat{[rowCnt .. rowCnt + NrRows(blockMat[i][j])-1 ]}
+                    {[colCnt .. colCnt + NrCols(blockMat[i][j])-1 ]}
+                    := blockMat[i][j];
+                colCnt := colCnt + NrCols(blockMat[i][j]);
+            fi;
+        od;
+        rowCnt := rowCnt + Sum(LocalColInfo[i]);
+    od;
+    
+    ConvertToMatrixRepNC(newMat, galoisField);
+    if flag = 1 then
+        tmp := IdentityMat(newRows, galoisField);
+    else
+        tmp := Length(riffle) - Sum(Concatenation(LocalSizeInfo));
+        if  tmp = 0 then return newMat; fi;
+        tmp := NullMat(tmp,newRows,galoisField);
+    fi;
+    ConvertToMatrixRep(tmp, galoisField);
+    return TransposedMat( GAUSS_RRF(galoisField, tmp, TransposedMat(newMat), riffle)
+               );
+end;
+
 
 GAUSS_GlueR := function(rank, ncols, galoisField, nrows, D, R, a, b)
     local C, rows, w, i, j, tmpR, tmpC, idMat;
@@ -189,72 +263,9 @@ GAUSS_GlueR := function(rank, ncols, galoisField, nrows, D, R, a, b)
     return rec( C := C, w := w );
 end;
 
-GAUSS_GlueK := function(v, rank, galoisField, a, b, E, K, mat)
-    local D, X, rows, i, j, tmpR, tmpC, tmp, nullMat;
-
-    if Length(v)=rank then
-        return [];
-    fi;
-    # We can't convert D and X since `D{list1}{list2} := ..` is not valid for
-    # compressed matrices. We need to use CopySubMatrix instead.
-    D := NullMat( Length(v)-rank,Length(v),galoisField );
-    X := IdentityMat( Length(v)-rank,galoisField );
-    rows := [];
-    for j in [ 1 .. a ] do
-        rows[j] := 0;
-        for i in [ 1 .. a ] do
-            if IsEmpty(K[j][i]) then
-                rows[j] := Length(E[j][b].rho) - Sum(E[j][b].rho);
-            else
-                rows[j] := NrRows(K[j][i]);
-                break;
-            fi;
-        od;
-    od;
-
-    tmpR := 1;
-    for j in [ 1 .. a ] do
-        if rows[j]=0 then
-            continue;
-        fi;
-        tmpC := 1;
-        for i in [ 1 .. a ] do
-            if IsEmpty(K[j][i]) then
-                if IsEmpty(E[i][b].rho) then
-                    #tmp := b;
-                    tmp := NrRows(mat)/a;
-                else
-                    tmp := Length( E[i][b].rho );
-                fi;
-                tmpC := tmpC + tmp; continue;
-                #K[j][i] := NullMat( rows[j],tmp,galoisField );
-            else
-                nullMat := NullMat(Length(E[i][b].rho)
-                                   - NrCols(K[j][i]),
-                                   NrRows(K[j][i]),
-                                   galoisField);
-                ConvertToMatrixRepNC(nullMat, galoisField);
-                K[j][i] := TransposedMat(
-                    GAUSS_RRF(galoisField, nullMat, TransposedMat(K[j][i]),
-                              E[i][b].rho)
-                );
-            fi;
-            D{[tmpR .. tmpR + NrRows(K[j][i])-1 ]}
-                {[tmpC .. tmpC + NrCols(K[j][i])-1 ]}
-                := K[j][i];
-            tmpC := tmpC + NrCols(K[j][i]);
-        od;
-        tmpR := tmpR + rows[j];
-    od;
-
-    ConvertToMatrixRepNC(D, galoisField);
-    ConvertToMatrixRepNC(X, galoisField);
-    return TransposedMat( GAUSS_RRF( galoisField,X,
-        TransposedMat( GAUSS_CEX( galoisField,v,D )[1] ),v ) );
-end;
 
 GAUSS_WriteOutput := function( mat,a,b,ncols,nrows,galoisField,D,R,M,E,K,withTrafo )
-    local v, w, rank, tmp, B, C, heads, i, j, GlueR, result;
+    local v, w, rank, tmp, B, C, heads, i, j, GlueR, result, localBitstrings, localCols;
 
     ## Write output
     Info(InfoGauss, 2, "Write output");
@@ -273,7 +284,16 @@ GAUSS_WriteOutput := function( mat,a,b,ncols,nrows,galoisField,D,R,M,E,K,withTra
     od;
 
     if  withTrafo then
-        B := GAUSS_GlueM(rank, v, galoisField, a, b, M, E, mat);
+        #B := GAUSS_GlueMorK( galoisField, M, b, a, mat, E, v, rank, Length(v), 0 );
+        localBitstrings := ListWithIdenticalEntries(a,[]);
+        localCols := ListWithIdenticalEntries(b,[]);
+        for  j in [ 1 .. b ] do
+            localCols[j] := D[j].bitstring;
+        od;
+        for i in [ 1 .. a ] do
+            localBitstrings[i] := E[i][b].rho;
+        od;
+        B := GAUSS_GlueFromBlocks(galoisField, M, localBitstrings, localCols, v, 0, NrRows(mat)/b);  
     fi;
 
     GlueR := GAUSS_GlueR(rank, ncols, galoisField, nrows, D, R, a, b);
@@ -282,9 +302,9 @@ GAUSS_WriteOutput := function( mat,a,b,ncols,nrows,galoisField,D,R,M,E,K,withTra
 
     if withTrafo then
         ## Glue the blocks of K
-        D := GAUSS_GlueK(v, rank, galoisField, a, b, E, K, mat);
+        D := GAUSS_GlueMorK(galoisField, K, a, a, mat, E, v, Length(v)-rank, Length(v), 1 );
     fi;
-
+    
     heads := GAUSS_createHeads(v, w, NrCols(mat));
     result := rec(vectors := -C, pivotrows := v, pivotcols := w, rank := rank,
                   heads := heads);
