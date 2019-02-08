@@ -221,7 +221,7 @@ end;
 
 # ECH: Echelonize
 # galoisField is a finite field
-# H is a matrix
+# H is a *non-zero* matrix
 # Creates 3 new matrices: M, K, R and 2 new lists of 0s and 1s: rho, gamma
 # R encodes the remnant of a row reduced echelon form (RREF) of H, i.e.
 # ( -1  | R )
@@ -271,6 +271,7 @@ GAUSS_ECH := function(galoisField, H)
     # We create this from coeffs
     M := [];
     coeffs := TransposedMat(EMT.coeffs);
+    ConvertToMatrixRepNC(coeffs, galoisField);
     # K is the transformation to get the zero rows of the RREF
     # We create this from relations
     K := [];
@@ -295,26 +296,21 @@ GAUSS_ECH := function(galoisField, H)
     # (M|0) x P_rho = coeffs;
     for i in [1..nrRowsCoeffs] do
         if IsZero(coeffs[i]) then
-            rho[sCnt] := 0;
-            sCnt := sCnt + 1;
+            rho[i] := 0;
         else
-            rho[sCnt] := 1;
-            sCnt := sCnt + 1;
+            rho[i] := 1;
         fi;
     od;
-    MCnt := 1;
+    selectedRho := Positions(rho, 1);
+    M := ExtractSubMatrix(coeffs, selectedRho, [1..nrColsCoeffs]);
     KCnt := 1;
-    for i in [1..nrRowsCoeffs] do
-        if not IsZero(coeffs[i]) then
-            M[MCnt] := coeffs[i];
-            MCnt := MCnt + 1;
-            if not IsEmpty(relations) then
+    if not IsEmpty(relations) then
+        for i in [1..nrRowsCoeffs] do
+            if rho[i] = 1 then
                 K[KCnt] := relations[i];
                 KCnt := KCnt + 1;
             fi;
-        fi;
-    od;
-
+        od;
     ind := 1;
     tCnt := 1;
     for i in [1..nrRowsVectors] do
