@@ -23,10 +23,10 @@ GAUSS_ChopMatrix := function( f,A,nrows,ncols )
     local   i, j, rrem, crem, rowCnt, rowOverhead, colOverhead, colCnt, AA, a,
     b;
 
-    rrem := DimensionsMat(A)[1] mod nrows;
-    crem := DimensionsMat(A)[2] mod ncols;
-    a := ( DimensionsMat(A)[1] - rrem ) / nrows; 
-    b := ( DimensionsMat(A)[2] - crem ) / ncols; 
+    rrem := NrRows(A) mod nrows;
+    crem := NrCols(A) mod ncols;
+    a := ( NrRows(A) - rrem ) / nrows; 
+    b := ( NrCols(A) - crem ) / ncols; 
     ## the alogirthm tries to chop the matrix A in equally sized submatrices
     ## the basic size of each block will be axb, the remainder of the above division is then
     ## spread among the frist rrem rows/cram cols respectively, giving each block 1 addiitonal row and/or column
@@ -90,7 +90,7 @@ GAUSS_GlueM := function(rank, v, galoisField, a, b, M, E, mat)
         rows[j] := 0;
         for i in [ 1 .. a ] do
             if  not IsEmpty(M[j][i]) then
-                rows[j] := DimensionsMat(M[j][i])[1];
+                rows[j] := NrRows(M[j][i]);
                 break;
             fi;
         od;
@@ -102,7 +102,7 @@ GAUSS_GlueM := function(rank, v, galoisField, a, b, M, E, mat)
             continue;
         fi;
         tmpC := 1;
-        w := DimensionsMat(mat)[1]/a;
+        w := NrRows(mat)/a;
         for i in [ 1 .. a ] do
             if IsEmpty(M[j][i]) then
                 if IsEmpty(E[i][b].rho) then
@@ -113,20 +113,20 @@ GAUSS_GlueM := function(rank, v, galoisField, a, b, M, E, mat)
                 tmpC := tmpC + tmp; continue;
                 #M[j][i] := NullMat( rows[j],tmp,galoisField );
             else
-                nullMat := NullMat(Length(E[i][b].rho)
-                                   - DimensionsMat(M[j][i])[2],
-                                   DimensionsMat(M[j][i])[1],
-                                   galoisField);
-                ConvertToMatrixRepNC(nullMat, galoisField);
+                nullMat := NullMat(
+                    Length(E[i][b].rho) - NrCols(M[j][i]),
+                    NrRows(M[j][i]), galoisField
+                );
+                ConvertToMatrixRepNC(nullMat, galoisField); 
                 M[j][i] := TransposedMat(
                     GAUSS_RRF(galoisField, nullMat, TransposedMat(M[j][i]),
                               E[i][b].rho)
                 );
             fi;
-            B{[tmpR .. tmpR + DimensionsMat(M[j][i])[1]-1 ]}
-                {[tmpC .. tmpC + DimensionsMat(M[j][i])[2]-1 ]}
+            B{[tmpR .. tmpR + NrRows(M[j][i])-1 ]}
+                {[tmpC .. tmpC + NrCols(M[j][i])-1 ]}
                 := M[j][i];
-            tmpC := tmpC + DimensionsMat(M[j][i])[2];
+            tmpC := tmpC + NrCols(M[j][i]);
         od;
         tmpR := tmpR + rows[j];
     od;
@@ -152,7 +152,7 @@ GAUSS_GlueR := function(rank, ncols, galoisField, nrows, D, R, a, b)
          fi;
          for j in [ 1 .. b ] do
              if  not IsEmpty(R[i][j]) then
-                 rows[i] := DimensionsMat(R[i][j])[1];
+                 rows[i] := NrRows(R[i][j]);
                  break;
              fi;
          od;
@@ -169,14 +169,14 @@ GAUSS_GlueR := function(rank, ncols, galoisField, nrows, D, R, a, b)
                  if not IsEmpty(D[j].bitstring) then
                      tmpC := tmpC + Sum( 1 - D[j].bitstring );
                  elif  not IsEmpty(R[1][j]) then
-                     tmpC := tmpC + DimensionsMat(R[1][j])[2];
+                     tmpC := tmpC + NrCols(R[1][j]);
                  fi;
                  continue;
              fi;
-             C{[tmpR .. tmpR + DimensionsMat(R[i][j])[1]-1 ]}
-                {[tmpC .. tmpC + DimensionsMat(R[i][j])[2]-1 ]}
+             C{[tmpR .. tmpR + NrRows(R[i][j])-1 ]}
+                {[tmpC .. tmpC + NrCols(R[i][j])-1 ]}
                 := R[i][j];
-            tmpC := tmpC + DimensionsMat(R[i][j])[2];
+            tmpC := tmpC + NrCols(R[i][j]);
         od;
         tmpR := tmpR + rows[i];
     od;
@@ -206,7 +206,7 @@ GAUSS_GlueK := function(v, rank, galoisField, a, b, E, K, mat)
             if IsEmpty(K[j][i]) then
                 rows[j] := Length(E[j][b].rho) - Sum(E[j][b].rho);
             else
-                rows[j] := DimensionsMat(K[j][i])[1];
+                rows[j] := NrRows(K[j][i]);
                 break;
             fi;
         od;
@@ -222,7 +222,7 @@ GAUSS_GlueK := function(v, rank, galoisField, a, b, E, K, mat)
             if IsEmpty(K[j][i]) then
                 if IsEmpty(E[i][b].rho) then
                     #tmp := b;
-                    tmp := DimensionsMat(mat)[1]/a;
+                    tmp := NrRows(mat)/a;
                 else
                     tmp := Length( E[i][b].rho );
                 fi;
@@ -230,8 +230,8 @@ GAUSS_GlueK := function(v, rank, galoisField, a, b, E, K, mat)
                 #K[j][i] := NullMat( rows[j],tmp,galoisField );
             else
                 nullMat := NullMat(Length(E[i][b].rho)
-                                   - DimensionsMat(K[j][i])[2],
-                                   DimensionsMat(K[j][i])[1],
+                                   - NrCols(K[j][i]),
+                                   NrRows(K[j][i]),
                                    galoisField);
                 ConvertToMatrixRepNC(nullMat, galoisField);
                 K[j][i] := TransposedMat(
@@ -239,10 +239,10 @@ GAUSS_GlueK := function(v, rank, galoisField, a, b, E, K, mat)
                               E[i][b].rho)
                 );
             fi;
-            D{[tmpR .. tmpR + DimensionsMat(K[j][i])[1]-1 ]}
-                {[tmpC .. tmpC + DimensionsMat(K[j][i])[2]-1 ]}
+            D{[tmpR .. tmpR + NrRows(K[j][i])-1 ]}
+                {[tmpC .. tmpC + NrCols(K[j][i])-1 ]}
                 := K[j][i];
-            tmpC := tmpC + DimensionsMat(K[j][i])[2];
+            tmpC := tmpC + NrCols(K[j][i]);
         od;
         tmpR := tmpR + rows[j];
     od;
@@ -261,7 +261,7 @@ GAUSS_WriteOutput := function( mat,a,b,ncols,nrows,galoisField,D,R,M,E,K,withTra
     # Begin with row-select bitstring named v
     v := [];
     rank := 0;
-    w := 0*[1..(DimensionsMat(mat)[1]/a) ];
+    w := 0*[1..(NrRows(mat)/a) ];
     for i in [ 1 .. a ] do
         if IsEmpty(E[i][b].rho) then
             tmp := w;
@@ -285,7 +285,7 @@ GAUSS_WriteOutput := function( mat,a,b,ncols,nrows,galoisField,D,R,M,E,K,withTra
         D := GAUSS_GlueK(v, rank, galoisField, a, b, E, K, mat);
     fi;
 
-    heads := GAUSS_createHeads(v, w, DimensionsMat(mat)[2]);
+    heads := GAUSS_createHeads(v, w, NrCols(mat));
     result := rec(vectors := -C, pivotrows := v, pivotcols := w, rank := rank,
                   heads := heads);
     if withTrafo then

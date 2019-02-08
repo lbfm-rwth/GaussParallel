@@ -7,14 +7,15 @@
 # 4, Every column that contains a leading 1 must have zeros everywhere else in that column.
 
 IsMatrixInRREF := function(A)
-    local dimensions, i, j, k, leadingElementFound;
+    local nrows, ncols, i, j, k, leadingElementFound;
 
-    dimensions := DimensionsMat(A);
+    nrows := NrRows(A);
+    ncols := NrCols(A);
 
-    for i in [ 1 .. dimensions[1] ] do
+    for i in [ 1 .. nrows ] do
         leadingElementFound := false;
-        for j in [ 1 .. dimensions[2] ] do
-            if not leadingElementFound and i < dimensions[1] then
+        for j in [ 1 .. ncols ] do
+            if not leadingElementFound and i < nrows then
                 if not IsZero(A[i+1][j]) then
                     Info(InfoGauss, 4, "Leading ones don't go from left to right when going down");
                     return false;
@@ -26,7 +27,7 @@ IsMatrixInRREF := function(A)
                     Info(InfoGauss, 4, "Row with a leading element that is not 1");
                     return false;
                 fi;
-                for k in [ 1 .. dimensions[1] ] do
+                for k in [ 1 .. nrows ] do
                     if not k = i and not IsZero(A[k][j]) then
                         Info(InfoGauss, 4, "Column with leading one contains other elements unequal to zero");
                         return false;
