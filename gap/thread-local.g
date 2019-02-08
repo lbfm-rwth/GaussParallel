@@ -234,8 +234,8 @@ end;
 # ( K | 1 )  (!rho)  H  (gamma | !gamma) = (  0  | 0 )
 # TODO Use SubMatrix in ECH
 GAUSS_ECH := function(galoisField, H)
-    local sCnt, MCnt, KCnt, tCnt, RCnt, EMT, m, k, M, K, R, S, N, r, rho, gamma, i, ind,
-    Id, one, zero, dims, dimId;
+    local EMT, R, vectors, M, coeffs, K, relations, rho, gamma, one, zero,
+    sCnt, MCnt, KCnt, RCnt, tCnt, Id, dims, ind, dimId, i;
 
     if IsEmpty(H) or IsZero(H) then
         return ListWithIdenticalEntries(5, []);
@@ -246,17 +246,17 @@ GAUSS_ECH := function(galoisField, H)
     # algorithm. We mostly need to reorder rows or columns.
     EMT := EchelonMatTransformation(H);
     # R remnant
-    # We create this from r
+    # We create this from vectors
     R := [];
-    r := TransposedMat(EMT.vectors);
+    vectors := TransposedMat(EMT.vectors);
     # M is the transformation to get the non-zero rows of the RREF
-    # We create this from m
+    # We create this from coeffs
     M := [];
-    m := TransposedMat(EMT.coeffs);
+    coeffs := TransposedMat(EMT.coeffs);
     # K is the transformation to get the zero rows of the RREF
-    # We create this from k
+    # We create this from relations
     K := [];
-    k := TransposedMat(EMT.relations);
+    relations := TransposedMat(EMT.relations);
     # rho is a row-select list. Is used to select the pivot, here non-zero, rows.
     rho := [];
     # gamma is a column-select list. Is used to select the pivot columns.
@@ -274,16 +274,16 @@ GAUSS_ECH := function(galoisField, H)
     tCnt := 1;
 
     ind := 1;
-    dims := DimensionsMat(m);
+    dims := DimensionsMat(coeffs);
     for i in [1..dims[1]] do
-        if m[i] = zero*[1..dims[2]] then
+        if coeffs[i] = zero*[1..dims[2]] then
             rho[sCnt] := 0;
             sCnt := sCnt + 1;
         else
-            M[MCnt] := m[i];
+            M[MCnt] := coeffs[i];
             MCnt := MCnt + 1;
-            if not IsEmpty(k) then
-                K[KCnt] := k[i];
+            if not IsEmpty(relations) then
+                K[KCnt] := relations[i];
                 KCnt := KCnt + 1;
             fi;
             rho[sCnt] := 1;
@@ -293,22 +293,22 @@ GAUSS_ECH := function(galoisField, H)
 
     ind := 1;
     dimId := DimensionsMat(Id);
-    for i in [1..DimensionsMat(r)[1]] do
+    for i in [1..DimensionsMat(vectors)[1]] do
         if ind > dimId[1] then
             gamma[tCnt] := 0;
             tCnt := tCnt + 1;
-            R[RCnt] := r[i];
+            R[RCnt] := vectors[i];
             RCnt := RCnt + 1;
             continue;
         fi;
-        if r[i] = Id[ind] then
+        if vectors[i] = Id[ind] then
             gamma[tCnt] := 1;
             tCnt := tCnt + 1;
             ind := ind + 1;
         else
             gamma[tCnt] := 0;
             tCnt := tCnt + 1;
-            R[RCnt] := r[i];
+            R[RCnt] := vectors[i];
             RCnt := RCnt + 1;
         fi;
     od;
