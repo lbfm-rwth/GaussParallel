@@ -83,7 +83,7 @@ GAUSS_ClearDown_destructive := function(galoisField, C, D, A, i, j)
 end;
 
 # UpdateRow_destructive takes information from ClearDown(i,j) about 
-# row transformations that are used to echolonize C[i,j]i and propagates it to
+# row transformations that are used to echelonize C[i,j] and propagates it to
 # matrices to the right (i.e C[i,k] for a k > j).  The function basically
 # copies these transformations and splits up C[i,k] into pivot-rows (going into
 # B, not processed any further) and non-pivot-rows (staying in C) processed by
@@ -143,7 +143,10 @@ GAUSS_PreClearUp := function(R, galoisField, D, B, j, k)
     return tmp[1];
 end;
 
-# See documentation of UpdateRow_destructive and refer to paper for changes.
+# Propagates the transformations used to echelonize C[i,j] to the transformation
+# matrices M, K. Basically works like UpdateRow_destructive but uses implicit
+# information about the shape of M and K.  See documentation of
+# UpdateRow_destructive and refer to paper for changes.
 # Writes into M[j,h] and K[i,h]
 GAUSS_UpdateRowTrafo_destructive := function(galoisField, A, K, M, E, i, h, j)
     local tmp, K_, M_, S, V, W, X, Z;
