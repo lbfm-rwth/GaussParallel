@@ -256,7 +256,7 @@ end;
 GAUSS_ECH := function(galoisField, H)
     local EMT, R, vectors, M, coeffs, K, relations, rho, gamma, one, zero,
     nrPivots, nrRowsCoeffs, nrColsCoeffs, nrRowsVectors, Id, selectedRows,
-    nrColsRelations, ind, tCnt, RCnt, i;
+    nrColsRelations, currentPivot, RCnt, i;
 
     # If H is empty or zero matrix we return early!
     if IsEmpty(H) or IsZero(H) then
@@ -311,33 +311,30 @@ GAUSS_ECH := function(galoisField, H)
         nrColsRelations := NrCols(relations);
         K := ExtractSubMatrix(relations, selectedRho, [1..nrColsRelations]);
     fi;
-    ind := 1;
-    tCnt := 1;
+    # Look for rows of the identity matrix
+    currentPivot := 1;
     for i in [1..nrRowsVectors] do
-        if ind > nrPivots then
-            gamma[tCnt] := 0;
-            tCnt := tCnt + 1;
-            continue;
-        fi;
-        if vectors[i] = Id[ind] then
-            gamma[tCnt] := 1;
-            tCnt := tCnt + 1;
-            ind := ind + 1;
+        if vectors[i] = Id[currentPivot] then
+            gamma[i] := 1;
+            currentPivot := currentPivot + 1;
         else
-            gamma[tCnt] := 0;
-            tCnt := tCnt + 1;
+            gamma[i] := 0;
+        fi;
+        if currentPivot > nrPivots then
+            break;
         fi;
     od;
-    ind := 1;
+    Append(gamma, ListWithIdenticalEntries(nrRowsVectors - Length(gamma), 0));
+    currentPivot := 1;
     RCnt := 1;
     for i in [1..nrRowsVectors] do
-        if ind > nrPivots then
+        if currentPivot > nrPivots then
             R[RCnt] := vectors[i];
             RCnt := RCnt + 1;
             continue;
         fi;
-        if vectors[i] = Id[ind] then
-            ind := ind + 1;
+        if vectors[i] = Id[currentPivot] then
+            currentPivot := currentPivot + 1;
         else
             R[RCnt] := vectors[i];
             RCnt := RCnt + 1;
