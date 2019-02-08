@@ -221,7 +221,7 @@ end;
 
 # ECH: Echelonize
 # galoisField is a finite field
-# H is a *non-zero* matrix
+# H is a matrix
 # Creates 3 new matrices: M, K, R and 2 new lists of 0s and 1s: rho, gamma
 # R encodes the remnant of a row reduced echelon form (RREF) of H, i.e.
 # ( -1  | R )
@@ -245,8 +245,8 @@ end;
 #
 # and
 #
-# ( -1  | R ) ( gamma)   ( vectors )
-# (  0  | 0 ) (!gamma) = (    0    )
+# ( vectors )                         ( -1  | R )
+# (    0    )  (gamma^T | !gamma^T) = (  0  | 0 )
 #
 # (note that permutation matrices are orthogonal).
 #
@@ -255,9 +255,10 @@ end;
 # TODO Get rid of the TransposedMat calls
 GAUSS_ECH := function(galoisField, H)
     local EMT, R, vectors, M, coeffs, K, relations, rho, gamma, one, zero,
-    sCnt, MCnt, KCnt, RCnt, tCnt, nrPivots, nrRowsCoeffs, nrColsCoeffs,
-    nrRowsVectors, Id, ind, i;
+    nrPivots, nrRowsCoeffs, nrColsCoeffs, nrRowsVectors, Id, selectedRows,
+    nrColsRelations, ind, tCnt, RCnt, i;
 
+    # If H is empty or zero matrix we return early!
     if IsEmpty(H) or IsZero(H) then
         return ListWithIdenticalEntries(5, []);
     fi;
@@ -276,6 +277,9 @@ GAUSS_ECH := function(galoisField, H)
     # We create this from relations
     K := [];
     relations := TransposedMat(EMT.relations);
+    if not IsEmpty(relations) then
+        ConvertToMatrixRepNC(relations, galoisField);
+    fi;
     # rho is a row-select list. Is used to select the pivot, here non-zero, rows.
     rho := [];
     # gamma is a column-select list. Is used to select the pivot columns.
@@ -303,14 +307,10 @@ GAUSS_ECH := function(galoisField, H)
     od;
     selectedRho := Positions(rho, 1);
     M := ExtractSubMatrix(coeffs, selectedRho, [1..nrColsCoeffs]);
-    KCnt := 1;
     if not IsEmpty(relations) then
-        for i in [1..nrRowsCoeffs] do
-            if rho[i] = 1 then
-                K[KCnt] := relations[i];
-                KCnt := KCnt + 1;
-            fi;
-        od;
+        nrColsRelations := NrCols(relations);
+        K := ExtractSubMatrix(relations, selectedRho, [1..nrColsRelations]);
+    fi;
     ind := 1;
     tCnt := 1;
     for i in [1..nrRowsVectors] do
