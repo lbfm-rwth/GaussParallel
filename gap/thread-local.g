@@ -237,7 +237,7 @@ GAUSS_ECH := function(galoisField, H)
     local sCnt, MCnt, KCnt, tCnt, RCnt, EMT, m, k, M, K, R, S, N, r, rho, gamma, i, ind,
     Id, one, zero, dims, dimId;
 
-    if IsEmpty(H) then
+    if IsEmpty(H) or IsZero(H) then
         return ListWithIdenticalEntries(5, []);
     fi;
 
@@ -245,10 +245,6 @@ GAUSS_ECH := function(galoisField, H)
     # get there. We need to transform this output into something usable by our
     # algorithm. We mostly need to reorder rows or columns.
     EMT := EchelonMatTransformation(H);
-    m := TransposedMat(EMT.coeffs);
-    if IsEmpty(m) then
-        return ListWithIdenticalEntries(5, []);
-    fi;
     # R remnant
     # We create this from r
     R := [];
@@ -265,6 +261,7 @@ GAUSS_ECH := function(galoisField, H)
     rho := [];
     # gamma is a column-select list. Is used to select the pivot columns.
     gamma := [];
+    # stuff:
     one := One(galoisField);
     zero := Zero(galoisField);
     # Our identity matrix has as many rows as R
