@@ -255,7 +255,8 @@ end;
 # TODO Get rid of the TransposedMat calls
 GAUSS_ECH := function(galoisField, H)
     local EMT, R, vectors, M, coeffs, K, relations, rho, gamma, one, zero,
-    sCnt, MCnt, KCnt, RCnt, tCnt, Id, dims, ind, dimId, i;
+    sCnt, MCnt, KCnt, RCnt, tCnt, nrPivots, nrRowsCoeffs, nrColsCoeffs,
+    nrRowsVectors, Id, ind, i;
 
     if IsEmpty(H) or IsZero(H) then
         return ListWithIdenticalEntries(5, []);
@@ -281,19 +282,22 @@ GAUSS_ECH := function(galoisField, H)
     # stuff:
     one := One(galoisField);
     zero := Zero(galoisField);
-    # Our identity matrix has as many rows as R
-    Id := IdentityMat(Length(EMT.vectors), galoisField);
-    ConvertToMatrixRepNC(Id, galoisField);
     sCnt := 1;
     MCnt := 1;
     KCnt := 1;
     RCnt := 1;
     tCnt := 1;
-
-    ind := 1;
-    dims := DimensionsMat(coeffs);
-    for i in [1..dims[1]] do
-        if coeffs[i] = zero*[1..dims[2]] then
+    # Our identity matrix has as many rows as R.
+    # FIXME vectors was transposed
+    nrPivots := NrCols(vectors);
+    # FIXME make this depend on H
+    nrRowsCoeffs := NrRows(coeffs);
+    nrColsCoeffs := NrCols(coeffs);
+    nrRowsVectors := NrRows(vectors);
+    Id := IdentityMat(nrPivots, galoisField);
+    ConvertToMatrixRepNC(Id, galoisField);
+    for i in [1..nrRowsCoeffs] do
+        if IsZero(coeffs[i]) then
             rho[sCnt] := 0;
             sCnt := sCnt + 1;
         else
@@ -309,9 +313,8 @@ GAUSS_ECH := function(galoisField, H)
     od;
 
     ind := 1;
-    dimId := DimensionsMat(Id);
-    for i in [1..DimensionsMat(vectors)[1]] do
-        if ind > dimId[1] then
+    for i in [1..nrRowsVectors] do
+        if ind > nrPivots then
             gamma[tCnt] := 0;
             tCnt := tCnt + 1;
             R[RCnt] := vectors[i];
