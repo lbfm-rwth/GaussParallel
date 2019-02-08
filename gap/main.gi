@@ -351,8 +351,8 @@ function (mat, options)
     result := GAUSS_WriteOutput(mat, a, b, ncols, nrows, galoisField, D, R, M,
                                 E, K, withTrafo);
     if verify and not IsMatrixInRREF(result.transformation * mat) then
-        Error("Result verification failed! Result is not in RREF! ",
-              "Please report this bug to ",
+        Error("Result verification failed! Result is not in RREF!\n",
+              "Please report this bug to\n",
               "https://github.com/lbfm-rwth/GaussPar#contact");
     fi;
     return result;
