@@ -254,9 +254,8 @@ end;
 # TODO Use SubMatrix in ECH
 # TODO Get rid of the TransposedMat calls
 GAUSS_ECH := function(galoisField, H)
-    local EMT, R, vectors, M, coeffs, K, relations, rho, gamma, one, zero,
-    nrPivots, nrRowsCoeffs, nrColsCoeffs, nrRowsVectors, Id, selectedRows,
-    nrColsRelations, currentPivot, RCnt, i;
+    local EMT, R, vectors, M, coeffs, K, relations, rho, gamma, nrPivots, Id,
+    selectedRho, currentPivot, nonSelectedGamma, i;
 
     # If H is empty or zero matrix we return early!
     if IsEmpty(H) or IsZero(H) then
@@ -285,22 +284,14 @@ GAUSS_ECH := function(galoisField, H)
     rho := [];
     # gamma is a column-select list. Is used to select the pivot columns.
     gamma := [];
-    # stuff:
-    one := One(galoisField);
-    zero := Zero(galoisField);
     # Our identity matrix has as many rows as R.
     # FIXME vectors was transposed
     nrPivots := NrCols(vectors);
-    # FIXME make this depend on H
-    nrRowsCoeffs := NrRows(coeffs);
-    nrColsCoeffs := NrCols(coeffs);
-    nrRowsVectors := NrRows(vectors);
-    nrColsVectors := NrCols(vectors);
     Id := IdentityMat(nrPivots, galoisField);
     ConvertToMatrixRepNC(Id, galoisField);
     # FIXME use heads?
     # (M|0) x P_rho = coeffs;
-    for i in [1..nrRowsCoeffs] do
+    for i in [1..NrRows(coeffs)] do
         if IsZero(coeffs[i]) then
             rho[i] := 0;
         else
@@ -308,14 +299,13 @@ GAUSS_ECH := function(galoisField, H)
         fi;
     od;
     selectedRho := Positions(rho, 1);
-    M := ExtractSubMatrix(coeffs, selectedRho, [1..nrColsCoeffs]);
+    M := ExtractSubMatrix(coeffs, selectedRho, [1..NrCols(coeffs)]);
     if not IsEmpty(relations) then
-        nrColsRelations := NrCols(relations);
-        K := ExtractSubMatrix(relations, selectedRho, [1..nrColsRelations]);
+        K := ExtractSubMatrix(relations, selectedRho, [1..NrCols(relations)]);
     fi;
     # Look for rows of the identity matrix
     currentPivot := 1;
-    for i in [1..nrRowsVectors] do
+    for i in [1..NrRows(vectors)] do
         if vectors[i] = Id[currentPivot] then
             gamma[i] := 1;
             currentPivot := currentPivot + 1;
@@ -326,13 +316,13 @@ GAUSS_ECH := function(galoisField, H)
             break;
         fi;
     od;
-    Append(gamma, ListWithIdenticalEntries(nrRowsVectors - Length(gamma), 0));
+    Append(gamma, ListWithIdenticalEntries(NrRows(vectors) - Length(gamma), 0));
     # R empty iff H full column rank
     nonSelectedGamma := Positions(gamma, 0);
     if IsEmpty(nonSelectedGamma) then
         R := [];
     else
-        R := ExtractSubMatrix(vectors, nonSelectedGamma, [1..nrColsVectors]);
+        R := ExtractSubMatrix(vectors, nonSelectedGamma, [1..NrCols(vectors)]);
     fi;
 
     M := -TransposedMat(M);
