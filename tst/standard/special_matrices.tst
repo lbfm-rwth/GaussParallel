@@ -5,5 +5,5 @@ gap> for i in [1..8] do result := GAUSS_TestEchelonMatTransformationBlockwiseWit
 gap> # No matrix
 gap> result := DoEchelonMatTransformationBlockwise(3, rec( galoisField := GF(2), numberBlocksHeight := 2, numberBlocksWidth := 2));
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `DimensionsMat' on 1 arguments
+Error, no 1st choice method found for `NumberRows' on 1 arguments
 gap> STOP_TEST("standard/special_matrices.tst");

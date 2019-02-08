@@ -159,7 +159,7 @@ GAUSS_CRZ := function(galoisField, mat, u, nr)
     if IsEmpty(mat) then
         return [];
     fi;
-    nullMat := NullMat(sum, DimensionsMat(mat)[1], galoisField);
+    nullMat := NullMat(sum, NrRows(mat), galoisField);
     ConvertToMatrixRepNC(nullMat, galoisField);
     return TransposedMat(GAUSS_RRF(galoisField, TransposedMat(mat), nullMat,
     u));

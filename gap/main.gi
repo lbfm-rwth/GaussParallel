@@ -41,15 +41,16 @@ function (mat, options)
 
     recnames := Set(RecNames(options));
 
-    dim := DimensionsMat(mat);
+    nrows := NrRows(mat);
+    ncols := NrCols(mat);
     Info(InfoGauss, 4, "Input checks");
     if ("numberBlocksHeight" in recnames)
             and ("numberBlocksWidth" in recnames) then
         numberBlocksHeight := options.numberBlocksHeight;
         numberBlocksWidth := options.numberBlocksWidth;
     else
-        numberBlocksHeight := GAUSS_calculateBlocks(dim[1]);
-        numberBlocksWidth := GAUSS_calculateBlocks(dim[2]);
+        numberBlocksHeight := GAUSS_calculateBlocks(nrows);
+        numberBlocksWidth := GAUSS_calculateBlocks(ncols);
     fi;
     #Hack
     a := numberBlocksHeight;
@@ -92,14 +93,6 @@ function (mat, options)
                       " nonnegative integer.");
     fi;
 
-    ##Not supported yet
-    if (DimensionsMat(mat)[1] mod a <> 0) then
-        ErrorNoReturn("Variable: 'a' must divide number of rows");
-    fi;
-    if (DimensionsMat(mat)[2] mod b <> 0) then
-        ErrorNoReturn("Variable: 'b' must divide number of columns");
-    fi;
-
     Info(InfoGauss, 1, "The matrix is split into ", numberBlocksHeight,
         " blocks vertically and ", numberBlocksWidth, " horizontally.");
 
@@ -109,7 +102,6 @@ function (mat, options)
     ##Preparation: Init and chopping the matrix mat
 
     C := GAUSS_ChopMatrix(galoisField, mat, a, b);
-    ncols := DimensionsMat(mat)[2];
 
     TaskListClearDown := List([1 .. a], x -> List([1 .. b]));
     TaskListE := List([1 .. a], x -> List([1 .. b]));
@@ -213,7 +205,7 @@ function (mat, options)
     # nrows is only used when glueing together R
     nrows := [];
     for i in [1 .. b] do
-        nrows[i] := DimensionsMat(C[1][i])[2];
+        nrows[i] := NrCols(C[1][i]);
     od;
     ###############################
     ###############################
