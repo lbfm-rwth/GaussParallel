@@ -282,11 +282,6 @@ GAUSS_ECH := function(galoisField, H)
     # stuff:
     one := One(galoisField);
     zero := Zero(galoisField);
-    sCnt := 1;
-    MCnt := 1;
-    KCnt := 1;
-    RCnt := 1;
-    tCnt := 1;
     # Our identity matrix has as many rows as R.
     # FIXME vectors was transposed
     nrPivots := NrCols(vectors);
@@ -296,29 +291,36 @@ GAUSS_ECH := function(galoisField, H)
     nrRowsVectors := NrRows(vectors);
     Id := IdentityMat(nrPivots, galoisField);
     ConvertToMatrixRepNC(Id, galoisField);
+    # FIXME use heads?
+    # (M|0) x P_rho = coeffs;
     for i in [1..nrRowsCoeffs] do
         if IsZero(coeffs[i]) then
             rho[sCnt] := 0;
             sCnt := sCnt + 1;
         else
+            rho[sCnt] := 1;
+            sCnt := sCnt + 1;
+        fi;
+    od;
+    MCnt := 1;
+    KCnt := 1;
+    for i in [1..nrRowsCoeffs] do
+        if not IsZero(coeffs[i]) then
             M[MCnt] := coeffs[i];
             MCnt := MCnt + 1;
             if not IsEmpty(relations) then
                 K[KCnt] := relations[i];
                 KCnt := KCnt + 1;
             fi;
-            rho[sCnt] := 1;
-            sCnt := sCnt + 1;
         fi;
     od;
 
     ind := 1;
+    tCnt := 1;
     for i in [1..nrRowsVectors] do
         if ind > nrPivots then
             gamma[tCnt] := 0;
             tCnt := tCnt + 1;
-            R[RCnt] := vectors[i];
-            RCnt := RCnt + 1;
             continue;
         fi;
         if vectors[i] = Id[ind] then
@@ -328,6 +330,19 @@ GAUSS_ECH := function(galoisField, H)
         else
             gamma[tCnt] := 0;
             tCnt := tCnt + 1;
+        fi;
+    od;
+    ind := 1;
+    RCnt := 1;
+    for i in [1..nrRowsVectors] do
+        if ind > nrPivots then
+            R[RCnt] := vectors[i];
+            RCnt := RCnt + 1;
+            continue;
+        fi;
+        if vectors[i] = Id[ind] then
+            ind := ind + 1;
+        else
             R[RCnt] := vectors[i];
             RCnt := RCnt + 1;
         fi;
