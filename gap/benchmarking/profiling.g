@@ -13,11 +13,12 @@ GAUSS_createMatrixFile := function( n, q, rank )
     A := (proj * A)^B;
     matrixFile := Concatenation( String(n), "-F", String(q), "-rk", String(rank));
     PrintTo( matrixFile, A );
+    Exec( "mkdir -p examples/" );
     Exec( Concatenation( "mv ", matrixFile, " examples/" ) );
 end;
 
 GAUSS_profileGauss := function( matrixFile, numberBlocks  )
-    local file, A, res, profile, profileName;
+    local file, A, res, galoisField, profile, profileName;
     profileName := Concatenation( matrixFile, "-chop", String(numberBlocks) );
     file := InputTextFile( Concatenation( "examples/", matrixFile ) );
     Print("Reading input...\c");
@@ -25,8 +26,16 @@ GAUSS_profileGauss := function( matrixFile, numberBlocks  )
     Print("OK\n");
     Exec( Concatenation( "rm -f ", profileName, ".gz" ) );
     Print("Computing...\c");
+    galoisField := DefaultFieldOfMatrix(A);
     ProfileLineByLine( Concatenation( profileName, ".gz" ) );
-    res := GAUSS_GaussParallel( A, numberBlocks, numberBlocks,DefaultFieldOfMatrix(A) );;
+    res := DoEchelonMatTransformationBlockwise(
+        A,
+        rec(galoisField := galoisField,
+            numberBlocksHeight := numberBlocks,
+            numberBlocksWidth := numberBlocks,
+            withTrafo := true,
+            verify := true)
+    );
     UnprofileLineByLine();
     Print("OK\n");
     Print("Reading profile...\c");
