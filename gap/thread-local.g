@@ -264,20 +264,18 @@ GAUSS_ECH := function(galoisField, H)
     # R remnant
     # We create this from vectors
     R := [];
+    ConvertToMatrixRepNC(EMT.vectors, galoisField);
     vectors := TransposedMat(EMT.vectors);
-    ConvertToMatrixRepNC(vectors, galoisField);
     # M is the transformation to get the non-zero rows of the RREF
     # We create this from coeffs
     M := [];
+    ConvertToMatrixRepNC(EMT.coeffs, galoisField);
     coeffs := TransposedMat(EMT.coeffs);
-    ConvertToMatrixRepNC(coeffs, galoisField);
     # K is the transformation to get the zero rows of the RREF
     # We create this from relations
     K := [];
+    ConvertToMatrixRepNC(EMT.relations, galoisField);
     relations := TransposedMat(EMT.relations);
-    if not IsEmpty(relations) then
-        ConvertToMatrixRepNC(relations, galoisField);
-    fi;
     # rho is a row-select list. Is used to select the pivot, here non-zero, rows.
     rho := [];
     # gamma is a column-select list. Is used to select the pivot columns.
@@ -323,11 +321,8 @@ GAUSS_ECH := function(galoisField, H)
     fi;
 
     M := -TransposedMat(M);
-    ConvertToMatrixRepNC(M, galoisField);
     K := TransposedMat(K);
-    ConvertToMatrixRepNC(K, galoisField);
     R := -TransposedMat(R);
-    ConvertToMatrixRepNC(R, galoisField);
     return [M, K, R, rho, gamma];
  end;
 
