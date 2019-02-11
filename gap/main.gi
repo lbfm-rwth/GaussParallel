@@ -31,12 +31,13 @@ function (mat, options)
     # options is a record that can specify
     # galoisField, IsHPC(removed for now), numberBlocksHeight, numberBlocksWidth,
     # withTrafo and verify
-    local recnames, dim, numberBlocksHeight, numberBlocksWidth, a, b,
-    withTrafo, galoisField, verify, C, ncols,
+    local recnames, nrows, ncols, numberBlocksHeight, numberBlocksWidth, a, b,
+    withTrafo, galoisField, verify, tmp, C,
+    nrRowsPerBlockRow, nrColsPerBlockCol,
     TaskListClearDown, TaskListE, TaskListUpdateR, TaskListUpdateM,
     TaskListPreClearUp, TaskListClearUpR, TaskListClearUpM,
     A, B, D, E, K, M, R, X,
-    nrows, ClearDownDeps, ExtendDeps, UpdateRowDeps, UpdateRowTrafoDeps,
+    ClearDownDeps, ExtendDeps, UpdateRowDeps, UpdateRowTrafoDeps,
     k, result, i, h, j, k_, l;
 
     recnames := Set(RecNames(options));
@@ -101,7 +102,10 @@ function (mat, options)
 
     ##Preparation: Init and chopping the matrix mat
 
-    C := GAUSS_ChopMatrix(galoisField, mat, a, b);
+    tmp := GAUSS_ChopMatrix(galoisField, mat, a, b);
+    C := tmp.mat;
+    nrRowsPerBlockRow := tmp.rowsList;
+    nrColsPerBlockCol := tmp.colsList;
 
     TaskListClearDown := List([1 .. a], x -> List([1 .. b]));
     TaskListE := List([1 .. a], x -> List([1 .. b]));

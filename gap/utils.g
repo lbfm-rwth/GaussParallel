@@ -21,7 +21,10 @@ end;
 # Larger high-level functions.
 GAUSS_ChopMatrix := function( f,A,nrows,ncols )
     local   i, j, rrem, crem, rowCnt, rowOverhead, colOverhead, colCnt, AA, a,
-    b;
+    b, rowsList, colsList;
+
+    rowsList := ListWithIdenticalEntries(nrows,0);
+    colsList := ListWithIdenticalEntries(ncols,0);
 
     rrem := NrRows(A) mod nrows;
     crem := NrCols(A) mod ncols;
@@ -40,18 +43,21 @@ GAUSS_ChopMatrix := function( f,A,nrows,ncols )
         colCnt := 0;
         colOverhead := 1;
         if  i > rrem then rowOverhead := 0; fi;
+        rowsList[i] := a+rowOverhead;
         AA[i] := FixedAtomicList(ncols, 0);
         for j in [ 1 .. ncols ] do
             if  j > crem then colOverhead := 0; fi;
-            AA[i][j] := A{[rowCnt+1 .. rowCnt+a+rowOverhead]}{[colCnt+1 .. colCnt+b+colOverhead]};
+            AA[i][j] := A{[rowCnt+1 .. rowCnt+rowsList[i]]}{[colCnt+1 .. colCnt+b+colOverhead]};
             ConvertToMatrixRepNC(AA[i][j],f);
             MakeReadOnlyOrImmutableObj(AA[i][j]);
+            colsList[j] := b + colOverhead;
+
             colCnt := colCnt + b + colOverhead;
         od;
         rowCnt := rowCnt + a + rowOverhead;
     od;
 
-    return AA;
+    return rec(mat:=AA, rowsList:=rowsList, colsList:=colsList );
 end;
 
 # Functions for Step 3
