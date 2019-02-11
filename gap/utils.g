@@ -61,19 +61,17 @@ GAUSS_ChopMatrix := function( f,A,nrows,ncols )
 end;
 
 # Functions for Step 3
-GAUSS_createHeads := function( pivotRows, pivotCols, rank )
-    # Inputs: lists of 0s and 1s encoding the positions of pivot rows and
-    # pivot columns, respectively
-    # The rank of the input matrix
-    local result, i, currentPivotCol, currentPivotRow;
+GAUSS_createHeads := function( pivotCols )
+    # Inputs: list of 0s and 1s encoding the positions of pivot colsList
+    local result, i, pivotCnt;
     
-    result := ListWithIdenticalEntries(Length(pivotCols), 0);
-    currentPivotRow := 0;
-    currentPivotCol := 0;
-    for i in [ 1 .. rank ] do
-        currentPivotRow := Position(pivotRows, 1, currentPivotRow); 
-        currentPivotCol := Position(pivotCols, 1, currentPivotCol); 
-        result[currentPivotCol] := currentPivotRow;
+    result := ShallowCopy(pivotCols); 
+    pivotCnt := 1;
+    for i in [ 1 .. Length(pivotCols) ] do
+        if  not result[i] = 0 then
+            result[i] := pivotCnt;
+            pivotCnt := pivotCnt + 1;
+        fi;
     od;
     return result;
 end;
@@ -196,7 +194,7 @@ GAUSS_WriteOutput := function(mat, a, b, nrColsPerBlockCol, nrRowsPerBlockRow,
         D := GAUSS_GlueFromBlocks(galoisField, K, rowBitstrings, v, 1);
     fi;
     
-    heads := GAUSS_createHeads(v, w, NrCols(mat));
+    heads := GAUSS_createHeads(w);
     result := rec(vectors := -C, pivotrows := v, pivotcols := w, rank := rank,
                   heads := heads);
     if withTrafo then
