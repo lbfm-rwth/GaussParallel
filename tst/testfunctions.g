@@ -8,7 +8,8 @@ GAUSS_testMatrix := function(
     result_std := EchelonMatTransformation(matrix);;
 
     return (result.vectors = result_std.vectors)
-        and (result.coeffs = result_std.coeffs);
+        and (result.coeffs = result_std.coeffs)
+        and (result.heads = result_std.heads);
 end;
 
 GAUSS_doubleTestMatrix := function(
@@ -20,7 +21,8 @@ GAUSS_doubleTestMatrix := function(
 
     return (result.vectors = result_std.vectors)
         and (result.coeffs = result_std.coeffs)
-        and (Concatenation(result.coeffs, result.relations) * matrix = echelon);
+        and (Concatenation(result.coeffs, result.relations) * matrix = echelon)
+        and (result.heads = result_std.heads);
 end;
 
 GAUSS_TestEchelonMatTransformationBlockwiseWithSetRank := function(
