@@ -87,7 +87,12 @@ GAUSS_createHeads := function( pivotrows, pivotcols, width )
 end;
 
 
-GAUSS_GlueFromBlocks := function( galoisField, blockMat, LocalSizeInfo, riffle, flag)
+# This function takes one of the block-matrices M,K or R and writes the blocks
+# into one big matrix. The cases for different block-matrices differ only in
+# details, thus we have the flag to indicate we are work with R (flag = -1), 
+# M (flag = 0) or K (flag = 1).
+GAUSS_GlueFromBlocks := function( galoisField, blockMat, LocalSizeInfo, riffle,
+flag)
     local i, j, a, b, nullMat, newRows, newCols, newMat, rowCnt, colCnt, tmp, rowInc;
 
     a := Length(blockMat); # NrRows of blockMat
@@ -101,9 +106,6 @@ GAUSS_GlueFromBlocks := function( galoisField, blockMat, LocalSizeInfo, riffle, 
     elif flag = 0 then
         newCols := Sum(Concatenation(LocalSizeInfo));
         newRows := newCols;
-    else
-        newRows := Sum(Concatenation(LocalSizeInfo));
-        newCols := Length(riffle) - Sum(Concatenation(LocalSizeInfo));
     fi;
 
     if newRows = 0 then
@@ -128,12 +130,8 @@ GAUSS_GlueFromBlocks := function( galoisField, blockMat, LocalSizeInfo, riffle, 
                     tmp := 0;
                 else
                     tmp := Sum(LocalSizeInfo[j]);
-                    #if flag = -1 then
-                    #    tmp := Sum(1-LocalSizeInfo[j]);
-                    #fi;
                 fi;
                 colCnt := colCnt + tmp;
-                continue;
             else
                 rowInc := NrRows(blockMat[i][j]);
                 newMat{[rowCnt .. rowCnt + NrRows(blockMat[i][j])-1 ]}
@@ -146,15 +144,13 @@ GAUSS_GlueFromBlocks := function( galoisField, blockMat, LocalSizeInfo, riffle, 
     od;
     
     ConvertToMatrixRepNC(newMat, galoisField);
-    if flag = 1 then
-        tmp := IdentityMat(newRows, galoisField);
-    elif flag = 0 then
+    if not flag = 0 then
+        tmp := flag*IdentityMat(newRows, galoisField);
+    else
         tmp := Length(riffle) - Sum(Concatenation(LocalSizeInfo));
         if  tmp = 0 then return newMat; fi;
         tmp := NullMat(tmp,newRows,galoisField);
-    else 
-        tmp := -IdentityMat(newRows, galoisField);
-    fi;
+    fi; 
     ConvertToMatrixRep(tmp, galoisField);
     return TransposedMat( GAUSS_RRF(galoisField, tmp, TransposedMat(newMat), riffle)
                );
