@@ -33,7 +33,7 @@ function (mat, options)
     # withTrafo and verify
     local recnames, recognisedOptions, nrows, ncols, numberBlocksHeight,
     numberBlocksWidth, a, b, withTrafo, galoisField, verify, tmp, C,
-    nrRowsPerBlockRow, nrColsPerBlockCol,
+    nrRowsPerBlockRow, nrColsPerBlockCol, copyMat,
     TaskListClearDown, TaskListE, TaskListUpdateR, TaskListUpdateM,
     TaskListPreClearUp, TaskListClearUpR, TaskListClearUpM,
     A, B, D, E, K, M, R, X,
@@ -111,7 +111,9 @@ function (mat, options)
 
     ##Preparation: Init and chopping the matrix mat
 
-    tmp := GAUSS_ChopMatrix(galoisField, mat, a, b);
+    copyMat := MutableCopyMat(mat);
+    ConvertToMatrixRepNC(copyMat);
+    tmp := GAUSS_ChopMatrix(galoisField, copyMat, a, b);
     C := tmp.mat;
     nrRowsPerBlockRow := tmp.rowsList;
     nrColsPerBlockCol := tmp.colsList;

@@ -47,7 +47,8 @@ GAUSS_ChopMatrix := function( f,A,nrows,ncols )
         AA[i] := FixedAtomicList(ncols, 0);
         for j in [ 1 .. ncols ] do
             if  j > crem then colOverhead := 0; fi;
-            AA[i][j] := A{[rowCnt+1 .. rowCnt+rowsList[i]]}{[colCnt+1 .. colCnt+b+colOverhead]};
+            AA[i][j] := ExtractSubMatrix(A,[rowCnt+1 .. rowCnt+rowsList[i]],[colCnt+1 .. colCnt+b+colOverhead]); 
+            
             ConvertToMatrixRepNC(AA[i][j],f);
             MakeReadOnlyOrImmutableObj(AA[i][j]);
             colsList[j] := b + colOverhead;
@@ -119,6 +120,7 @@ flag)
         fi; 
     fi;
     newMat := NullMat(newRows, newCols, galoisField);
+    ConvertToMatrixRepNC(newMat, galoisField);
     
     rowCnt := 1;
     for i in [ 1 .. a ] do
@@ -134,16 +136,19 @@ flag)
                 colCnt := colCnt + tmp;
             else
                 rowInc := NrRows(blockMat[i][j]);
-                newMat{[rowCnt .. rowCnt + NrRows(blockMat[i][j])-1 ]}
-                    {[colCnt .. colCnt + NrCols(blockMat[i][j])-1 ]}
-                    := blockMat[i][j];
-                colCnt := colCnt + NrCols(blockMat[i][j]);
+               
+                tmp := blockMat[i][j];
+                CopySubMatrix(
+                    tmp, newMat, 
+                    [1 .. NrRows(tmp)], [rowCnt .. (rowCnt + NrRows(tmp) -1)],
+                    [1 .. NrCols(tmp)], [colCnt .. (colCnt + NrCols(tmp) -1)]
+                );
+                colCnt := colCnt + NrCols(tmp);
             fi;
         od;
         rowCnt := rowCnt + rowInc;
     od;
     
-    ConvertToMatrixRepNC(newMat, galoisField);
     if not flag = 0 then
         tmp := flag*IdentityMat(newRows, galoisField);
     else
