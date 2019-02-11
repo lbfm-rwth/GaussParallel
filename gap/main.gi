@@ -31,8 +31,8 @@ function (mat, options)
     # options is a record that can specify
     # galoisField, IsHPC(removed for now), numberBlocksHeight, numberBlocksWidth,
     # withTrafo and verify
-    local recnames, nrows, ncols, numberBlocksHeight, numberBlocksWidth, a, b,
-    withTrafo, galoisField, verify, tmp, C,
+    local recnames, recognisedOptions, nrows, ncols, numberBlocksHeight,
+    numberBlocksWidth, a, b, withTrafo, galoisField, verify, tmp, C,
     nrRowsPerBlockRow, nrColsPerBlockCol,
     TaskListClearDown, TaskListE, TaskListUpdateR, TaskListUpdateM,
     TaskListPreClearUp, TaskListClearUpR, TaskListClearUpM,
@@ -92,6 +92,15 @@ function (mat, options)
     if not (a in NonnegativeIntegers and b in NonnegativeIntegers) then
         ErrorNoReturn("Wrong argument: The third or fourth parameter is not a",
                       " nonnegative integer.");
+    fi;
+    # Check for invalid components of `options`. Note that IsHPC is a dummy
+    # value that is still used by the tests but doesn't do anything.
+    recognisedOptions := ["numberBlocksHeight", "numberBlocksWidth",
+                          "withTrafo", "galoisField", "verify",
+                          "IsHPC"];
+    if not IsSubset(recognisedOptions, recnames) then
+        Print("Warning: unrecognised options: ",
+              Difference(recnames, recognisedOptions), "\n");
     fi;
 
     Info(InfoGauss, 1, "The matrix is split into ", numberBlocksHeight,
