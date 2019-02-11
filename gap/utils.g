@@ -156,19 +156,20 @@ flag)
                );
 end;
 
-
-GAUSS_WriteOutput := function(mat, a, b, ncols, nrows, galoisField, D, R, M, E, K, withTrafo)
-    local v, w, rank, tmp, B, C, heads, i, j, GlueR, result, localBitstrings, localCols;
+GAUSS_WriteOutput := function(mat, a, b, nrColsPerBlockCol, nrRowsPerBlockRow,
+                              galoisField, D, R, M, E, K, withTrafo)
+    local v, rank, tmp, w, colBitstrings, rowBitstrings, B, C, heads, result,
+    i, j;
 
     ## Write output
     Info(InfoGauss, 2, "Write output");
     # Begin with row-select bitstring named v
     v := [];
     rank := 0;
-    w := 0*[1..(NrRows(mat)/a) ];
+
     for i in [ 1 .. a ] do
         if IsEmpty(E[i][b].rho) then
-            tmp := w;
+            tmp := ListWithIdenticalEntries(nrRowsPerBlockRow[i], 0);
         else
             tmp := E[i][b].rho;
         fi;
@@ -179,36 +180,28 @@ GAUSS_WriteOutput := function(mat, a, b, ncols, nrows, galoisField, D, R, M, E, 
     w := [];
     for j in [ 1 .. b ] do
          if IsEmpty(D[j].bitstring) then
-             D[j] := rec(remnant := [], bitstring := 0*[1..nrows[j]]);
-             w := Concatenation(w,0*[1..nrows[j]]);
+             D[j] := rec(remnant := [], bitstring := 0*[1..nrColsPerBlockCol[j]]);
+             w := Concatenation(w,0*[1..nrColsPerBlockCol[j]]);
          else
              w := Concatenation(w,D[j].bitstring);
          fi;
     od;
     
+    colBitstrings := ListWithIdenticalEntries(b,[]);
+    for  j in [ 1 .. b ] do
+        colBitstrings[j] := 1-D[j].bitstring;
+    od;
     if  withTrafo then
-        #B := GAUSS_GlueMorK( galoisField, M, b, a, mat, E, v, rank, Length(v), 0 );
-        localBitstrings := ListWithIdenticalEntries(a,[]);
-        localCols := ListWithIdenticalEntries(b,[]);
-        for  j in [ 1 .. b ] do
-            localCols[j] := 1-D[j].bitstring;
-        od;
+        rowBitstrings := ListWithIdenticalEntries(a,[]);
         for i in [ 1 .. a ] do
-            localBitstrings[i] := E[i][b].rho;
+            rowBitstrings[i] := E[i][b].rho;
         od;
-        B := GAUSS_GlueFromBlocks(galoisField, M, localBitstrings, v, 0);  
+        B := GAUSS_GlueFromBlocks(galoisField, M, rowBitstrings, v, 0);  
     fi;
-
-    #GlueR := GAUSS_GlueR(rank, ncols, galoisField, nrows, D, R, a, b);
-    #C := GlueR.C;
-    C := GAUSS_GlueFromBlocks(galoisField, R, localCols, 1-w, -1);
-    
-
+    C := GAUSS_GlueFromBlocks(galoisField, R, colBitstrings, 1-w, -1);
 
     if withTrafo then
-        ## Glue the blocks of K
-        #D := GAUSS_GlueMorK(galoisField, K, a, a, mat, E, v, Length(v)-rank, Length(v), 1 );
-        D := GAUSS_GlueFromBlocks(galoisField, K, localBitstrings, v, 1);
+        D := GAUSS_GlueFromBlocks(galoisField, K, rowBitstrings, v, 1);
     fi;
     
     heads := GAUSS_createHeads(v, w, NrCols(mat));
@@ -220,6 +213,5 @@ GAUSS_WriteOutput := function(mat, a, b, ncols, nrows, galoisField, D, R, M, E, 
         result.transformation := Concatenation(result.coeffs,
                                                result.relations);
     fi;
-    
     return result;
 end;
