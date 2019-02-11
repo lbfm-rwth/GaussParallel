@@ -62,28 +62,20 @@ GAUSS_ChopMatrix := function( f,A,nrows,ncols )
 end;
 
 # Functions for Step 3
-GAUSS_createHeads := function( pivotrows, pivotcols, width )
-    # inputs: list that contains the row numbers of the pivot rows and
-    # list that contains the column numbers of the pivot cols and
-    # width of matrix
-    local result, i, currentPivot;
-
-    if not Length(pivotrows) = Length(pivotcols) then
-        return [];
-    fi;
-
-    currentPivot := 0;
-    result := ListWithIdenticalEntries( width, 0 );
-
-    for i in [1 .. width] do
-        if i in pivotcols then
-            currentPivot := currentPivot + 1;
-            result[i] := pivotrows[currentPivot];
-        else
-            result[i] := 0;
-        fi;
+GAUSS_createHeads := function( pivotRows, pivotCols, rank )
+    # Inputs: lists of 0s and 1s encoding the positions of pivot rows and
+    # pivot columns, respectively
+    # The rank of the input matrix
+    local result, i, currentPivotCol, currentPivotRow;
+    
+    result := ListWithIdenticalEntries(Length(pivotCols), 0);
+    currentPivotRow := 0;
+    currentPivotCol := 0;
+    for i in [ 1 .. rank ] do
+        currentPivotRow := Position(pivotRows, 1, currentPivotRow); 
+        currentPivotCol := Position(pivotCols, 1, currentPivotCol); 
+        result[currentPivotCol] := currentPivotRow;
     od;
-
     return result;
 end;
 
