@@ -29,32 +29,32 @@ end
 InstallGlobalFunction(DoEchelonMatTransformationBlockwise,
 function (mat, options)
     # options is a record that can specify
-    # galoisField, IsHPC(removed for now), numberBlocksHeight, numberBlocksWidth,
+    # galoisField, IsHPC(removed for now), nrBlockRows, nrBlockCols,
     # withTrafo and verify
-    local recnames, dim, numberBlocksHeight, numberBlocksWidth, a, b,
-    withTrafo, galoisField, verify, C, ncols,
+    local recnames, dim, nrBlockRows, nrBlockCols, a, b,
+    withTrafo, galoisField, verify, C, ncols, nrRowsPerBlockRow, nrColsPerBlockCol,
     TaskListClearDown, TaskListE, TaskListUpdateR, TaskListUpdateM,
     TaskListPreClearUp, TaskListClearUpR, TaskListClearUpM,
     A, B, D, E, K, M, R, X,
     nrows, ClearDownDeps, ExtendDeps, UpdateRowDeps, UpdateRowTrafoDeps,
-    k, result, i, h, j, k_, l;
+    k, result, i, h, j, k_, l, tmp;
 
     recnames := Set(RecNames(options));
 
     nrows := NrRows(mat);
     ncols := NrCols(mat);
     Info(InfoGauss, 4, "Input checks");
-    if ("numberBlocksHeight" in recnames)
-            and ("numberBlocksWidth" in recnames) then
-        numberBlocksHeight := options.numberBlocksHeight;
-        numberBlocksWidth := options.numberBlocksWidth;
+    if ("nrBlockRows" in recnames)
+            and ("nrBlockCols" in recnames) then
+        nrBlockRows := options.nrBlockRows;
+        nrBlockCols := options.nrBlockCols;
     else
-        numberBlocksHeight := GAUSS_calculateBlocks(nrows);
-        numberBlocksWidth := GAUSS_calculateBlocks(ncols);
+        nrBlockRows := GAUSS_calculateBlocks(nrows);
+        nrBlockCols := GAUSS_calculateBlocks(ncols);
     fi;
     #Hack
-    a := numberBlocksHeight;
-    b := numberBlocksWidth;
+    a := nrBlockRows;
+    b := nrBlockCols;
 
     if "withTrafo" in recnames then
         withTrafo := options.withTrafo;
@@ -93,15 +93,18 @@ function (mat, options)
                       " nonnegative integer.");
     fi;
 
-    Info(InfoGauss, 1, "The matrix is split into ", numberBlocksHeight,
-        " blocks vertically and ", numberBlocksWidth, " horizontally.");
+    Info(InfoGauss, 1, "The matrix is split into ", nrBlockRows,
+        " blocks vertically and ", nrBlockCols, " horizontally.");
 
     Info(InfoGauss, 2, "------------ Start Chief ------------");
     Info(InfoGauss, 2, "Preparation");
 
     ##Preparation: Init and chopping the matrix mat
 
-    C := GAUSS_ChopMatrix(galoisField, mat, a, b);
+    tmp := GAUSS_ChopMatrix(galoisField, mat, a, b);
+    C := tmp.mat;
+    nrRowsPerBlockRow := tmp.rowsList;
+    nrColsPerBlockCol := tmp.colsList;
 
     TaskListClearDown := List([1 .. a], x -> List([1 .. b]));
     TaskListE := List([1 .. a], x -> List([1 .. b]));
@@ -340,7 +343,7 @@ function (mat, options)
         WaitTask(Concatenation(List(TaskListClearUpM, Concatenation)));
     fi;
     # Computations are finished. Now prepare the output.
-    result := GAUSS_WriteOutput(mat, a, b, ncols, nrows, galoisField, D, R, M,
+    result := GAUSS_WriteOutput(mat, a, b, nrColsPerBlockCol, nrRowsPerBlockRow, galoisField, D, R, M,
                                 E, K, withTrafo);
     if verify and not IsMatrixInRREF(result.transformation * mat) then
         Error("Result verification failed! Result is not in RREF!\n",
