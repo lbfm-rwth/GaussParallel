@@ -152,7 +152,7 @@ GAUSS_GlueMorK := function( galoisField, blockMat, nrBlocksHeigth, nrBlocksWidth
     return destination;
 end;
 
-GAUSS_GlueFromBlocks := function( galoisField, blockMat, LocalSizeInfo, LocalColInfo, riffle, flag)
+GAUSS_GlueFromBlocks := function( galoisField, blockMat, LocalSizeInfo, riffle, flag)
     local i, j, a, b, nullMat, newRows, newCols, newMat, rowCnt, colCnt, tmp, rowInc;
 
     a := Length(blockMat); # NrRows of blockMat
@@ -160,11 +160,15 @@ GAUSS_GlueFromBlocks := function( galoisField, blockMat, LocalSizeInfo, LocalCol
     
     # create a new matrix into which the blocks are glued 
     # compute its size first
-    newCols := Sum(Concatenation(LocalSizeInfo));
-    if flag = 1 then
+    if flag = 1 or flag = -1 then
+        newCols := Sum(Concatenation(LocalSizeInfo));
         newRows := Length(riffle) - newCols;
     elif flag = 0 then
+        newCols := Sum(Concatenation(LocalSizeInfo));
         newRows := newCols;
+    else
+        newRows := Sum(Concatenation(LocalSizeInfo));
+        newCols := Length(riffle) - Sum(Concatenation(LocalSizeInfo));
     fi;
 
     if newRows = 0 then
@@ -173,9 +177,8 @@ GAUSS_GlueFromBlocks := function( galoisField, blockMat, LocalSizeInfo, LocalCol
     if  newCols = 0 then
         if flag = 0 then
             return [];
-        elif flag = 1 then
-            tmp := IdentityMat(Length(riffle),galoisField);
-            return tmp;
+        else
+            return flag*IdentityMat(Length(riffle),galoisField);
         fi; 
     fi;
     newMat := NullMat(newRows, newCols, galoisField);
@@ -190,6 +193,9 @@ GAUSS_GlueFromBlocks := function( galoisField, blockMat, LocalSizeInfo, LocalCol
                     tmp := 0;
                 else
                     tmp := Sum(LocalSizeInfo[j]);
+                    #if flag = -1 then
+                    #    tmp := Sum(1-LocalSizeInfo[j]);
+                    #fi;
                 fi;
                 colCnt := colCnt + tmp;
                 continue;
@@ -207,10 +213,12 @@ GAUSS_GlueFromBlocks := function( galoisField, blockMat, LocalSizeInfo, LocalCol
     ConvertToMatrixRepNC(newMat, galoisField);
     if flag = 1 then
         tmp := IdentityMat(newRows, galoisField);
-    else
+    elif flag = 0 then
         tmp := Length(riffle) - Sum(Concatenation(LocalSizeInfo));
         if  tmp = 0 then return newMat; fi;
         tmp := NullMat(tmp,newRows,galoisField);
+    else 
+        tmp := -IdentityMat(newRows, galoisField);
     fi;
     ConvertToMatrixRep(tmp, galoisField);
     return TransposedMat( GAUSS_RRF(galoisField, tmp, TransposedMat(newMat), riffle)
@@ -292,27 +300,39 @@ GAUSS_WriteOutput := function(mat, a, b, ncols, nrows, galoisField, D, R, M, E, 
         rank := rank + Sum( tmp );
     od;
 
+    w := [];
+    for j in [ 1 .. b ] do
+         if IsEmpty(D[j].bitstring) then
+             D[j] := rec(remnant := [], bitstring := 0*[1..nrows[j]]);
+             w := Concatenation(w,0*[1..nrows[j]]);
+         else
+             w := Concatenation(w,D[j].bitstring);
+         fi;
+    od;
+    
     if  withTrafo then
         #B := GAUSS_GlueMorK( galoisField, M, b, a, mat, E, v, rank, Length(v), 0 );
         localBitstrings := ListWithIdenticalEntries(a,[]);
         localCols := ListWithIdenticalEntries(b,[]);
         for  j in [ 1 .. b ] do
-            localCols[j] := D[j].bitstring;
+            localCols[j] := 1-D[j].bitstring;
         od;
         for i in [ 1 .. a ] do
             localBitstrings[i] := E[i][b].rho;
         od;
-        B := GAUSS_GlueFromBlocks(galoisField, M, localBitstrings, localCols, v, 0);  
+        B := GAUSS_GlueFromBlocks(galoisField, M, localBitstrings, v, 0);  
     fi;
 
-    GlueR := GAUSS_GlueR(rank, ncols, galoisField, nrows, D, R, a, b);
-    C := GlueR.C;
-    w := GlueR.w;
+    #GlueR := GAUSS_GlueR(rank, ncols, galoisField, nrows, D, R, a, b);
+    #C := GlueR.C;
+    C := GAUSS_GlueFromBlocks(galoisField, R, localCols, 1-w, -1);
+    
+
 
     if withTrafo then
         ## Glue the blocks of K
         #D := GAUSS_GlueMorK(galoisField, K, a, a, mat, E, v, Length(v)-rank, Length(v), 1 );
-        D := GAUSS_GlueFromBlocks(galoisField, K, localBitstrings, localCols, v, 1);
+        D := GAUSS_GlueFromBlocks(galoisField, K, localBitstrings, v, 1);
     fi;
     
     heads := GAUSS_createHeads(v, w, NrCols(mat));
