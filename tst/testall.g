@@ -7,7 +7,7 @@ dirs := [
 ];
 if IsHPCGAP then
     # timing suite
-    Add(dirs, DirectoriesPackageLibrary("GaussPar", "tst/stats"));
+    Add(dirs, DirectoriesPackageLibrary("GaussPar", "tst/benchmarking"));
 fi;
 
 TestDirectory(dirs, rec(exitGAP := true));

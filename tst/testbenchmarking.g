@@ -7,7 +7,7 @@
 LoadPackage("GaussPar");
 SetInfoLevel(InfoGauss, 0);
 TestDirectory(
-    DirectoriesPackageLibrary("GaussPar", "tst/stats"),
+    DirectoriesPackageLibrary("GaussPar", "tst/benchmarking"),
     rec(exitGAP := true)
 );
 FORCE_QUIT_GAP(1);
