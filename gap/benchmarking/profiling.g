@@ -34,7 +34,7 @@ GAUSS_profileGauss := function( matrixFile, numberBlocks  )
             numberBlocksHeight := numberBlocks,
             numberBlocksWidth := numberBlocks,
             withTrafo := true,
-            verify := true)
+            verify := false)
     );
     UnprofileLineByLine();
     Print("OK\n");
