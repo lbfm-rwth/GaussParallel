@@ -18,6 +18,7 @@ if not IsHPCGAP then
     ReadPackage( "GaussPar", "gap/hpcgap-mockups.g");
 fi;
 
+ReadPackage( "GaussPar", "gap/upstream.g");
 ReadPackage( "GaussPar", "gap/RREF.g");
 ReadPackage( "GaussPar", "gap/dependencies.g");
 ReadPackage( "GaussPar", "gap/thread-local.g");
