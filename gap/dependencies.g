@@ -5,6 +5,8 @@
 # Function in step 1
 GAUSS_ClearDownDependencies := function(i, j, TaskListClearDown, TaskListUpdateR)
     local list;
+    # We put a dummy task into list because ScheduleTask sometimes is buggy
+    # when called with an empty list of dependencies.
     list := [RunTask(function() return []; end)];
     if not (i = 1) then
         Add(list, TaskListClearDown[i - 1][j]);
