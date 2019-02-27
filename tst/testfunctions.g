@@ -47,7 +47,7 @@ GAUSS_TestEchelonMatTransformationBlockwiseWithGivenEchelonForm := function(
         numberBlocksWidth, withTrafo)
     local shapeless, result, result_std;
 
-    shapeless := GAUSS_RandomMatFromEchelonForm(echelon, width);
+    shapeless := GAUSS_RandomMatFromEchelonForm(echelon, height);
     return GAUSS_doubleTestMatrix(shapeless, echelon, q, numberBlocksHeight,
         numberBlocksWidth, withTrafo);
 end;
