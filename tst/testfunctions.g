@@ -6,9 +6,12 @@ GAUSS_testMatrix := function(
 
     result := DoEchelonMatTransformationBlockwise(matrix, rec( galoisField := GF(q), numberBlocksHeight := numberBlocksHeight, numberBlocksWidth := numberBlocksWidth, withTrafo := withTrafo ));;
     result_std := EchelonMatTransformation(matrix);;
-
-    return (result.vectors = result_std.vectors)
-        and (result.coeffs = result_std.coeffs)
+    if withTrafo then
+        return (result.vectors = result_std.vectors)
+            and (result.coeffs = result_std.coeffs)
+            and (result.heads = result_std.heads);
+    fi;
+    return result.vectors = result_std.vectors
         and (result.heads = result_std.heads);
 end;
 
@@ -18,10 +21,13 @@ GAUSS_doubleTestMatrix := function(
 
     result := DoEchelonMatTransformationBlockwise(matrix, rec( galoisField := GF(q), numberBlocksHeight := numberBlocksHeight, numberBlocksWidth := numberBlocksWidth, withTrafo := withTrafo ));;
     result_std := EchelonMatTransformation(matrix);;
-
-    return (result.vectors = result_std.vectors)
-        and (result.coeffs = result_std.coeffs)
-        and (Concatenation(result.coeffs, result.relations) * matrix = echelon)
+    if withTrafo then
+        return (result.vectors = result_std.vectors)
+            and (result.coeffs = result_std.coeffs)
+            and (Concatenation(result.coeffs, result.relations) * matrix = echelon)
+            and (result.heads = result_std.heads);
+    fi;
+    return result.vectors = result_std.vectors
         and (result.heads = result_std.heads);
 end;
 
