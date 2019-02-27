@@ -38,7 +38,7 @@ function (mat, options)
     TaskListPreClearUp, TaskListClearUpR, TaskListClearUpM,
     A, B, D, E, K, M, R, X,
     ClearDownDeps, ExtendDeps, UpdateRowDeps, UpdateRowTrafoDeps,
-    k, result, i, h, j, k_, l;
+    k, result, i, h, j, k_, l, ClearUpDeps;
 
     recnames := Set(RecNames(options));
 
@@ -304,45 +304,25 @@ function (mat, options)
             for l in [k .. b] do
                 Info(InfoGauss, 3,
                      "ClearUpR j, k, l: ", j, " ", k, " ", l);
-                if l-k = 0 then
-                    TaskListClearUpR[j][l][1] := ScheduleTask(
-                        [TaskListPreClearUp[j][k]],
-                        GAUSS_ClearUp_destructive,
-                        R, TaskResult(TaskListPreClearUp[j][k]), j, k, l
-                    );
-                else
-                    TaskListClearUpR[j][l][l-k+1] := ScheduleTask(
-                        [
-                            TaskListClearUpR[j][l][l-k],
-                            TaskListClearUpR[k][l][l-k],
-                            TaskListPreClearUp[j][k]
-                        ],
-                        GAUSS_ClearUp_destructive,
-                        R, TaskResult(TaskListPreClearUp[j][k]), j, k, l
-                    );
-                fi;
+                ClearUpDeps := GAUSS_ClearUpDependencies(
+                    j, k, l, l-k, TaskListPreClearUp, TaskListClearUpR
+                );                               
+                TaskListClearUpR[j][l][l-k+1] := ScheduleTask(
+                    ClearUpDeps, GAUSS_ClearUp_destructive,
+                    R, TaskResult(TaskListPreClearUp[j][k]), j, k, l
+                );
             od;
             if  withTrafo then
                 for h in [1 .. a] do
                     Info(InfoGauss, 3,
                          "ClearUpM j, k, h: ", j, " ", k, " ", h);
-                    if k_ = 1 then
-                        TaskListClearUpM[j][h][1] := ScheduleTask(
-                            [TaskListPreClearUp[j][k]],
-                            GAUSS_ClearUp_destructive,
-                            M, TaskResult(TaskListPreClearUp[j][k]), j, k, h
-                        );
-                    else
-                        TaskListClearUpM[j][h][k_] := ScheduleTask(
-                            [
-                                TaskListClearUpM[j][h][k_-1],
-                                TaskListClearUpM[k][h][k_-1],
-                                TaskListPreClearUp[j][k]
-                            ],
-                            GAUSS_ClearUp_destructive,
-                            M, TaskResult(TaskListPreClearUp[j][k]), j, k, h
-                        );
-                    fi;
+                    ClearUpDeps := GAUSS_ClearUpDependencies(
+                        j, k, h, k_-1, TaskListPreClearUp, TaskListClearUpM
+                    );                               
+                    TaskListClearUpM[j][h][k_] := ScheduleTask(
+                        ClearUpDeps, GAUSS_ClearUp_destructive,
+                        M, TaskResult(TaskListPreClearUp[j][k]), j, k, h
+                    );
                 od;
             fi;
         od;

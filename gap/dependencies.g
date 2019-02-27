@@ -51,3 +51,13 @@ GAUSS_UpdateRowTrafoDependencies := function(i, j, k, TaskListClearDown, TaskLis
     fi;
     return list;
 end;
+
+GAUSS_ClearUpDependencies := function(j, k, l, i, TaskListPreClearUp, TaskListClearUp)
+    local list;
+    list := [ TaskListPreClearUp[j][k] ];
+    if i > 0 then
+        Add(list, TaskListClearUp[j][l][i]);
+        Add(list, TaskListClearUp[k][l][i]);
+    fi;
+    return list;
+end;
