@@ -38,7 +38,7 @@ function (mat, options)
     TaskListPreClearUp, TaskListClearUpR, TaskListClearUpM,
     A, B, D, E, K, M, R, X,
     ClearDownDeps, ExtendDeps, UpdateRowDeps, UpdateRowTrafoDeps,
-    k, result, i, h, j, k_, l, ClearUpDeps;
+    k, result, i, h, j, k_, l, ClearUpDeps, isChopped;
 
     recnames := Set(RecNames(options));
 
@@ -61,6 +61,12 @@ function (mat, options)
         withTrafo := options.withTrafo;
     else
         withTrafo := true;
+    fi;
+    
+    if "isChopped" in recnames then
+        isChopped := options.isChopped;
+    else
+        isChopped :=false;
     fi;
 
     if "galoisField" in recnames then
@@ -110,10 +116,13 @@ function (mat, options)
     Info(InfoGauss, 2, "Preparation");
 
     ##Preparation: Init and chopping the matrix mat
-
-    copyMat := MutableCopyMat(mat);
-    ConvertToMatrixRepNC(copyMat);
-    tmp := GAUSS_ChopMatrix(galoisField, copyMat, a, b);
+    if isChopped then
+        copyMat := mat;
+    else 
+        copyMat := MutableCopyMat(mat);
+        ConvertToMatrixRepNC(copyMat); 
+    fi;
+    tmp := GAUSS_ChopMatrix(galoisField, copyMat, a, b, isChopped);
     C := tmp.mat;
     nrRowsPerBlockRow := tmp.rowsList;
     nrColsPerBlockCol := tmp.colsList;
