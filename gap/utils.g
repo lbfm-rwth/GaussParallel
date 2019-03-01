@@ -23,12 +23,30 @@ end;
 
 ##############################################################################
 # Larger high-level functions.
-GAUSS_ChopMatrix := function( f,A,nrows,ncols )
+GAUSS_ChopMatrix := function( f,A,nrows,ncols, isChopped)
     local   i, j, rrem, crem, rowCnt, rowOverhead, colOverhead, colCnt, AA, a,
     b, rowsList, colsList;
 
     rowsList := ListWithIdenticalEntries(nrows,0);
     colsList := ListWithIdenticalEntries(ncols,0);
+    if  isChopped then
+        AA := FixedAtomicList(nrows, 0);
+        for i in [ 1 .. nrows ] do
+            AA[i] := FixedAtomicList(ncols, 0);
+            for j in [ 1 .. ncols ] do
+                AA[i][j] := MutableCopyMat(A[i][j]);
+                ConvertToMatrixRepNC(AA[i][j],f);
+            od; 
+        od;
+        for i in [ 1 .. nrows ] do
+            rowsList[i] := NrRows(A[i][1]);
+        od;
+        for j in [ 1 .. ncols ] do
+            colsList[i] := NrCols(A[1][j]);
+        od;
+
+        return rec(mat:=AA, rowsList:=rowsList, colsList:=colsList );
+    fi;
 
     rrem := NrRows(A) mod nrows;
     crem := NrCols(A) mod ncols;
@@ -36,7 +54,7 @@ GAUSS_ChopMatrix := function( f,A,nrows,ncols )
     b := ( NrCols(A) - crem ) / ncols; 
     ## the alogirthm tries to chop the matrix A in equally sized submatrices
     ## the basic size of each block will be axb, the remainder of the above division is then
-    ## spread among the frist rrem rows/cram cols respectively, giving each block 1 addiitonal row and/or column
+    ## spread among the first rrem rows/crem cols respectively, giving each block 1 additional row and/or column
 
     ## create a matrix AA of size 'nrows x ncols' which stores all submatrices
     AA := FixedAtomicList(nrows, 0);
