@@ -42,16 +42,14 @@ function (mat, options)
 
     recnames := Set(RecNames(options));
 
-    nrows := NrRows(mat);
-    ncols := NrCols(mat);
     Info(InfoGauss, 4, "Input checks");
     if ("numberBlocksHeight" in recnames)
             and ("numberBlocksWidth" in recnames) then
         numberBlocksHeight := options.numberBlocksHeight;
         numberBlocksWidth := options.numberBlocksWidth;
     else
-        numberBlocksHeight := GAUSS_calculateBlocks(nrows);
-        numberBlocksWidth := GAUSS_calculateBlocks(ncols);
+        numberBlocksHeight := 1; 
+        numberBlocksWidth := 1;
     fi;
     #Hack
     a := numberBlocksHeight;
@@ -67,6 +65,19 @@ function (mat, options)
         isChopped := options.isChopped;
     else
         isChopped :=false;
+    fi;
+    if isChopped then
+        nrows := 0;
+        ncols := 0;
+        for i in [ 1 .. numberBlocksHeight ] do
+            nrows := nrows + NrRows(mat[i][1]);
+        od;     
+        for j in [ 1 .. numberBlocksWidth ] do
+            ncols := ncols + NrCols(mat[1][j]);
+        od;
+    else
+        nrows := NrRows(mat);
+        ncols := NrCols(mat);
     fi;
 
     if "galoisField" in recnames then
@@ -84,6 +95,9 @@ function (mat, options)
     else
         verify := false;
     fi;
+    if verify and isChopped then
+        Error("Can't use verify and isChopped simultaneously");
+    fi;
     if verify and not withTrafo then
         Error("can't verify the calculation without computing the ",
               "transformation matrix");
@@ -92,7 +106,7 @@ function (mat, options)
     if not (HasIsField(galoisField) and IsField(galoisField)) then
         ErrorNoReturn("Wrong argument: The first parameter is not a field.");
     fi;
-    if not IsMatrix(mat) then
+    if not isChopped and not IsMatrix(mat) then
         ErrorNoReturn("Wrong argument: The second parameter is not a matrix.");
     fi;
     if not (a in NonnegativeIntegers and b in NonnegativeIntegers) then
@@ -117,10 +131,17 @@ function (mat, options)
 
     ##Preparation: Init and chopping the matrix mat
     if isChopped then
-        copyMat := mat;
+        copyMat := FixedAtomicList(a,0);
+        for i in [ 1 .. a ] do
+            copyMat[i] := FixedAtomicList(b,0);
+            for j in [ 1 .. b ] do
+                copyMat[i][j] := MutableCopyMat(mat[i][j]);
+                ConvertToMatrixRepNC(copyMat[i][j], galoisField);
+            od;
+        od;
     else 
         copyMat := MutableCopyMat(mat);
-        ConvertToMatrixRepNC(copyMat); 
+        ConvertToMatrixRepNC(copyMat, galoisField); 
     fi;
     tmp := GAUSS_ChopMatrix(galoisField, copyMat, a, b, isChopped);
     C := tmp.mat;
