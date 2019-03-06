@@ -23,64 +23,73 @@ end;
 
 ##############################################################################
 # Larger high-level functions.
-GAUSS_ChopMatrix := function( f,A,nrows,ncols, isChopped)
-    local   i, j, rrem, crem, rowCnt, rowOverhead, colOverhead, colCnt, AA, a,
-    b, rowsList, colsList;
+GAUSS_calculateBlockSize := function(i, j, nrVerticalBlocks, nrHorizontalBlocks,
+        nrRowsTotal, nrColsTotal)
+    local verticalRemainder, horizontalRemainder, a, b, horizontalOverhead,
+    verticalOverhead, currentVerticalOverhead, currentHorizontalOverhead;
+    ## the alogirthm tries to chop the matrix A in equally sized submatrices 
+    ## the basic size of each block will be axb, the remainder of the above
+    ## division is then spread among the first rrem rows/crem cols
+    ## respectively, giving each block 1 additional row and/or column
+    
+    verticalRemainder := RemInt(nrRowsTotal, nrVerticalBlocks);
+    horizontalRemainder := RemInt(nrColsTotal, nrHorizontalBlocks);
+    a := QuoInt(nrRowsTotal, nrVerticalBlocks);
+    b := QuoInt(nrColsTotal, nrHorizontalBlocks);
+    
+    if i > verticalRemainder then
+        verticalOverhead := verticalRemainder;
+        currentVerticalOverhead := 0;
+    else
+        verticalOverhead := i-1;
+        currentVerticalOverhead := 1;
+    fi;
+    if j > horizontalRemainder then
+        horizontalOverhead := horizontalRemainder;
+        currentHorizontalOverhead := 0;
+    else
+        horizontalOverhead := j-1;
+        currentHorizontalOverhead := 1;
+    fi;
+
+    return rec(
+        vertical := [(i-1)*a+1+verticalOverhead 
+            .. i*a+verticalOverhead+currentVerticalOverhead], 
+        horizontal := [(j-1)*b+1+horizontalOverhead 
+            .. j*b+horizontalOverhead+currentHorizontalOverhead]
+    );
+end;
+
+GAUSS_ChopMatrix := function(f, A, nrows, ncols, isChopped  )
+    local i, j, AA, rowsList, colsList, blockSize;
 
     rowsList := ListWithIdenticalEntries(nrows,0);
     colsList := ListWithIdenticalEntries(ncols,0);
-    if  isChopped then
-        AA := FixedAtomicList(nrows, 0);
-        for i in [ 1 .. nrows ] do
-            AA[i] := FixedAtomicList(ncols, 0);
-            for j in [ 1 .. ncols ] do
-                AA[i][j] := MutableCopyMat(A[i][j]);
-                ConvertToMatrixRepNC(AA[i][j],f);
-            od; 
-        od;
-        for i in [ 1 .. nrows ] do
-            rowsList[i] := NrRows(A[i][1]);
-        od;
-        for j in [ 1 .. ncols ] do
-            colsList[i] := NrCols(A[1][j]);
-        od;
-
-        return rec(mat:=AA, rowsList:=rowsList, colsList:=colsList );
-    fi;
-
-    rrem := NrRows(A) mod nrows;
-    crem := NrCols(A) mod ncols;
-    a := ( NrRows(A) - rrem ) / nrows; 
-    b := ( NrCols(A) - crem ) / ncols; 
-    ## the alogirthm tries to chop the matrix A in equally sized submatrices
-    ## the basic size of each block will be axb, the remainder of the above division is then
-    ## spread among the first rrem rows/crem cols respectively, giving each block 1 additional row and/or column
-
-    ## create a matrix AA of size 'nrows x ncols' which stores all submatrices
     AA := FixedAtomicList(nrows, 0);
-    
-    rowCnt := 0;
-    rowOverhead := 1;
     for i in [ 1 .. nrows ] do
-        colCnt := 0;
-        colOverhead := 1;
-        if  i > rrem then rowOverhead := 0; fi;
-        rowsList[i] := a+rowOverhead;
         AA[i] := FixedAtomicList(ncols, 0);
         for j in [ 1 .. ncols ] do
-            if  j > crem then colOverhead := 0; fi;
-            AA[i][j] := ExtractSubMatrix(A,[rowCnt+1 .. rowCnt+rowsList[i]],[colCnt+1 .. colCnt+b+colOverhead]); 
-            
-            ConvertToMatrixRepNC(AA[i][j],f);
+            if isChopped then
+                AA[i][j] := MutableCopyMat(A[i][j]);
+            else
+                blockSize := GAUSS_calculateBlockSize(
+                    i, j, nrows, ncols, NrRows(A), NrCols(A)
+                );
+                AA[i][j] := ExtractSubMatrix(
+                    A, blockSize.vertical, blockSize.horizontal
+                ); 
+            fi;
+            ConvertToMatrixRepNC(AA[i][j], f);
             MakeReadOnlyOrImmutableObj(AA[i][j]);
-            colsList[j] := b + colOverhead;
-
-            colCnt := colCnt + b + colOverhead;
-        od;
-        rowCnt := rowCnt + a + rowOverhead;
+        od; 
     od;
-
-    return rec(mat:=AA, rowsList:=rowsList, colsList:=colsList );
+    for i in [ 1 .. nrows ] do
+        rowsList[i] := NrRows(AA[i][1]);
+    od;
+    for j in [ 1 .. ncols ] do
+        colsList[j] := NrCols(AA[1][j]);
+    od;
+    return rec(mat := AA, rowsList := rowsList, colsList := colsList );
 end;
 
 # Functions for Step 3
