@@ -23,19 +23,15 @@ end;
 
 ##############################################################################
 # Larger high-level functions.
-GAUSS_calculateBlockSize := function(i, j, nrVerticalBlocks, nrHorizontalBlocks,
-        nrRowsTotal, nrColsTotal)
-    local verticalRemainder, horizontalRemainder, a, b, horizontalOverhead,
-    verticalOverhead, currentVerticalOverhead, currentHorizontalOverhead;
+GAUSS_calculateBlockSize := function(i, j, verticalRemainder, 
+        horizontalRemainder, a, b)
+    local currentVerticalOverhead, currentHorizontalOverhead, verticalOverhead,
+        horizontalOverhead;
     ## the alogirthm tries to chop the matrix A in equally sized submatrices 
     ## the basic size of each block will be axb, the remainder of the above
     ## division is then spread among the first rrem rows/crem cols
     ## respectively, giving each block 1 additional row and/or column
     
-    verticalRemainder := RemInt(nrRowsTotal, nrVerticalBlocks);
-    horizontalRemainder := RemInt(nrColsTotal, nrHorizontalBlocks);
-    a := QuoInt(nrRowsTotal, nrVerticalBlocks);
-    b := QuoInt(nrColsTotal, nrHorizontalBlocks);
     
     if i > verticalRemainder then
         verticalOverhead := verticalRemainder;
@@ -60,9 +56,17 @@ GAUSS_calculateBlockSize := function(i, j, nrVerticalBlocks, nrHorizontalBlocks,
     );
 end;
 
-GAUSS_ChopMatrix := function(f, A, nrows, ncols, isChopped  )
-    local i, j, AA, rowsList, colsList, blockSize;
+GAUSS_ChopMatrix := function(f, A, nrows, ncols, isChopped)
+    local i, j, AA, rowsList, colsList, blockSize, a, b,
+    verticalRemainder, horizontalRemainder, verticalOverhead,
+    horizontalOverhead;
 
+    if not isChopped then
+        verticalRemainder := RemInt(NrRows(A), nrows);
+        horizontalRemainder := RemInt(NrCols(A), ncols);
+        a := QuoInt(NrRows(A), nrows);
+        b := QuoInt(NrCols(A), ncols);
+    fi;
     rowsList := ListWithIdenticalEntries(nrows,0);
     colsList := ListWithIdenticalEntries(ncols,0);
     AA := FixedAtomicList(nrows, 0);
@@ -73,13 +77,13 @@ GAUSS_ChopMatrix := function(f, A, nrows, ncols, isChopped  )
                 AA[i][j] := MutableCopyMat(A[i][j]);
             else
                 blockSize := GAUSS_calculateBlockSize(
-                    i, j, nrows, ncols, NrRows(A), NrCols(A)
+                    i, j, verticalRemainder,
+                    horizontalRemainder, a, b
                 );
                 AA[i][j] := ExtractSubMatrix(
                     A, blockSize.vertical, blockSize.horizontal
                 ); 
             fi;
-            ConvertToMatrixRepNC(AA[i][j], f);
             MakeReadOnlyOrImmutableObj(AA[i][j]);
         od; 
     od;
