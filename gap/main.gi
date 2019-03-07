@@ -76,7 +76,7 @@ function (mat, options)
     if "verify" in recnames then
         verify := options.verify;
     else
-        verify := withTrafo;
+        verify := false;
     fi;
     if verify and not withTrafo then
         Error("can't verify the calculation without computing the ",
