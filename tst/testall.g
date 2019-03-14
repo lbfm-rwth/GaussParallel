@@ -8,6 +8,9 @@ dirs := [
 if IsHPCGAP then
     # timing suite
     Add(dirs, DirectoriesPackageLibrary("GaussPar", "tst/benchmarking"));
+else
+    # CVEC pkg doesn't work under HPCGAP. We only test it with GAP.
+    Add(dirs, DirectoriesPackageLibrary("GaussPar", "tst/sequential"));
 fi;
 
 TestDirectory(dirs, rec(exitGAP := true));
