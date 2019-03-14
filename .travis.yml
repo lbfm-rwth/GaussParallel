@@ -3,6 +3,7 @@ env:
   global:
     - GAPROOT=gaproot
     - COVDIR=coverage
+    - GAP_PKGS_TO_BUILD="io profiling orb cvec"
 
 addons:
   apt_packages:
@@ -19,9 +20,9 @@ matrix:
       compiler: clang
     - env: CFLAGS="-O2"
       compiler: gcc
-    - env: CFLAGS="-O2" HPCGAP=yes GAP_PKGS_TO_BUILD="io"
+    - env: CFLAGS="-O2" HPCGAP=yes GAP_PKGS_TO_BUILD="io orb cvec"
       compiler: gcc
-    - env: CFLAGS="-O2" HPCGAP=yes SUITE=statistics GAP_PKGS_TO_BUILD="io"
+    - env: CFLAGS="-O2" HPCGAP=yes SUITE=statistics GAP_PKGS_TO_BUILD="io orb cvec"
       compiler: gcc
 
 branches:
