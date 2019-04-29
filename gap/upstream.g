@@ -1,4 +1,5 @@
-EchelonBasisMutableTX := function(m)
+InstallGlobalFunction( EchelonBasisMutableTX,
+function (m)
     local downBasis, coeffs, vectors, pivots, findPivotsPerm, nrRows, dec,
     upBasis, reversePerm, s, transformation, i;
     # Clear downwards
@@ -41,10 +42,13 @@ EchelonBasisMutableTX := function(m)
             transformation * downBasis!.coeffs;
     od;
     return downBasis;
-end;
+end
+);
 
-EchelonBasisMutableT := function(m)
+InstallGlobalFunction( EchelonBasisMutableT,
+function (m)
     local copyM;
     copyM := MutableCopyMat(m);
     return EchelonBasisMutableTX(copyM);
-end;
+end
+);

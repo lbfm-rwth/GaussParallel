@@ -1,4 +1,4 @@
-# Declare global functions of this package
+# Declare main global functions
 #! @Chapter High-level functions
 #! @Section Test
 #!
