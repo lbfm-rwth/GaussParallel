@@ -6,7 +6,8 @@
 # 3. Any rows consisting entirely of zeroes are placed at the bottom of the matrix.
 # 4, Every column that contains a leading 1 must have zeros everywhere else in that column.
 
-IsMatrixInRREF := function(A)
+InstallGlobalFunction( IsMatrixInRREF,
+function (A)
     local nrows, ncols, i, j, k, leadingElementFound;
 
     nrows := NrRows(A);
@@ -38,4 +39,5 @@ IsMatrixInRREF := function(A)
     od;
 
     return true;
-end;
+end
+);
