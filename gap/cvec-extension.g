@@ -1,8 +1,7 @@
 # These functions are currently unused under HPCGAP because cvec causes a
 # segfault. If they work then one day they should be added to the cvec package.
-LoadPackage("cvec");
-
-GAUSS_EchelonBasisMutableTX := function(m)
+InstallGlobalFunction( GAUSS_EchelonBasisMutableTX,
+function (m)
     local downBasis, coeffs, vectors, pivots, findPivotsPerm, nrRows, dec,
     upBasis, reversePerm, s, transformation, i;
     # Clear downwards
@@ -45,10 +44,13 @@ GAUSS_EchelonBasisMutableTX := function(m)
             transformation * downBasis!.coeffs;
     od;
     return downBasis;
-end;
+end
+);
 
-GAUSS_EchelonBasisMutableT := function(m)
+InstallGlobalFunction( GAUSS_EchelonBasisMutableT,
+function (m)
     local copyM;
     copyM := MutableCopyMat(m);
-    return GAUSS_EchelonBasisMutableTX(copyM);
-end;
+    return EchelonBasisMutableTX(copyM);
+end
+);

@@ -2,7 +2,8 @@
 # and a function that gets a matrix and returns another matrix with the same
 # strict row echelon form.
 
-RandomEchelonMat := function(height, width, rank, randomSeed, ring)
+InstallGlobalFunction( RandomEchelonMat,
+function (height, width, rank, randomSeed, ring)
    local echelonMat, rightCorner, i, j;
 
     rightCorner := RandomMat(randomSeed, rank, width-rank, ring);
@@ -20,7 +21,8 @@ RandomEchelonMat := function(height, width, rank, randomSeed, ring)
     od;
 
     return echelonMat;
-end;
+end
+);
 
 GAUSS_RandomMatFromEchelonForm := function(echelon, height)
     local i, grp, left;
