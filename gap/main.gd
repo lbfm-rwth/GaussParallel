@@ -1,6 +1,6 @@
 # Declare main global functions
-#! @Chapter High-level functions
-#! @Section Test
+#! @Chapter Functions
+#! @Section High-Level Functions
 #!
 #!
 if IsHPCGAP then

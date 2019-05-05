@@ -1,7 +1,3 @@
-#! @Chapter Low-level functions
-#! @Section Helper functions
-#!
-#!
 # This function is temporary until it is not necessary anymore to find
 # a number of blocks that divides the width or height.
 # When different chop sizes are possible, we will presumably find the perfect

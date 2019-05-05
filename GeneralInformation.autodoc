@@ -1,0 +1,14 @@
+@AutoDocPlainText
+@Chapter General Information
+@Section What Is This Package About?
+
+In this package we implement a parallel version of the Gauss algorithm that
+aims to be faster than the normal, sequential version by dividing a given
+matrix in...
+
+@Section What Is In The Package?
+The package contains three different functions that execute the Gauss
+algorithms whereas the main differences lie in the outputs of those
+functions...
+
+@EndAutoDocPlainText
