@@ -1,6 +1,6 @@
 # Declare global functions
-#! @Chapter Low-level functions
-#! @Section Helper functions
+#! @Chapter Functions
+#! @Section Low-Level Functions
 #!
 DeclareGlobalFunction( "EchelonBasisMutableTX" );
 DeclareGlobalFunction( "EchelonBasisMutableT" );
