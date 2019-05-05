@@ -14,3 +14,25 @@
 #! * Every column that contains a leading one must have zeros everywhere else
 #!   in that column.
 DeclareGlobalFunction( "IsMatrixInRREF" );
+#! @BeginExampleSession
+#! gap> M := RandomMat( 3, 3 );;
+#! gap> Display( M );
+#! [ [   1,   0,  -1 ],
+#!   [  -1,  -1,   1 ],
+#!   [  -1,   1,  -2 ] ]
+#! gap> IsMatrixInRREF( M );
+#! false
+#! gap> N := IdentityMat( 3 );;
+#! gap> Display( N );
+#! [ [  1,  0,  0 ]
+#!   [  0,  1,  0 ],
+#!   [  0,  0,  1 ] ]
+#! gap> IsMatrixInRREF( N );
+#! true
+#! gap> L := [ [ 1, 0, 3 ], [ 0, 1, 5 ] ];;
+#! gap> Display( L );
+#! [ [  1,  0,  3 ],
+#!   [  0,  1,  5 ] ]
+#! gap> IsMatrixInRREF( L );
+#! true
+#! @EndExampleSession
