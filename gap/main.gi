@@ -48,8 +48,8 @@ function (mat, options)
         numberBlocksHeight := options.numberBlocksHeight;
         numberBlocksWidth := options.numberBlocksWidth;
     else
-        numberBlocksHeight := 1; 
-        numberBlocksWidth := 1;
+        numberBlocksHeight := GAUSS_calculateBlocks(NrRows(mat));
+        numberBlocksWidth := GAUSS_calculateBlocks(NrCols(mat));
     fi;
     #Hack
     a := numberBlocksHeight;
