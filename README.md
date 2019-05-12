@@ -28,12 +28,12 @@ The third function is called `DoEchelonMatTransformationBlockwise`. As input you
 
 The most basic usage of our algorithm would be the following:
 ```
-n := 4000;; numberBlocks := 8;; q := 5;;
+n := 4000;; q := 5;;
 A := RandomMat(n, n, GF(q));;
 result := EchelonMatBlockwise(A);;
 ```
 
-`result` is a record with the components `vectors` and `heads`, whereas `vectors` is a list of the nonzero rows of the reduced echelon form of the matrix and `heads` is a list that of the pivot elements. If the i-th entry of `heads` is j, then we now that there is a pivot element at the position [j,i].
+`result` is a record with the components `vectors` and `heads`, whereas `vectors` is a list of the nonzero rows of the reduced echelon form of the matrix and `heads` is a list of the pivot elements. If the i-th entry of `heads` is j, then we know that there is a pivot element at the position [j,i].
 
 ## EchelonMatTransformationBlockwise
 
