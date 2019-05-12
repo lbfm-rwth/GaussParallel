@@ -2,16 +2,55 @@
 @Chapter General Information
 @Section What Is This Package About?
 
-In this package we implement a parallel version of the Gauss algorithm that
-aims to be faster than the normal, sequential version by dividing a given
-matrix in...
+This package implements a parallel version of the GAUSS algorithm which divides
+a given matrix in smaller blocks, executes the GAUSS algorithm on the blocks
+simultaneously using different kernels and merges the result in a thought out
+way. We realize the algorithm that is described in the paper "A parallel
+algorithm for Gaussian elimination over finite fields" (Linton et al. 2018)
+@BeginLatexOnly
+\footnote{Linton, S., Nebe, G., Niemeyer, A., Parker, R. and Thackray, J. (2018).
+A parallel algorithm for Gaussian elimination over finite fields.}
+@EndLatexOnly
 
-@Section What Is In The Package?
-The package contains three different functions that execute the Gauss
-algorithms whereas the main differences lie in the outputs of those
-functions...
+To make our package user-friendly we provide different versions of the main
+function returning different amounts of information and options to influence the 
+process of calculation. While creating the main functions we implemented many
+low-level functions and found that some of them could be useful independently.
+The exact documentation of all those functions can be found in chapter 2.
+Examples for the main functions are in chapter 3.
+
+@Section Technical Background
+
+Our syntax is based on the GAP package "GAUSS"
+@BeginLatexOnly
+\footnote{\url{https://www.gap-system.org/Packages/gauss.html}}
+@EndLatexOnly
+by Simon Goertzen which provides an implementation of the sequential GAUSS algorithm, meaning
+that we tried to name our functions similarily.
+
+
+To use our package one needs to download it
+@BeginLatexOnly
+\footnote{Download for example from our github repository:
+\url{https://github.com/lbfm-rwth/GaussPar/}}
+@EndLatexOnly
+, navigate inside the directory, open HPCGAP and type
+@BeginExampleSession
+#! gap> LoadPackage( "GAUSSPAR" );
+@EndExampleSession
+Then you can start by following the examples in chapter 3.
 
 @Chapter Functions
+@Section Low-Level Functions
+
+The following functions were created while implementing the high-level functions,
+but we found that they could be useful outside of our functions, too.
+You can find the specifications of the functions and some small examples here.
+
+@Section High-Level Functions
+
+In this section there are the specifications of the variants of our implementation
+of the GAUSS algorithm. For example usage see chapter 3.
 
 @Chapter Examples
 
