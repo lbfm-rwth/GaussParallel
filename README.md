@@ -37,7 +37,7 @@ blocks that are used and whether to use the sequential or the parallel version.
 
 The most basic usage of our algorithm would be the following:
 ```
-n := 4000;; numberBlocks := 8;; q := 5;;
+n := 4000;; q := 5;;
 A := RandomMat(n, n, GF(q));;
 result := EchelonMatBlockwise(A);;
 ```
