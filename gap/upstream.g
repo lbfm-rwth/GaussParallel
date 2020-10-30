@@ -1,4 +1,6 @@
-EchelonBasisMutableTX := function(m)
+# These functions are currently unused under HPCGAP because cvec causes a
+# segfault.
+GAUSS_EchelonBasisMutableTX := function(m)
     local downBasis, coeffs, vectors, pivots, findPivotsPerm, nrRows, dec,
     upBasis, reversePerm, s, transformation, i;
     # Clear downwards
@@ -43,7 +45,7 @@ EchelonBasisMutableTX := function(m)
     return downBasis;
 end;
 
-EchelonBasisMutableT := function(m)
+GAUSS_EchelonBasisMutableT := function(m)
     local copyM;
     copyM := MutableCopyMat(m);
     return EchelonBasisMutableTX(copyM);
