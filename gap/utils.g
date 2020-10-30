@@ -115,7 +115,7 @@ end;
 
 # This function takes one of the block-matrices M,K or R and writes the blocks
 # into one big matrix. The cases for different block-matrices differ only in
-# details, thus we have the flag to indicate we are work with R (flag = -1), 
+# details, thus we have the flag to indicate we are working with R (flag = -1),
 # M (flag = 0) or K (flag = 1).
 GAUSS_GlueFromBlocks := function( galoisField, blockMat, LocalSizeInfo, riffle,
 flag)
