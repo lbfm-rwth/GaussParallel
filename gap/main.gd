@@ -1,6 +1,44 @@
 # Declare main global functions
-#! @Chapter Functions
+
+#! @Chapter Gaussian Elimination
 #! @Section High-Level Functions
+#!
+#! @Arguments mat
+#! @Returns a record
+#! @Description This record contains
+#! * vectors:
+#!   the reduced row echelon form of the matrix mat without the zero rows
+#! * heads:
+#!    list that contains at position i, if nonzero, the number of the row for
+#!    that the pivot element is in column i.
+#! * coeffs:
+#!   the transformation matrix needed to obtain the RREF from mat
+#! * relations:
+#!   the kernel of the matrix mat if the underlying ring is a field
+#!
+#! Calculates the parallel Gauss algorithm. This version assumes the underlying
+#! field of the matrix by using DefaultFieldOfMatrix and uses a block size that
+#! has proven to lead to the fastest execution of the algorithm. It returns the
+#! commonly needed informations.
+DeclareGlobalFunction( "EchelonMatTransformationBlockwise" );
+
+#! @Arguments mat
+#! @Returns a record
+#! @Description This record contains
+#! * vectors:
+#!   the reduced row echelon form of the matrix mat without the zero rows
+#! * heads:
+#!    list that contains at position i, if nonzero, the number of the row for
+#!    that the pivot element is in column i.
+#!
+#! Calculates the parallel Gauss algorithm. This version assumes the underlying
+#! field of the matrix by using DefaultFieldOfMatrix and uses a block size that
+#! has proven to lead to the fastest execution of the algorithm. It returns
+#! a minimum of information but has the least execution time.
+DeclareGlobalFunction( "EchelonMatBlockwise" );
+
+#! @Chapter Low-Level Functions
+#! @Section Low-Level Functions
 #!
 #!
 if IsHPCGAP then
@@ -10,7 +48,7 @@ else
 fi;
 
 #! @Arguments mat, options
-#! @Returns a record that contains information of an echelonized version of mat.
+#! @Returns a record
 #! @Description This record contains
 #! * vectors:
 #!   the reduced row echelon form of the matrix mat without the zero rows

@@ -1,6 +1,6 @@
 # Declare global functions
-#! @Chapter Functions
-#! @Section Low-Level Functions
+#! @Chapter Gaussian Elimination
+#! @Section Utility Functions
 #!
 #! @Arguments mat
 #! @Returns bool
