@@ -1,5 +1,5 @@
 @AutoDocPlainText
-@Chapter General Information
+@Chapter Introduction
 @Section What Is This Package About?
 
 This package implements a parallel version of the GAUSS algorithm which divides
@@ -40,17 +40,17 @@ To use our package one needs to download it
 @EndExampleSession
 Then you can start by following the examples in chapter 3.
 
-@Chapter Functions
-@Section Low-Level Functions
-
-The following functions were created while implementing the high-level functions,
-but we found that they could be useful outside of our functions, too.
-You can find the specifications of the functions and some small examples here.
-
+@Chapter Gaussian Elimination
 @Section High-Level Functions
 
 In this section there are the specifications of the variants of our implementation
 of the GAUSS algorithm. For example usage see chapter 3.
+
+@Section Utility Functions
+
+The following functions were created while implementing the high-level functions,
+but we found that they could be useful outside of our functions, too.
+You can find the specifications of the functions and some small examples here.
 
 @Chapter Examples
 
@@ -279,5 +279,7 @@ TODO is this possible with blocks of different sizes??!!
 @BeginExampleSession
 #! gap> DoEchelonMatTransformationBlockwise( A, rec( isChopped := true ) );;
 @EndExampleSession
+
+@Chapter Low-Level Functions
 
 @EndAutoDocPlainText

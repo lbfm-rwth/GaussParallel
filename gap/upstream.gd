@@ -1,6 +1,6 @@
 # Declare global functions
-#! @Chapter Functions
-#! @Section Low-Level Functions
+#! @Chapter Gaussian Elimination
+#! @Section Utility Functions
 #!
 DeclareGlobalFunction( "EchelonBasisMutableTX" );
 DeclareGlobalFunction( "EchelonBasisMutableT" );
