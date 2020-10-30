@@ -43,7 +43,14 @@ function (mat, options)
     recnames := Set(RecNames(options));
 
     Info(InfoGauss, 4, "Input checks");
-    if ("numberBlocksHeight" in recnames)
+    if ("numberBlocks" in recnames) then
+	if ("numberBlocksHeight" in recnames) or ("numberBlocksWidth" in recnames) then
+		ErrorNoReturn("Conflicting parameters: Can't use numberBlocks and numberBlocksWidth/numberBlocksHeight simultaneously");
+	else
+		numberBlocksHeight := options.numberBlocks;
+		numberBlocksWidth := options.numberBlocks;		
+	fi;
+    elif ("numberBlocksHeight" in recnames)
             and ("numberBlocksWidth" in recnames) then
         numberBlocksHeight := options.numberBlocksHeight;
         numberBlocksWidth := options.numberBlocksWidth;
