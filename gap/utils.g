@@ -240,8 +240,6 @@ GAUSS_WriteOutput := function(mat, a, b, nrColsPerBlockCol, nrRowsPerBlockRow,
     if withTrafo then
         result.coeffs := -B;
         result.relations := D;
-        result.transformation := Concatenation(result.coeffs,
-                                               result.relations);
     fi;
     return result;
 end;

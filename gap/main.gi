@@ -374,7 +374,9 @@ function (mat, options)
     # Computations are finished. Now prepare the output.
     result := GAUSS_WriteOutput(mat, a, b, nrColsPerBlockCol, nrRowsPerBlockRow, galoisField, D, R, M,
                                 E, K, withTrafo);
-    if verify and not IsMatrixInRREF(result.transformation * mat) then
+	
+    #the transformation matrix is just Concatenation(result.coeffs, result.relations);
+    if verify and not IsMatrixInRREF(Concatenation(result.coeffs, result.relations) * mat) then
         Error("Result verification failed! Result is not in RREF!\n",
               "Please report this bug to\n",
               "https://github.com/lbfm-rwth/GaussPar#contact");
