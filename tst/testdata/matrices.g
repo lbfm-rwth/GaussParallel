@@ -26,8 +26,6 @@ M7 := RandomEchelonMat(1, 1, 0, randomSource, GF(11));;
 # 1x1, full rank
 M8 := RandomEchelonMat(1, 1, 1, randomSource, GF(11));;
 
-# The following matrices aren't working right now.
-# That is the reason why they aren't used for testing yet.
 # 1x100
 M9 := RandomEchelonMat(1, 100, 1, randomSource, GF(5));
 
