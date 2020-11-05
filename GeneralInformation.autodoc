@@ -16,8 +16,7 @@ To make our package user-friendly we provide different versions of the main
 function returning different amounts of information and options to influence the 
 process of calculation. While creating the main functions we implemented many
 low-level functions and found that some of them could be useful independently.
-The exact documentation of all those functions can be found in chapter 2.
-Examples for the main functions are in chapter 3.
+The exact documentation of all those functions as well as some examples can be found below.
 
 @Section Technical Background
 
@@ -39,6 +38,7 @@ To use our package one needs to download it
 #! gap> LoadPackage( "GAUSSPAR" );
 @EndExampleSession
 Then you can start by following the examples in chapter 3.
+
 
 @Chapter Gaussian Elimination
 @Section Gaussian Elimination
@@ -280,6 +280,9 @@ TODO is this possible with blocks of different sizes??!!
 @BeginExampleSession
 #! gap> DoEchelonMatTransformationBlockwise( A, rec( isChopped := true ) );;
 @EndExampleSession
+
+@Chapter Benchmark Data
+@Section TODO
 
 @Chapter Low-Level Functions
 

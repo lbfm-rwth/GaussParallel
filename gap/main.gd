@@ -79,6 +79,8 @@ fi;
 #!   The number of vertical and horizontal blocks in which to divide
 #!   the matrix during the algorithm, note that you need to specify either none
 #!   or both of those variables to make it work.
+#! * numberBlocks:
+#!   Use this argument if you want the same number of vertical and horizontal chops.
 #! * withTrafo:
 #!   A boolean specifying whether or not the transformation matrix is
 #!   calculated, the default value is true.
