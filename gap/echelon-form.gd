@@ -1,5 +1,5 @@
 # Declare global functions
-#! @Chapter Gaussian Elimination
+#! @Chapter Utility Functions
 #! @Section Utility Functions
 #!
 #! @Arguments height, width, rank, randomSeed, ring

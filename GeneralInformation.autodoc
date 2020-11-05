@@ -1,5 +1,5 @@
 @AutoDocPlainText
-@Chapter Introduction
+@Chapter The GaussPar package
 @Section What Is This Package About?
 
 This package implements a parallel version of the GAUSS algorithm which divides
@@ -41,11 +41,12 @@ To use our package one needs to download it
 Then you can start by following the examples in chapter 3.
 
 @Chapter Gaussian Elimination
-@Section High-Level Functions
+@Section Gaussian Elimination
 
 In this section there are the specifications of the variants of our implementation
 of the GAUSS algorithm. For example usage see chapter 3.
 
+@Chapter Utility Functions
 @Section Utility Functions
 
 The following functions were created while implementing the high-level functions,
