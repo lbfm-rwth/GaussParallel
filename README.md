@@ -130,9 +130,9 @@ Instead `cd` into the root folder of the `GaussPar` package and run:
 Please submit bug reports, suggestions for improvements and patches via
 the [issue tracker](https://github.com/lbfm-rwth/GaussPar/issues)
 or via email to
-[Sergio Siccha](mailto:sergio@mathb.rwth-aachen.de)
+[Sergio Siccha](mailto:siccha@mathematik.uni-kl.de)
 or
-[Jendrik Brachter](mailto:jendrik.brachter@rwth-aachen.de).
+[Jendrik Brachter](mailto:brachter@cs.uni-kl.de).
 
 ## License
 
