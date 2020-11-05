@@ -48,5 +48,5 @@ end;
 GAUSS_EchelonBasisMutableT := function(m)
     local copyM;
     copyM := MutableCopyMat(m);
-    return EchelonBasisMutableTX(copyM);
+    return GAUSS_EchelonBasisMutableTX(copyM);
 end;
