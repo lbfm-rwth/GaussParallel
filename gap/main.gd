@@ -1,7 +1,7 @@
 # Declare main global functions
 
 #! @Chapter Gaussian Elimination
-#! @Section High-Level Functions
+#! @Section Gaussian Elimination
 #!
 #! @Arguments mat
 #! @Returns a record
