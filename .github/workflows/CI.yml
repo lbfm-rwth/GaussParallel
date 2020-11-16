@@ -1,0 +1,46 @@
+name: CI
+
+# Trigger the workflow on push or pull request
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    name: ${{ matrix.gap-branch }} - HPCGAP ${{ matrix.HPCGAP }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        gap-branch:
+          - master
+        HPCGAP:
+          - no
+          - yes
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: gap-actions/setup-gap-for-packages@latest
+        with:
+          GAPBRANCH: ${{ matrix.gap-branch }}
+          HPCGAP: ${{ matrix.HPCGAP }}
+          GAP_PKGS_TO_BUILD: "io orb cvec profiling"
+      - uses: gap-actions/compile-documentation-for-packages@latest
+      - uses: gap-actions/run-test-for-packages@latest
+
+  manual:
+    name: Build manuals
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: gap-actions/setup-gap-for-packages@latest
+      - uses: gap-actions/compile-documentation-for-packages@latest
+        with:
+          use-latex: 'true'
+      - name: "Upload documentation"
+        uses: actions/upload-artifact@v1
+        with:
+          name: manual
+          path: ./doc/manual.pdf
