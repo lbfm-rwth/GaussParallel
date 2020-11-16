@@ -1,3 +1,4 @@
+[![Build Status](https://github.com/gap-packages/GaussPar/workflows/CI/badge.svg?branch=master)](https://github.com/gap-packages/GaussPar/actions?query=workflow%3ACI+branch%3Amaster)
 # Introduction
 
 This is an implementation of a parallel Gaussian algorithm as described in
