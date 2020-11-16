@@ -1,3 +1,4 @@
+[![Build Status](https://github.com/gap-packages/GaussPar/workflows/CI/badge.svg?branch=master)](https://github.com/gap-packages/GaussPar/actions?query=workflow%3ACI+branch%3Amaster)
 # How to use
 
 Note that this is not an actual gap package but is supposed to be included in the GAP package Gauss. Therefore you can't load the code by executing LoadPackage(). Instead, there are two different ways to use GaussPar.
