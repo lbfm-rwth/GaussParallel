@@ -20,9 +20,6 @@ maintainers:
 
 GAP: "4.8"
 
-needed-pkgs:
-    - name: none.
-
 www: https://github.com/lbfm-rwth/GaussPar/
 readme: README.md
 packageinfo: https://github.com/lbfm-rwth/GaussPar/
