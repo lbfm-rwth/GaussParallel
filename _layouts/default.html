@@ -43,7 +43,7 @@
               <a class="header name" href="{{ person.url }}">{{ person.name }}</a>{% else %}
               {{ person.name }}
             {% endif %}
-            {%- unless forloop.last -%}, {%- endunless -%}
+            {% unless forloop.last %}, {% endunless %}
           {% endfor %}
         </p>
 
