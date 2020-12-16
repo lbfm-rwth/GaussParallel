@@ -2,5 +2,5 @@
 #! @Chapter Utility Functions
 #! @Section Utility Functions
 #!
-DeclareGlobalFunction( "EchelonBasisMutableTX" );
-DeclareGlobalFunction( "EchelonBasisMutableT" );
+DeclareGlobalFunction( "GAUSS_EchelonBasisMutableTX" );
+DeclareGlobalFunction( "GAUSS_EchelonBasisMutableT" );
