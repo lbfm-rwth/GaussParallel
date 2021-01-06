@@ -2,6 +2,14 @@
 @Chapter The GaussPar package
 @Section What Is This Package About?
 
+TODO:
+- new sections
+  - introduction
+  - installation
+  - overview
+- compare to manual of AutoDoc, Gauss, and Semigroups
+
+
 This package implements a parallel version of the GAUSS algorithm which divides
 a given matrix in smaller blocks, executes the GAUSS algorithm on the blocks
 simultaneously using different kernels and merges the result in a thought out
