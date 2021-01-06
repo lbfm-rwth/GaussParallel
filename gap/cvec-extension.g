@@ -1,5 +1,7 @@
 # These functions are currently unused under HPCGAP because cvec causes a
 # segfault. If they work then one day they should be added to the cvec package.
+LoadPackage("cvec");
+
 GAUSS_EchelonBasisMutableTX := function(m)
     local downBasis, coeffs, vectors, pivots, findPivotsPerm, nrRows, dec,
     upBasis, reversePerm, s, transformation, i;

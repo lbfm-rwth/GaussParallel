@@ -4,9 +4,6 @@
 # Reading the implementation part of the package.
 #
 
-if not IsHPCGAP then
-    LoadPackage("cvec");
-fi;
 # The gauss pkg doesn't work under old versions of HPCGAP. But we can take
 # the functions we need from the following files we copied.
 gauss := LoadPackage("GAUSS");
@@ -18,7 +15,6 @@ LoadPackage("IO");
 
 if not IsHPCGAP then
     ReadPackage( "GaussPar", "gap/hpcgap-mockups.g");
-    ReadPackage( "GaussPar", "gap/cvec-extension.g");
 fi;
 
 ReadPackage( "GaussPar", "gap/RREF.g");
