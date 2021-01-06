@@ -20,6 +20,18 @@ maintainers:
 
 GAP: "4.8"
 
+needed-pkgs:
+    - name: "io"
+      version: "4.5.4"
+
+suggested-pkgs:
+    - name: "GAPDoc"
+      version: "1.6.2"
+    - name: "Gauss"
+      version: "2018.09.08"
+    - name: "AutoDoc"
+      version: "2019.05.20"
+
 www: https://github.com/lbfm-rwth/GaussPar/
 readme: README.md
 packageinfo: https://github.com/lbfm-rwth/GaussPar/
