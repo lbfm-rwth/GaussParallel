@@ -23,14 +23,18 @@ GAP: "4.8"
 needed-pkgs:
     - name: "io"
       version: "4.5.4"
+      url: "https://gap-packages.github.io/io/"
 
 suggested-pkgs:
     - name: "GAPDoc"
       version: "1.6.2"
+      url: "http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc"
     - name: "Gauss"
       version: "2018.09.08"
+      url: "https://homalg-project.github.io/homalg_project/Gauss/"
     - name: "AutoDoc"
       version: "2019.05.20"
+      url: "https://gap-packages.github.io/AutoDoc/"
 
 www: https://github.com/lbfm-rwth/GaussPar/
 readme: README.md
