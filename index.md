@@ -16,7 +16,7 @@ This package requires GAP version {{site.data.package.GAP}}
 {% if site.data.package.needed-pkgs %}
 The following other GAP packages are needed:
 {% for pkg in site.data.package.needed-pkgs %}
-- {% if pkg.url %}<a href="{{ pkg.url }}">{{ pkg.name }}</a> {% else %}{{ pkg.name }} {% endif %}
+- {% if pkg.url %}<a href="{{ pkg.url }}">{{ pkg.name }}</a> {% else %}{{ pkg.name }}{% endif %} 
   {{- pkg.version -}}
 {% endfor %}
 {% endif %}
