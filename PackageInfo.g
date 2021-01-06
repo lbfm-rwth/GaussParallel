@@ -69,7 +69,11 @@ ArchiveFormats := ".tar.gz",
 ##
 Status := "dev",
 
-AbstractHTML   :=  "",
+AbstractHTML   :=  
+  "The <span class=\"pkgname\">GaussPar</span> package provides an \
+  implementation of a parallel Gaussian elimination algorithm as described in \
+  <a href=\"https://arxiv.org/abs/1806.04211\">\
+  A parallel algorithm for Gaussian elemination over finite fields</a>.",
 
 PackageDoc := rec(
   BookName  := "GaussPar",
