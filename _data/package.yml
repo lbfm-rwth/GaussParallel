@@ -2,21 +2,21 @@ name: GaussPar
 version: 0.1.0
 date: 2020-12-16
 description: |
-    Parallel Gaussian algorithm for finite fields.
+    Parallel Gaussian elimination for finite fields.
 
 authors:
     - name: Jendrik Brachter
-      url: brachter@cs.uni-kl.de
+      url: mailto:brachter@cs.uni-kl.de
     - name: Sergio Siccha
-      url: siccha@mathematik.uni-kl.de
+      url: mailto:siccha@mathematik.uni-kl.de
     - name: Emma Ahrens
-      url: emma.ahrens@rwth-aachen.de
+      url: mailto:emma.ahrens@rwth-aachen.de
 
 maintainers:
     - name: Jendrik Brachter
-      url: brachter@cs.uni-kl.de
+      url: mailto:brachter@cs.uni-kl.de
     - name: Sergio Siccha
-      url: siccha@mathematik.uni-kl.de
+      url: mailto:siccha@mathematik.uni-kl.de
 
 GAP: "4.8"
 
@@ -27,6 +27,7 @@ packageinfo: https://github.com/lbfm-rwth/GaussPar/
 downloads:
     - name: .tar.gz
       url: https://github.com/gap-packages/example/releases/download/v4.2.1/Example-4.2.1.tar.gz
+github: https://github.com/lbfm-rwth/GaussPar/
 
 abstract: TODO.
 
