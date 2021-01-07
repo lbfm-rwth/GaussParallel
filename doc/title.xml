@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This is an automatically generated file. -->
+<TitlePage>
+  <Title>
+    GaussPar
+  </Title>
+  <Subtitle>
+    Parallel gaussian algorithm for finite fields
+  </Subtitle>
+  <Version>
+    0.1
+  </Version>
+  <Author>
+    Jendrik Brachter<Alt Only="LaTeX"><Br/></Alt>
+<Email>brachter@cs.uni-kl.de</Email>
+
+  </Author>
+  <Author>
+    Sergio Siccha<Alt Only="LaTeX"><Br/></Alt>
+<Email>siccha@mathematik.uni-kl.de</Email>
+
+  </Author>
+  <Author>
+    Emma Ahrens<Alt Only="LaTeX"><Br/></Alt>
+<Email>emma.ahrens@rwth-aachen.de</Email>
+
+  </Author>
+  <Date>
+    24 October 2018
+  </Date>
+  </TitlePage>

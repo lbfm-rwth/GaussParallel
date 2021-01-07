@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This is an automatically generated file. -->
+<Chapter Label="Chapter_High-level_functions">
+<Heading>High-level functions</Heading>
+
+<Section Label="Chapter_High-level_functions_Section_Test">
+<Heading>Test</Heading>
+
+<P/>
+<ManSection>
+  <Func Arg="arg" Name="DoEchelonMatTransformationBlockwise" />
+ <Returns>Stuff
+</Returns>
+ <Description>
+Some functions
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Func Arg="arg" Name="EchelonMatTransformationBlockwise" />
+ <Description>
+<P/>
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Func Arg="arg" Name="EchelonMatBlockwise" />
+ <Description>
+<P/>
+ </Description>
+</ManSection>
+
+
+</Section>
+
+
+</Chapter>
+
