@@ -10,8 +10,8 @@ SetPackageInfo( rec(
 
 PackageName := "GaussPar",
 Subtitle := "Parallel gaussian algorithm for finite fields",
-Version := "0.1",
-Date := "24/10/2018", # dd/mm/yyyy format
+Version := "0.1.0",
+Date := "16/12/2020", # dd/mm/yyyy format
 
 Persons := [
   rec(
@@ -19,7 +19,7 @@ Persons := [
     IsMaintainer := true,
     FirstNames := "Jendrik",
     LastName := "Brachter",
-    #WWWHome := TODO,
+    #WWWHome := "mailto:brachter@cs.uni-kl.de",
     Email := "brachter@cs.uni-kl.de",
     #PostalAddress := TODO,
     #Place := TODO,
@@ -30,7 +30,7 @@ Persons := [
     IsMaintainer := true,
     FirstNames := "Sergio",
     LastName := "Siccha",
-    #WWWHome := TODO,
+    #WWWHome := "mailto:siccha@mathematik.uni-kl.de",
     Email := "siccha@mathematik.uni-kl.de",
     #PostalAddress := TODO,
     #Place := TODO,
@@ -41,7 +41,7 @@ Persons := [
     IsMaintainer := true,
     FirstNames := "Emma",
     LastName := "Ahrens",
-    #WWWHome := TODO,
+    #WWWHome := "mailto:emma.ahrens@rwth-aachen.de",
     Email := "emma.ahrens@rwth-aachen.de",
     #PostalAddress := TODO,
     #Place := TODO,
@@ -55,7 +55,7 @@ PackageWWWHome := "https://github.com/lbfm-rwth/GaussPar/",
 PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
 README_URL     := Concatenation( ~.PackageWWWHome, "README.md" ),
 ArchiveURL     := Concatenation( ~.PackageWWWHome,
-                                 "/", ~.PackageName, "-", ~.Version ),
+                                 "/", ~.PackageName, "/archive/", ~.Version ),
 
 ArchiveFormats := ".tar.gz",
 
