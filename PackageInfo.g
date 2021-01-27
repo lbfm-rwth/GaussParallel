@@ -38,7 +38,7 @@ Persons := [
   ),
   rec(
     IsAuthor := true,
-    IsMaintainer := true,
+    IsMaintainer := false,
     FirstNames := "Emma",
     LastName := "Ahrens",
     #WWWHome := "mailto:emma.ahrens@rwth-aachen.de",
