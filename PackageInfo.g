@@ -55,7 +55,7 @@ PackageWWWHome := "https://github.com/lbfm-rwth/GaussPar/",
 PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
 README_URL     := Concatenation( ~.PackageWWWHome, "README.md" ),
 ArchiveURL     := Concatenation( ~.PackageWWWHome,
-                                 "archive/", ~.Version ),
+                                 "archive/v", ~.Version ),
 
 ArchiveFormats := ".tar.gz",
 
