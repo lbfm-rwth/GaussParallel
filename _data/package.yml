@@ -2,7 +2,7 @@ name: GaussPar
 version: 0.1.0
 date: 2020-12-16
 description: |
-    Parallel Gaussian elimination for finite fields.
+    Parallel gaussian algorithm for finite fields
 
 authors:
     - name: Jendrik Brachter
@@ -18,12 +18,12 @@ maintainers:
     - name: Sergio Siccha
       url: mailto:siccha@mathematik.uni-kl.de
 
-GAP: "4.8"
+GAP: ">= 4.10"
 
 needed-pkgs:
     - name: "io"
       version: "4.5.4"
-      url: "https://gap-packages.github.io/io/"
+      url: "https://gap-packages.github.io/io"
 
 suggested-pkgs:
     - name: "GAPDoc"
@@ -34,19 +34,19 @@ suggested-pkgs:
       url: "https://homalg-project.github.io/homalg_project/Gauss/"
     - name: "AutoDoc"
       version: "2019.05.20"
-      url: "https://gap-packages.github.io/AutoDoc/"
+      url: "https://gap-packages.github.io/AutoDoc"
 
 www: https://github.com/lbfm-rwth/GaussPar/
 readme: README.md
-packageinfo: https://github.com/lbfm-rwth/GaussPar/
+packageinfo: https://github.com/lbfm-rwth/GaussPar/PackageInfo.g
 
 downloads:
     - name: .tar.gz
-      url: https://github.com/lbfm-rwth/GaussPar/archive/v0.1.0.tar.gz
-github: https://github.com/lbfm-rwth/GaussPar/
+      url: https://github.com/lbfm-rwth/GaussPar/archive/0.1.0.tar.gz
 
-abstract: TODO.
+abstract: |
+    The <span class="pkgname">GaussPar</span> package provides an   implementation of a parallel Gaussian elimination algorithm as described in   <a href="https://arxiv.org/abs/1806.04211">  A parallel algorithm for Gaussian elemination over finite fields</a>.
 
-status: deposited
+status: dev
 doc-html: doc/chap0.html
 doc-pdf: doc/manual.pdf
