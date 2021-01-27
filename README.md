@@ -1,3 +1,4 @@
+[![Build Status](https://github.com/lbfm-rwth/GaussPar/workflows/CI/badge.svg?branch=master)](https://github.com/lbfm-rwth/GaussPar/actions?query=workflow%3ACI+branch%3Amaster)
 ## The GaussPar package
 This package provides an implementation of a parallel Gaussian elimination algorithm as described in
 [A parallel algorithm for Gaussian elemination over finite fields](https://arxiv.org/abs/1806.04211).
