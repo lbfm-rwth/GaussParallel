@@ -45,11 +45,10 @@ function (mat, options)
     Info(InfoGauss, 4, "Input checks");
     if ("numberBlocks" in recnames) then
 	if ("numberBlocksHeight" in recnames) or ("numberBlocksWidth" in recnames) then
-		ErrorNoReturn("Conflicting parameters: Can't use numberBlocks and numberBlocksWidth/numberBlocksHeight simultaneously");
-	else
-		numberBlocksHeight := options.numberBlocks;
-		numberBlocksWidth := options.numberBlocks;		
+	    ErrorNoReturn("Conflicting parameters: Can't use numberBlocks and numberBlocksWidth/numberBlocksHeight simultaneously");
 	fi;
+        numberBlocksHeight := options.numberBlocks;
+        numberBlocksWidth := options.numberBlocks;		
     elif ("numberBlocksHeight" in recnames)
             and ("numberBlocksWidth" in recnames) then
         numberBlocksHeight := options.numberBlocksHeight;
@@ -71,7 +70,10 @@ function (mat, options)
     if "isChopped" in recnames then
         isChopped := options.isChopped;
     else
-        isChopped :=false;
+        isChopped := false;
+    fi;
+    if not isChopped and not IsMatrix(mat) then
+        ErrorNoReturn("<mat> is not a matrix.");
     fi;
     if isChopped then
         nrows := 0;
@@ -111,14 +113,16 @@ function (mat, options)
     fi;
 
     if not (HasIsField(galoisField) and IsField(galoisField)) then
-        ErrorNoReturn("Wrong argument: The first parameter is not a field.");
-    fi;
-    if not isChopped and not IsMatrix(mat) then
-        ErrorNoReturn("Wrong argument: The second parameter is not a matrix.");
+        ErrorNoReturn("<galoisField> is not a field.");
     fi;
     if not (a in NonnegativeIntegers and b in NonnegativeIntegers) then
-        ErrorNoReturn("Wrong argument: The third or fourth parameter is not a",
-                      " nonnegative integer.");
+        ErrorNoReturn("<numberBlocksWidth> and <numberBlocksHeight> must be ",
+                      " nonnegative integers.");
+    fi;
+    if not (numberBlocksHeight <= nrows and numberBlocksWidth <= ncols) then
+        ErrorNoReturn("<numberBlocksHeight> and <numberBlocksWidth> must be",
+                      " less or equal than the number of rows and columns",
+                      " respectively");
     fi;
     # Check for invalid components of `options`. Note that IsHPC is a dummy
     # value that is still used by the tests but doesn't do anything.
