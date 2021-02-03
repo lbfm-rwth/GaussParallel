@@ -1,4 +1,4 @@
-gap> START_TEST("standard/special_matrices.tst");
+gap> START_TEST("parallel/special_matrices.tst");
 gap> ReadPackage("GaussPar", "tst/testdata/matrices.g");;
 gap> ReadPackage("GaussPar", "tst/testfunctions.g");;
 gap> for i in [1..Length(M)] do
@@ -21,4 +21,4 @@ Error, <numberBlocksHeight> and <numberBlocksWidth> must be less or equal than\
 gap> DoEchelonMatTransformationBlockwise(M1, rec( numberBlocksHeight := 2, numberBlocksWidth := 3));
 Error, <numberBlocksHeight> and <numberBlocksWidth> must be less or equal than\
  the number of rows and columns respectively
-gap> STOP_TEST("standard/special_matrices.tst");
+gap> STOP_TEST("parallel/special_matrices.tst");
