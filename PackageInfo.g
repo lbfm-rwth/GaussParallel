@@ -89,8 +89,9 @@ Dependencies := rec(
   # list of pairs [package name, version], package name is case
   # insensitive, exact version denoted with '=' prepended to version string.
   # without these, the package will not load
-  NeededOtherPackages := [["io", "4.5.4"]],
-  SuggestedOtherPackages := [["GAPDoc", "1.6.2"],
+  NeededOtherPackages := [],
+  SuggestedOtherPackages := [["io", "4.5.4"],
+                             ["GAPDoc", "1.6.2"],
                              ["Gauss", "2018.09.08"],
                              ["AutoDoc", "2019.05.20"]],
   ExternalConditions := [ ],
