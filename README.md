@@ -10,7 +10,7 @@ Gaussian elimination from the [GAUSS package](https://www.gap-system.org/Package
 ## Compatibility with old HPC-GAP version
 Older versions of hpcgap still have working guards. Unfortunately, in those
 versions you can't load this package via `LoadPackage`.
-Let's assume that you can run your old HPC-GAP version via $HPCGAP-OLD
+Let's assume that you can run your old HPC-GAP version via $HPCGAP-OLD.
 Open a shell in the root folder of the `GaussPar` package and run:
 `$HPCGAP-OLD compatibility-for-old-hpcgap/read.g`
 
