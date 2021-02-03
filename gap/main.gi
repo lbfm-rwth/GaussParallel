@@ -130,7 +130,7 @@ function (mat, options)
               Difference(recnames, recognisedOptions), "\n");
     fi;
 
-    Info(InfoGauss, 1, "The matrix is split into ", numberBlocksHeight,
+    Info(InfoGauss, 2, "The matrix is split into ", numberBlocksHeight,
         " blocks vertically and ", numberBlocksWidth, " horizontally.");
 
     Info(InfoGauss, 2, "------------ Start Chief ------------");
