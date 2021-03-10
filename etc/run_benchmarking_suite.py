@@ -82,7 +82,8 @@ for (d, rank, ring, numberBlocks, p) in specifications:
             print(args)
             print(instructions)
             sys.exit(0)
-        subprocess.run(gap + 
-                        ' -r << EOF\n' + args + instructions + '\nEOF\n',
-                        shell=True,
-                        check=True)
+        subprocess.run(gap
+                       + ' -r --quitonbreak'
+                       + ' << EOF\n' + args + instructions + '\nEOF\n',
+                       shell=True,
+                       check=True)
