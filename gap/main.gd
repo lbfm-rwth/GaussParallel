@@ -2,10 +2,11 @@
 
 #! @Chapter Gaussian Elimination
 #! @Section Gaussian Elimination
-#!
+
+
 #! @Arguments mat, [options]
-#! @Returns a record. 
-#! @Description This is the main function of the GaussPar package. It computes the reduced row echelon form (RREF) of the matrix **mat** and the corresponding transformation matrix. It is an implementation of the parallel Gaussian elimination algorithm as described in [??].
+#! @Returns a record that contains information on the echelon form of **mat**.
+#! @Description This is the main function of the GaussPar package. It computes the reduced row echelon form (RREF) of the matrix **mat** and the corresponding transformation matrix. In a pre-processing step, **mat** is split up into smaller block matrices which can be processed in parallel.
 #!  
 #!  The output record contains the following items:
 #! * **vectors**:
@@ -14,45 +15,23 @@
 #!    a list of integers, such that **heads[i]** gives the number of the row for
 #!    which the pivot element is in column i. If no such row exists, **heads[i]** is **0**.
 #! * **coeffs**:
-#!   the corresponding transformation matrix. It holds **coeffs*****mat**=**vectors**.
-#! * **relations**: the kernel of the matrix mat. If **relations** is not the  empty list, it holds **relations*****mat**=**0**. Otherwise **mat** has full row rank.
+#!   the corresponding transformation matrix. It holds **coeffs** * **mat** = **vectors**.
+#! * **relations**: the kernel of the matrix mat. If **relations** is not the  empty list, it holds **relations** * **mat** = **0**. Otherwise **mat** has full row rank.
 #! 
 #!  The input parameters have the following meaning:
 #! * **mat** is a matrix defined over a finite field
 #! * **options** is a record that can be used to provide some additional parameters. The following   are currently supported:
-#!   * **numberBlocks**
-#!   * **numberBlocksHeight**
-#!   * **numberBlocksWidth**
-#!   * **isChopped**
-#!   * **galoisField**
-#!   * **verify**
+#!   * **numberBlocks**: **mat** is initially split into **numberBlocks**-by-**numberBlocks** many block matrices.
+#!   * **verify**: If set to **true**, the computation will be verified at the end.
+#!   * **isChopped**: It is possible to input **mat** directly as a matrix of block matrices. In this case the parameter **isChopped** must be set to **true** and the splitting step is skipped. Note that a specification of **numberBlocks** is ignored if **isChopped** is set to **true**. 
+#!   * **numberBlocksHeight** and **numberBlocksWidth**: Instead of specifying **numberBlocks** it is possible to specify **numberBlocksHeight** and **numberBlocksWidth** separately. In this case, **mat** will be split into **numberBlocksHeight**-by-**numberBlocksWidth** many block matrices. Note that one can only either specify **numberBlocks** or both **numberBlocksHeight** and **numberBlocksWidth**. 
 DeclareGlobalFunction( "EchelonMatTransformationBlockwise" );
-
-#! @Arguments mat
-#! @Returns a record that contains information of an echelonized version of mat.
-#! @Description This record contains
-#! * vectors:
-#!   the reduced row echelon form of the matrix mat without the zero rows
-#! * heads:
-#!    list that contains at position i, if nonzero, the number of the row for
-#!    that the pivot element is in column i.
-#!
-#! Calculates the parallel Gauss algorithm. This version assumes the underlying
-#! field of the matrix by using DefaultFieldOfMatrix and uses a block size that
-#! has proven to lead to the fastest execution of the algorithm. It returns
-#! a minimum of information but has the least execution time.
 DeclareGlobalFunction( "EchelonMatBlockwise" );
 
 #! @Chapter Low-Level Functions
 #! @Section Low-Level Functions
 #!
 #!
-if IsHPCGAP then
-     MakeReadOnlyOrImmutableObj := MakeReadOnlyObj;
-else
-     MakeReadOnlyOrImmutableObj := MakeImmutable;
-fi;
-
 #! @Arguments mat, options
 #! @Returns a record
 #! @Description This record contains
@@ -94,4 +73,5 @@ fi;
 #! * verify:
 #!   A boolean specifying whether or not the result values should be directly
 #!   checked, the default value is false.
+
 DeclareGlobalFunction( "DoEchelonMatTransformationBlockwise" );
