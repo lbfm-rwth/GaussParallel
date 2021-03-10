@@ -55,7 +55,11 @@ jobs:
       - name: Setup tmate session
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
-
+      - name: "Upload benchmark data"
+        uses: actions/upload-artifact@v1
+        with:
+          name: benchmark
+          path: stats/*.csv
   manual:
     name: Build manuals
     runs-on: ubuntu-latest
