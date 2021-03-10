@@ -50,8 +50,8 @@ jobs:
         uses: gap-actions/setup-gap-for-packages@latest
         with:
           GAP_PKGS_TO_BUILD: "io orb cvec profiling"
-      - name: "Make archives"
-        run: python -u etc/run_benchmarking_suite.py gap/bin/gap.sh hpcgap/bin/gap.sh
+      - name: "Run benchmark suite"
+        run: python -u etc/run_benchmarking_suite.py --small --path-to-gap gap/bin/gap.sh --path-to-hpcgap hpcgap/bin/gap.sh
 
   manual:
     name: Build manuals
