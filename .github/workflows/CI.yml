@@ -44,12 +44,14 @@ jobs:
         with:
           HPCGAP: "yes"
           GAP_PKGS_TO_BUILD: "io orb cvec profiling"
+      - name: "Clean up"
+        run: rm -rf pkg-ci-scripts/
       - name: "Set up GAP"
         uses: gap-actions/setup-gap-for-packages@latest
         with:
           GAP_PKGS_TO_BUILD: "io orb cvec profiling"
       - name: "Make archives"
-        run: python -u ./dev/releases/make_archives.py
+        run: python -u etc/run_benchmarking_suite.py gap/bin/gap.sh hpcgap/bin/gap.sh
 
   manual:
     name: Build manuals
