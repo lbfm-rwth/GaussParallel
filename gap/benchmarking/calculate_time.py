@@ -9,7 +9,9 @@ import argparse
 # TODO: --small suite flag
 # round numbers
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+    description = "gap and hpcgap have to be available in the path or paths to them must be passed as arguments"
+)
 parser.add_argument("--debug",
                     help = "only show one set of commands and don't pass it to gap/hpcgap",
                     action = "store_true")
@@ -34,9 +36,9 @@ if not command_line_options.small_suite:
     numberBlocks = [1, 5, 50]
 else:
     isParallel = ["true", "false"]
-    dimensions = [5, 10, 50]
+    dimensions = [5, 10]
     rings = [2, 3, 5]
-    ranks = [1, 3, 5, 7, 15, 50]
+    ranks = [1, 3, 5, 7]
     numberBlocks = [1, 2, 3]
 
 specifications = list(itertools.product(isParallel, dimensions, ranks, rings, numberBlocks))
