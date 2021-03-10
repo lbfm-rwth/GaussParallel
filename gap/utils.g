@@ -137,7 +137,9 @@ flag)
         if flag = 0 then
             return [];
         else
-            return flag*IdentityMat(Length(riffle),galoisField);
+            tmp := IdentityMat(Length(riffle),galoisField);
+            ConvertToMatrixRepNC(tmp, galoisField);
+            return flag*tmp;
         fi; 
     fi;
     newMat := NullMat(newRows, newCols, galoisField);
