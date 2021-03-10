@@ -54,14 +54,10 @@ Then you can start by following the examples in chapter 3.
 This section describes the different variants of our implementation
 of the Gaussian algorithm.
 
-@Chapter Utility Functions
-@Section Utility Functions
-
-The following functions were created while implementing the high-level functions,
-but we found that they could be useful outside of our functions, too.
-You can find the specifications of the functions and some small examples here.
-
 @Chapter Examples
+
+TODO: revise this (don't use first person) and merge it into the Gaussian Elimination chapter. Also make
+the matrices smaller or do not Display them.
 
 To understand the usage of our high level functions (that are basically
 different versions of the same algorithm), I will show you some examples that
@@ -289,9 +285,16 @@ TODO is this possible with blocks of different sizes??!!
 #! gap> DoEchelonMatTransformationBlockwise( A, rec( isChopped := true ) );;
 @EndExampleSession
 
-@Chapter Benchmark Data
+@Chapter Finding a suitable number of blocks
 @Section TODO
 
-@Chapter Low-Level Functions
+TODO: document MeasureContention here
+
+@Chapter Utility Functions
+@Section Utility Functions
+
+The following functions were created while implementing the high-level functions,
+but we found that they could be useful outside of our functions, too.
+You can find the specifications of the functions and some small examples here.
 
 @EndAutoDocPlainText
