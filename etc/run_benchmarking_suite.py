@@ -4,13 +4,14 @@
 import subprocess
 import itertools
 import sys
+import os
 import argparse
 
 # TODO: --small suite flag
 # round numbers
 
 parser = argparse.ArgumentParser(
-    description = "gap and hpcgap have to be available in the path or paths to them must be passed as arguments"
+    description = "GAP and HPC-GAP have to be available in the path or paths to them must be passed as arguments"
 )
 parser.add_argument("--debug",
                     help = "only show one set of commands and don't pass it to gap/hpcgap",
@@ -18,10 +19,19 @@ parser.add_argument("--debug",
 parser.add_argument("--small-suite",
                     help = "only run a small subset of the suite",
                     action = "store_true")
+parser.add_argument("--path-to-gap",
+                    help = "path to GAP executable")
+parser.add_argument("--path-to-hpcgap",
+                    help = "path to HPC-GAP executable")
 command_line_options = parser.parse_args()
 
 
-# Write files.
+# Create folder and csv files.
+try:
+    os.mkdir("stats")
+except FileExistsError:
+    pass
+
 subprocess.call('echo "height,width,rank,ring,average,median" > stats/times_par.csv', shell=True)
 subprocess.call('echo "height,width,rank,ring,time,average,median" > stats/times_seq.csv', shell=True)
 
