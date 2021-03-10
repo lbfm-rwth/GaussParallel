@@ -52,6 +52,9 @@ jobs:
           GAP_PKGS_TO_BUILD: "io orb cvec profiling"
       - name: "Run benchmark suite"
         run: python -u etc/run_benchmarking_suite.py --small --path-to-gap gap/bin/gap.sh --path-to-hpcgap hpcgap/bin/gap.sh
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
 
   manual:
     name: Build manuals
