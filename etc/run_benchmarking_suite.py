@@ -84,4 +84,5 @@ for (d, rank, ring, numberBlocks, p) in specifications:
             sys.exit(0)
         subprocess.run(gap + 
                         ' -r << EOF\n' + args + instructions + '\nEOF\n',
-                        shell=True)
+                        shell=True,
+                        check=True)
