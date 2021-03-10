@@ -52,14 +52,14 @@ jobs:
           GAP_PKGS_TO_BUILD: "io orb cvec profiling"
       - name: "Run benchmark suite"
         run: python -u etc/run_benchmarking_suite.py --small --path-to-gap "$HOME/gap/bin/gap.sh -l \"$PWD/gaproot;\"" --path-to-hpcgap "hpcgap/bin/gap.sh -l \"$PWD/gaproot;\""
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
       - name: "Upload benchmark data"
         uses: actions/upload-artifact@v1
         with:
           name: benchmark
           path: stats/*.csv
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
   manual:
     name: Build manuals
     runs-on: ubuntu-latest
