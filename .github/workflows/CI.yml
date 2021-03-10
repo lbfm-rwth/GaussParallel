@@ -3,22 +3,19 @@ name: CI
 # Trigger the workflow on push or pull request
 on:
   pull_request:
-    branches:
-      - '*'
   push:
-    branches:
-      - master
 
 jobs:
   test:
-    name: ${{ matrix.gap-branch }} - HPCGAP ${{ matrix.HPCGAP }} - ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.gap-branch }} - HPCGAP ${{ matrix.HPCGAP }}
+    runs-on: ubuntu-latest
+    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
         gap-branch:
           - master
+          - stable-4.11
         HPCGAP:
           - no
           - yes
@@ -32,6 +29,32 @@ jobs:
           GAP_PKGS_TO_BUILD: "io orb cvec profiling"
       - uses: gap-actions/compile-documentation-for-packages@latest
       - uses: gap-actions/run-test-for-packages@latest
+
+  benchmark-suite:
+    name: benchmark-suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Set up Python"
+        uses: actions/setup-python@v2
+      - name: "Set up HPC-GAP"
+        uses: gap-actions/setup-gap-for-packages@latest
+        env:
+          GAPROOT: hpcgap
+        with:
+          HPCGAP: "yes"
+          GAP_PKGS_TO_BUILD: "io orb cvec profiling"
+      - name: "Clean up"
+        run: rm -rf pkg-ci-scripts/
+      - name: "Set up GAP"
+        uses: gap-actions/setup-gap-for-packages@latest
+        with:
+          GAP_PKGS_TO_BUILD: "io orb cvec profiling"
+      - name: "Run benchmark suite"
+        run: python -u etc/run_benchmarking_suite.py --small --path-to-gap "$HOME/gap/bin/gap.sh -l \"$PWD/gaproot;\"" --path-to-hpcgap "hpcgap/bin/gap.sh -l \"$PWD/gaproot;\""
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
 
   manual:
     name: Build manuals
