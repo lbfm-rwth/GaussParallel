@@ -3,23 +3,29 @@
 #! @Chapter Gaussian Elimination
 #! @Section Gaussian Elimination
 #!
-#! @Arguments mat
-#! @Returns a record that contains information of an echelonized version of mat.
-#! @Description This record contains
-#! * vectors:
-#!   the reduced row echelon form of the matrix mat without the zero rows
-#! * heads:
-#!    list that contains at position i, if nonzero, the number of the row for
-#!    that the pivot element is in column i.
-#! * coeffs:
-#!   the transformation matrix needed to obtain the RREF from mat
-#! * relations:
-#!   the kernel of the matrix mat if the underlying ring is a field
-#!
-#! Calculates the parallel Gauss algorithm. This version assumes the underlying
-#! field of the matrix by using DefaultFieldOfMatrix and uses a block size that
-#! has proven to lead to the fastest execution of the algorithm. It returns the
-#! commonly needed informations.
+#! @Arguments mat, [options]
+#! @Returns a record. 
+#! @Description This is the main function of the GaussPar package. It computes the reduced row echelon form (RREF) of the matrix **mat** and the corresponding transformation matrix. It is an implementation of the parallel Gaussian elimination algorithm as described in [??].
+#!  
+#!  The output record contains the following items:
+#! * **vectors**:
+#!   a matrix that forms the RREF of **mat** without zero rows
+#! * **heads**:
+#!    a list of integers, such that **heads[i]** gives the number of the row for
+#!    which the pivot element is in column i. If no such row exists, **heads[i]** is **0**.
+#! * **coeffs**:
+#!   the corresponding transformation matrix. It holds **coeffs*****mat**=**vectors**.
+#! * **relations**: the kernel of the matrix mat. If **relations** is not the  empty list, it holds **relations*****mat**=**0**. Otherwise **mat** has full row rank.
+#! 
+#!  The input parameters have the following meaning:
+#! * **mat** is a matrix defined over a finite field
+#! * **options** is a record that can be used to provide some additional parameters. The following   are currently supported:
+#!   * **numberBlocks**
+#!   * **numberBlocksHeight**
+#!   * **numberBlocksWidth**
+#!   * **isChopped**
+#!   * **galoisField**
+#!   * **verify**
 DeclareGlobalFunction( "EchelonMatTransformationBlockwise" );
 
 #! @Arguments mat
