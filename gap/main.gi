@@ -76,6 +76,9 @@ function (mat, options)
         ErrorNoReturn("<mat> is not a matrix.");
     fi;
     if isChopped then
+	if not (("numberBlocks" in recnames) or ("numberBlocksHeight" in recnames)) then
+			ErrorNoReturn("Insufficient Paramters: Can't use isChopped option without specifying numberBlocks or both of numberBlocksHeight and numberBlocksWidth."); 
+	fi;
         nrows := 0;
         ncols := 0;
         for i in [ 1 .. numberBlocksHeight ] do
