@@ -56,10 +56,8 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: benchmark
-          path: stats/*.csv
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
+          path: |
+            stats/*.csv
   manual:
     name: Build manuals
     runs-on: ubuntu-latest
