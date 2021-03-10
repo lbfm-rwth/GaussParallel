@@ -94,3 +94,9 @@ DeclareGlobalFunction( "EchelonMatBlockwise" );
 #!   A boolean specifying whether or not the result values should be directly
 #!   checked, the default value is false.
 DeclareGlobalFunction( "DoEchelonMatTransformationBlockwise" );
+
+if IsHPCGAP then
+     MakeReadOnlyOrImmutableObj := MakeReadOnlyObj;
+else
+     MakeReadOnlyOrImmutableObj := MakeImmutable;
+fi;
