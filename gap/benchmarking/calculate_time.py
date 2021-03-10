@@ -1,59 +1,76 @@
+#!/usr/bin/env python3
 # Creates two csv files and writes the statistics for the sequential and
 # parallel version of the gaussian algorithm into those files.
 import subprocess
 import itertools
 import sys
+import argparse
 
-# If we only want to check whether the script works, we dont run the algorithm
-# for all possible input combinations.
-if len(sys.argv) == 2:
-    debugging = sys.argv[1]
-    if debugging == "--debug":
-        debugging = True
-    else:
-        print 'Available command line options: --debug'
-        sys.exit(1)
+# TODO: --small suite flag
+# round numbers
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--debug",
+                    help = "only show one set of commands and don't pass it to gap/hpcgap",
+                    action = "store_true")
+parser.add_argument("--small-suite",
+                    help = "only run a small subset of the suite",
+                    action = "store_true")
+command_line_options = parser.parse_args()
+
 
 # Write files.
 subprocess.call('echo "height,width,rank,ring,average,median" > stats/times_par.csv', shell=True)
 subprocess.call('echo "height,width,rank,ring,time,average,median" > stats/times_seq.csv', shell=True)
 
-# Path to hpcgap executable
-hpcgap = '/home/sergio/projects/gap-master/build/hpcgap/bin/gap.sh'
-
 # Calculates average and median of the duration of Chief for every combination
 # from lists of width, height, rank, ring. Saves them in the csv files.
-isParallel = ["true", "false"]
-dimensions = [5, 10, 50, 100, 200, 500]
-ranks = [1, 3, 7, 15, 50, 90, 155, 350, 500]
-rings = [2, 3, 5, 11, 17]
-numberBlocks = [1, 5, 50]
+# TODO: make ranks and numberBlocks depend on the dimension
+if not command_line_options.small_suite:
+    isParallel = ["true", "false"]
+    dimensions = [5, 10, 50, 100, 200, 500]
+    rings = [2, 3, 5, 11, 17]
+    ranks = [1, 3, 7, 15, 50, 90, 155, 350, 500]
+    numberBlocks = [1, 5, 50]
+else:
+    isParallel = ["true", "false"]
+    dimensions = [5, 10, 50]
+    rings = [2, 3, 5]
+    ranks = [1, 3, 5, 7, 15, 50]
+    numberBlocks = [1, 2, 3]
 
 specifications = list(itertools.product(isParallel, dimensions, ranks, rings, numberBlocks))
-if debugging:
-    specifications = specifications[0:10]
-for (p, d, ra, ri, n) in specifications:
-    print(p, d, ra, ri, n)
-    if ra <= d and n < d:
+for (p, d, rank, ring, numberBlocks) in specifications:
+    if rank <= d and numberBlocks < d:
+        print(p, d, rank, ring, numberBlocks)
         if p == "true":
             outfile = '"stats/times_par.csv"'
+            gap = 'hpcgap'
         else:
             outfile = '"stats/times_seq.csv"'
+            gap = 'gap-master'
         args = 'isParallel := ' + p \
             + ';; dimension :=' + str(d) \
-            + ';; rank := ' + str(ra) \
-            + ';; ring := GF(' + str(ri) + ')' \
-            + ';; numberBlocks := ' + str(n) \
+            + ';; rank := ' + str(rank) \
+            + ';; ring := GF(' + str(ring) + ')' \
+            + ';; numberBlocks := ' + str(numberBlocks) \
             + ';;\n'
-        instructions = 'measuredTime := _GAUSS_CalculateAverageTime(isParallel, ' \
-            + 'dimension, dimension, rank, ring, numberBlocks, numberBlocks);;' \
-            + '\n' \
-            + 'AppendTo(' + outfile \
-            + ', dimension, ",", dimension, ",", rank, ",", ring, ",", ' \
-            + 'measuredTime[3], ",", measuredTime[4], "\\n");' \
-            + '\n'
-        subprocess.call(hpcgap + ' -q read.g << EOF\n'
+        instructions = "\n".join([
+            'LoadPackage("GaussPar");;',
+            'LoadPackage("io");;',
+            'ReadPackage("GaussPar", "gap/benchmarking/timing.g");;',
+            'measuredTime := GAUSS_CalculateAverageTime(isParallel, '
+            + 'dimension, dimension, rank, ring, numberBlocks, numberBlocks);;',
+            'AppendTo(' + outfile 
+            + ', dimension, ",", dimension, ",", rank, ",", ring, ",", '
+            + 'measuredTime[3], ",", measuredTime[4], "\\n");'
+        ])
+        if command_line_options.debug:
+            print(args)
+            print(instructions)
+            sys.exit(0)
+        subprocess.call(gap + ' << EOF\n'
             + args
             + instructions
-            + 'EOF\n'
+            + '\nEOF\n'
             , shell=True)
