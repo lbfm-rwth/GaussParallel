@@ -51,8 +51,8 @@ Then you can start by following the examples in chapter 3.
 @Chapter Gaussian Elimination
 @Section Gaussian Elimination
 
-In this section there are the specifications of the variants of our implementation
-of the GAUSS algorithm. For example usage see chapter 3.
+This section describes the different variants of our implementation
+of the Gaussian algorithm.
 
 @Chapter Utility Functions
 @Section Utility Functions
