@@ -12,8 +12,7 @@ fi;
 #! @Arguments mat, [options]
 #! @Returns a record that contains information on the echelon form of **mat** and the corresponding transformation matrix.
 #! @Description This is the main function of the GaussPar package. It computes the reduced row echelon form (RREF) of the matrix **mat** and the corresponding transformation matrix. In a pre-processing step, **mat** is split up into smaller block matrices which can be processed in parallel.
-#! TODO Explain how to compoute Trafo as Concat(coeffs,relations);
-#!  
+#!
 #!  The output record contains the following items:
 #! * **vectors**:
 #!   a matrix that forms the RREF of **mat** without zero rows
@@ -23,7 +22,11 @@ fi;
 #! * **coeffs**:
 #!   the corresponding transformation matrix. It holds **coeffs** * **mat** = **vectors**.
 #! * **relations**: the kernel of the matrix **mat**. If **relations** is not the  empty list, it holds **relations** * **mat** = **0**. Otherwise **mat** has full row rank.
-#! 
+#!  
+#!  The transformation matrix can be easily obtained from the output via 
+#!
+#!  #!  gap> trafo := Concatenation( res.coeffs,res.relations );
+#!
 #!  The input parameters have the following meaning:
 #! * **mat** is a matrix defined over a finite field
 #! * **options** is a record that can be used to provide some additional parameters. The following   are currently supported:

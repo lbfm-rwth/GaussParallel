@@ -56,12 +56,11 @@ of the Gaussian algorithm.
 
 @Chapter Examples
 
-TODO: revise this (don't use first person) and merge it into the Gaussian Elimination chapter. Also make
+TODO: merge this into the Gaussian Elimination chapter. Also make
 the matrices smaller or do not Display them.
 
-To understand the usage of our high level functions (that are basically
-different versions of the same algorithm), I will show you some examples that
-transform the following random matrix A.
+We showcase the usage of our main functions and their parameters by transforming
+the follwoing random matrix A into its RREF.
 
 @BeginExampleSession
 #! gap> A := RandomMat( 40, 40, GF( 5 ) );
@@ -108,11 +107,7 @@ transform the following random matrix A.
 #! 2 4 1 3 2 3 3 . 1 . 4 3 . 2 2 3 . 2 3 1 1 1 2 3 . 4 1 3 1 . 3 3 4 . 3 2 . 4 4 4
 @EndExampleSession
 
-This is the most basic version which takes the matrix as the argument and
-calculates all the other informations automatically. You can not set any
-additional parameters and the return value is a record which contains the
-positions of the pivot elements and the vectors of the transformed matrix
-without the rows containing only zeros.
+We start with the most basic version which just takes A as the argument and computes its RREF (whithout zero rows). It is not necessary to set any additional parameters, however, in this case the input matrix is not split into smaller blocks, so this is not the optimal use of the algorithm.
 
 @BeginExampleSession
 #! gap> result := EchelonMatBlockwise( A );
@@ -151,8 +146,7 @@ without the rows containing only zeros.
 #! . . . . . . . . . . . . . . . . . . . . . . . . . . . 1 2 3 4 3 3 1 1 . 3 4 4 .
 @EndExampleSession
 
-This version returns additionally two lists of vectors with whom one can calculate
-the transformation matrix that is used to obtain the RREF form of the matrix.
+This version additionally computes the transformation matrix.
 
 @BeginExampleSession
 #! gap> result2 := EchelonMatTransformationBlockwise( A );
@@ -218,6 +212,9 @@ the transformation matrix that is used to obtain the RREF form of the matrix.
 #! . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 @EndExampleSession
 
+
+TODO: more examples on parameters.
+TODO: remove the following examples (?).
 This version is the most adjustable one - see chapter 2.2 for more information.
 You can specify the field of the matrix and whether or not you need the
 transformation matrix (extra calculation is needed, so it makes sense to
