@@ -4,16 +4,22 @@
 # DoEchelonMatTransformationBlockwise
 InstallGlobalFunction(EchelonMatTransformationBlockwise,
 function (mat, opt...)
-    local result, options;
-    
+    local result, options, recnames;
     if Length(opt) = 0 then 
-        options := rec();
+        options := rec(withTrafo:=true);
+    elif Length(opt)>1 then
+	ErrorNoReturn("number of arguments must be 1 or 2");
     else
-	options := opt[1];
+	options := opt[1];	
 	if not IsRecord(options) then
 	    ErrorNoReturn("the second argument must be a record");
-	fi;	
+	fi;
+	recnames := Set(RecNames(options));
+        if withTrafo in recnames then
+	    ErrorNoReturn("withTrafo is no valid option");
+        fi;	
     fi;
+    options.withTrafo:=true;	
     result := DoEchelonMatTransformationBlockwise(mat, options);
     return rec(
         vectors := result.vectors,
@@ -26,15 +32,22 @@ end
 
 InstallGlobalFunction(EchelonMatBlockwise,
 function (mat, opt...)
-    local result, options;
+    local result, options, recnames;
     if Length(opt) = 0 then 
-	options := rec();
+        options := rec(withTrafo:=true);
+    elif Length(opt)>1 then
+	ErrorNoReturn("number of arguments must be 1 or 2");
     else
-    	options := opt[1];
+	options := opt[1];	
 	if not IsRecord(options) then
 	    ErrorNoReturn("the second argument must be a record");
-	fi;		
+	fi;
+	recnames := Set(RecNames(options));
+        if withTrafo in recnames then
+	    ErrorNoReturn("withTrafo is no valid option");
+        fi;	
     fi;
+    options.withTrafo:=false;
     result := DoEchelonMatTransformationBlockwise(mat, options);
     return rec(
         vectors := result.vectors,
