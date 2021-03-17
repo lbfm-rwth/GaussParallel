@@ -48,9 +48,9 @@ if not command_line_options.small_suite:
 else:
     isParallel = ["true", "false"]
     dimensions = [5, 10]
-    rings = [2, 3, 5]
-    ranks = [1, 3, 5, 7]
-    numberBlocks = [1, 2, 3]
+    rings = [2, 5]
+    ranks = [1, 7]
+    numberBlocks = [1, 2]
 
 specifications = list(itertools.product(dimensions, ranks, rings, numberBlocks, isParallel))
 for (d, rank, ring, numberBlocks, p) in specifications:
