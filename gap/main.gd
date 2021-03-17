@@ -23,9 +23,10 @@ fi;
 #!   the corresponding transformation matrix. It holds **coeffs** * **mat** = **vectors**.
 #! * **relations**: the kernel of the matrix **mat**. If **relations** is not the  empty list, it holds **relations** * **mat** = **0**. Otherwise **mat** has full row rank.
 #!  
-#!  The transformation matrix can be easily obtained from the output via 
-#!
-#!  #!  gap> trafo := Concatenation( res.coeffs,res.relations );
+#!  The transformation matrix can be easily obtained from the output record as follows:
+#! @BeginExampleSession
+#! Concatenation( result.coeffs,result.relations );
+#! @EndExampleSession
 #!
 #!  The input parameters have the following meaning:
 #! * **mat** is a matrix defined over a finite field
@@ -38,6 +39,19 @@ fi;
 #!   Use this argument if you want the same number of vertical and horizontal blocks in the block matrix decomposition of **mat**.
 #!   * **verify**: If set to **true**, the computation is verified at the end. That is, we check wheter **coeffs** * **mat** is in RREF. This option is only available for the function **EchelonMatTransformationBlockwise**.
 #!   * **isChopped**: It is possible to input **mat** directly as a matrix of block matrices. In this case the parameter **isChopped** must be set to **true** and the splitting step is skipped. Note that a specification of **numberBlocks** is mandatory if **isChopped** is set to **true**. 
+
+#! @BeginExampleSession
+#! A := RandomMat(8,5,GF(5))*RandomMat(5,8,GF(5));
+#! Display(A);
+#! 4 1 2 4 2 3 2 2
+#! 2 1 3 4 2 1 . 4
+#! . 4 1 4 3 4 3 .
+#! 4 4 3 . 3 4 3 .
+#! 2 . 3 2 1 . . 2
+#! . 2 4 1 1 3 3 2
+#! 1 3 . . 3 3 2 2
+#! . 2 1 2 3 1 2 1
+#! @EndExampleSession
 DeclareGlobalFunction( "EchelonMatTransformationBlockwise" );
 
 #! @Arguments mat, [options]
