@@ -76,12 +76,12 @@ AbstractHTML   :=
   A parallel algorithm for Gaussian elemination over finite fields</a>.",
 
 PackageDoc := rec(
-  BookName  := "GaussPar",
+  BookName  := ~.PackageName,
   ArchiveURLSubset := ["doc"],
   HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
   SixFile   := "doc/manual.six",
-  LongTitle := "Parallel gaussian algorithm for finite fields",
+  LongTitle := ~.Subtitle,
 ),
 
 Dependencies := rec(
