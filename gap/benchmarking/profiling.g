@@ -1,4 +1,4 @@
-LoadPackage( "profil" );
+LoadPackage( "profiling" );
 
 GAUSS_createMatrixFile := function( n, q, rank )
     local A, B, proj, matrixFile;
