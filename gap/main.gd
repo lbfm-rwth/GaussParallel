@@ -41,16 +41,52 @@ fi;
 #!   * **isChopped**: It is possible to input **mat** directly as a matrix of block matrices. In this case the parameter **isChopped** must be set to **true** and the splitting step is skipped. Note that a specification of **numberBlocks** is mandatory if **isChopped** is set to **true**. 
 
 #! @BeginExampleSession
-#! A := RandomMat(8,5,GF(5))*RandomMat(5,8,GF(5));
-#! Display(A);
-#! 4 1 2 4 2 3 2 2
-#! 2 1 3 4 2 1 . 4
-#! . 4 1 4 3 4 3 .
-#! 4 4 3 . 3 4 3 .
-#! 2 . 3 2 1 . . 2
-#! . 2 4 1 1 3 3 2
-#! 1 3 . . 3 3 2 2
-#! . 2 1 2 3 1 2 1
+#! gap> A := RandomMat(8,5,GF(5))*RandomMat(5,8,GF(5));;
+#! gap> Display(A);
+#! 1 4 3 2 4 4 3 4
+#! 4 1 2 4 2 . . 4
+#! 2 3 1 4 3 3 1 3
+#! 3 . 4 3 3 2 4 .
+#! 4 1 3 2 3 3 . 2
+#! 2 1 3 3 1 1 2 3
+#! . 3 3 . 1 1 3 .
+#! 4 1 4 1 4 3 1 1
+#! gap> res := EchelonMatTransformationBlockwise( A );;
+#! gap> Display(res.vectors);
+#!  1 . . . . . . 3
+#! . 1 . . . 3 2 3
+#! . . 1 . . . . 3
+#! . . . 1 . 2 1 1
+#! . . . . 1 2 2 2
+#! gap> res.coeffs*A=res.vectors;
+#! true
+#! gap> Display(res.relations*A);
+#! gap> trafo := Concatenation(res.coeffs,res.relations);;
+#! gap> Display(trafo*A);
+#! 1 . . . . . . 3
+#! . 1 . . . 3 2 3
+#! . . 1 . . . . 3
+#! . . . 1 . 2 1 1
+#! . . . . 1 2 2 2
+#! . . . . . . . .
+#! . . . . . . . .
+#! . . . . . . . .
+#! @EndExampleSession
+#! If the number of blocks is not specified, the function uses a simple heuristic to determine a suitable blocksize (TODO explain).
+#! @BeginExampleSession
+#! gap> res1 := EchelonMatTransformationBlockwise( A );;
+#! gap> res2 := EchelonMatTransformationBlockwise( A, rec(numberBlocks := 2) );;
+#! gap> res1 = res2;
+#! true
+#! gap> A1 := A{[1..4]}{[1..4]};;
+#! gap> A2 := A{[1..4]}{[5..8]};;
+#! gap> A3 := A{[5..8]}{[1..2]};;
+#! gap> A4 := A{[5..8]}{[5..8]};;
+#! gap> A_blockwise := [[A1,A2],[A3,A4]];;
+#! gap> res3 := EchelonMatTransformationBlockwise( A_blockwise, 
+#!   rec(numberBlocks := 2, isChopped := true) );;
+#! gap> res3 = res1;
+#! true
 #! @EndExampleSession
 DeclareGlobalFunction( "EchelonMatTransformationBlockwise" );
 
