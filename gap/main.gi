@@ -3,9 +3,18 @@
 # the actual work:
 # DoEchelonMatTransformationBlockwise
 InstallGlobalFunction(EchelonMatTransformationBlockwise,
-function (mat)
-    local result;
-    result := DoEchelonMatTransformationBlockwise(mat, rec());
+function (mat, opt...)
+    local result, options;
+    
+    if Length(opt) = 0 then 
+        options := rec();
+    else
+	options := opt[1];
+	if not IsRecord(options) then
+	    ErrorNoReturn("the second argument must be a record");
+	fi;	
+    fi;
+    result := DoEchelonMatTransformationBlockwise(mat, options);
     return rec(
         vectors := result.vectors,
         heads := result.heads,
@@ -16,9 +25,17 @@ end
 );
 
 InstallGlobalFunction(EchelonMatBlockwise,
-function (mat)
-    local result;
-    result := DoEchelonMatTransformationBlockwise(mat, rec());
+function (mat, opt...)
+    local result, options;
+    if Length(opt) = 0 then 
+	options := rec();
+    else
+    	options := opt[1];
+	if not IsRecord(options) then
+	    ErrorNoReturn("the second argument must be a record");
+	fi;		
+    fi;
+    result := DoEchelonMatTransformationBlockwise(mat, options);
     return rec(
         vectors := result.vectors,
         heads := result.heads
@@ -129,9 +146,9 @@ function (mat, options)
     fi;
     # Check for invalid components of `options`. Note that IsHPC is a dummy
     # value that is still used by the tests but doesn't do anything.
-    recognisedOptions := ["numberBlocksHeight", "numberBlocksWidth",
+    recognisedOptions := ["numberBlocks","numberBlocksHeight", "numberBlocksWidth",
                           "withTrafo", "galoisField", "verify",
-                          "IsHPC"];
+                          "IsHPC","isChopped"];
     if not IsSubset(recognisedOptions, recnames) then
         Print("Warning: unrecognised options: ",
               Difference(recnames, recognisedOptions), "\n");
