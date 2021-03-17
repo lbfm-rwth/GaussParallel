@@ -15,8 +15,8 @@ function (mat, opt...)
 	    ErrorNoReturn("the second argument must be a record");
 	fi;
 	recnames := Set(RecNames(options));
-        if withTrafo in recnames then
-	    ErrorNoReturn("withTrafo is no valid option");
+        if "withTrafo" in recnames then
+	    ErrorNoReturn("withTrafo is not a valid option");
         fi;	
     fi;
     options.withTrafo:=true;	
@@ -43,8 +43,8 @@ function (mat, opt...)
 	    ErrorNoReturn("the second argument must be a record");
 	fi;
 	recnames := Set(RecNames(options));
-        if withTrafo in recnames then
-	    ErrorNoReturn("withTrafo is no valid option");
+        if "withTrafo" in recnames then
+	    ErrorNoReturn("withTrafo is not a valid option");
         fi;	
     fi;
     options.withTrafo:=false;
