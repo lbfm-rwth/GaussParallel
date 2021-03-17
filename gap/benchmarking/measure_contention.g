@@ -83,7 +83,8 @@ GAUSS_evaluate := function(nrAvailableThreads, bench, A, showOutput)
     fi;
 end;
 
-MeasureContention := function(numberBlocks, q, A, options...)
+InstallGlobalFunction("GAUSS_MeasureContention",
+function(numberBlocks, q, A, options...)
     local nrAvailableThreads, bench, showOutput;
 
     # showOutput can be set for testing purposes
@@ -99,8 +100,8 @@ MeasureContention := function(numberBlocks, q, A, options...)
 
     nrAvailableThreads := GAPInfo.KernelInfo.NUM_CPUS;
     bench := "";
-    
+
     GAUSS_prepare(nrAvailableThreads);;
     bench := GAUSS_compute(A, q, numberBlocks, showOutput);;
     GAUSS_evaluate(nrAvailableThreads, bench, A, showOutput);;
-end;
+end);
