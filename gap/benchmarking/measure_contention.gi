@@ -96,9 +96,9 @@ function(numberBlocks, q, A, options...)
         showOutput := false;
     fi;
     if showOutput then
-        Print("Make sure you called GAP with sufficient preallocated ",
-              "memory via `-m` if you try non-trivial examples!",
-              "Otherwise garbage collection will be a big overhead.\n\n");
+        Print("Make sure you called GAP with sufficient preallocated",
+              " memory via `-m` if you try non-trivial examples!",
+              " Otherwise garbage collection will be a big overhead.\n\n");
     fi;
 
     nrAvailableThreads := GAPInfo.KernelInfo.NUM_CPUS;
