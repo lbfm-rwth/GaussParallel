@@ -2,17 +2,16 @@
 #! @Chapter Utility Functions
 #! @Section Utility Functions
 #!
-#! @Arguments height, width, rank, randomSeed, ring
+#! @Arguments height, width, rank, randomSeed, field
 #! @Returns mat
-#! @Description Constructs a random matrix in echelon form of the given
-#! height, width and rank over the given ring. One random matrix can be
-#! recreated by using the same random seed.
+#! @Description Constructs a random matrix in RREF of the given
+#! height (number of rows), width (number of columns) and rank over the given field. Using the same random seed will recreate the same matrix.
 DeclareGlobalFunction( "RandomEchelonMat" );
 #! @BeginExampleSession
 #! gap> # We use Mersenne twister as a random seed here.
 #! gap> randomSeed := RandomSource(IsMersenneTwister, 42);;
-#! gap> M := RandomEchelonMat( 10, 10, 5, randomSeed, GF( 5 ) );;
-#! gap> Display( M );
+#! gap> M := RandomEchelonMat(10, 10, 5, randomSeed, GF(5));;
+#! gap> Display(M);
 #! 1 . . . . . 1 4 4 .
 #! . 1 . . . 1 3 2 4 3
 #! . . 1 . . . 3 . 1 .
