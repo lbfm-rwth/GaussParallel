@@ -28,7 +28,7 @@ ReadPackage( "GaussPar", "gap/echelon-form.g");
 
 if IsHPCGAP then
     ReadPackage( "GaussPar", "gap/benchmarking/timing.g");
-    ReadPackage( "GaussPar", "gap/benchmarking/measure_contention.g");
+    ReadPackage( "GaussPar", "gap/benchmarking/measure_contention.gi");
 fi;
 
 Info(InfoGauss, 1, "<<                                                 >>");
