@@ -125,7 +125,11 @@ function (mat, options)
     if "galoisField" in recnames then
         galoisField := options.galoisField;
     else
-        galoisField := DefaultFieldOfMatrix(mat);
+	if isChopped then 
+		galoisField := DefaultFieldOfMatrix(mat[1][1]);	
+	else
+        	galoisField := DefaultFieldOfMatrix(mat);
+	fi;
         if galoisField = fail then
             Error("Please specify the field of the matrix using the options parameter.");
         fi;
