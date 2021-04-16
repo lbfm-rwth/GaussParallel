@@ -84,8 +84,7 @@ function (mat, options)
         numberBlocksHeight := options.numberBlocksHeight;
         numberBlocksWidth := options.numberBlocksWidth;
     else
-        numberBlocksHeight := 1; 
-        numberBlocksWidth := 1;
+        ErrorNoReturn("Specification of either numberBlocks or both of numberBlocksWidth and numberBlocksHeight is mandatory");
     fi;
     #Hack
     a := numberBlocksHeight;
