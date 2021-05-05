@@ -6,7 +6,7 @@
                 [1X Parallel gaussian algorithm for finite fields [101X
   
   
-                                    1.0.0dev
+                                     1.0.0
   
   
                                    5 May 2021
