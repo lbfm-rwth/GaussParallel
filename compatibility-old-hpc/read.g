@@ -46,7 +46,3 @@ if IsHPCGAP then
 else
      MakeReadOnlyOrImmutableObj := MakeImmutable;
 fi;
-
-
-Info(InfoGauss, 1, "<< The package \"GaussPar\" is still in alpha stage! >>");
-Info(InfoGauss, 1, "<< See the README.md for some usage examples.      >>");

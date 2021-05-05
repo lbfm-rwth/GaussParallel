@@ -4,7 +4,6 @@
 # Reading the declaration part of the package.
 #
 DeclareInfoClass("InfoGauss");
-SetInfoLevel(InfoGauss, 1);
 
 ReadPackage("GaussPar", "gap/main.gd");
 ReadPackage("GaussPar", "gap/echelon-form.gd");
