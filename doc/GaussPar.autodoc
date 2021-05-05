@@ -1,11 +1,20 @@
 @Chapter The GaussPar package
-@Section What Is This Package About?
+@Section Introduction
+This package implements the algorithm described in "A parallel algorithm for Gaussian elimination over finite fields" (Linton, S., Nebe, G., Niemeyer, A., Parker, R. and Thackray, J. (2018)).
+The algorithm divides a given matrix into smaller submatrices (blocks) and carries out steps of the Gaussian elimination block by block.
+The paper identifies the minimal dependencies between processing different blocks. Independent steps can be performed simultaneously, allowing for high levels of parallelism.
+We provide two main functions <Ref Func="EchelonMatBlockwise"/>
+and <Ref Func="EchelonMatTransformationBlockwise"/>, where the latter additionally computes the transformation matrix in parallel. The naming conventions are chosen in accordance with the "Gauss"-package 
+@BeginLatexOnly
+\footnote{\url{https://www.gap-system.org/Packages/gauss.html}}
+@EndLatexOnly
+, which provides an implementation of the sequential GAUSS algorithm. Our functions do currently not support sparse matrices.
 
-TODO:
-- new sections
-  - introduction
-  - installation
-  - overview
+
+
+NOTES FOR US BELOW
+
+
 
 TODO: move this to the right place.
 The value of <A>numberBlocks</A> has a big impact on the perfomance of the
@@ -19,44 +28,6 @@ threads and the machine itself.
 The function <Ref Func="GAUSS_MeasureContention"/> in Chapter
 <Ref Chap="Chapter_Finding_a_suitable_number_of_blocks"/>
 can be used to find a suitable value systematically.
-
-This package implements a parallel version of the GAUSS algorithm which divides
-a given matrix in smaller blocks, executes the GAUSS algorithm on the blocks
-simultaneously using different kernels and merges the result in a thought out
-way. We realize the algorithm that is described in the paper "A parallel
-algorithm for Gaussian elimination over finite fields" (Linton et al. 2018)
-@BeginLatexOnly
-\footnote{Linton, S., Nebe, G., Niemeyer, A., Parker, R. and Thackray, J. (2018).
-A parallel algorithm for Gaussian elimination over finite fields.}
-@EndLatexOnly
-
-To make our package user-friendly we provide different versions of the main
-function returning different amounts of information and options to influence the 
-process of calculation. While creating the main functions we implemented many
-low-level functions and found that some of them could be useful independently.
-The exact documentation of all those functions as well as some examples can be found below.
-
-@Section Technical Background
-
-Our syntax is based on the GAP package "GAUSS"
-@BeginLatexOnly
-\footnote{\url{https://www.gap-system.org/Packages/gauss.html}}
-@EndLatexOnly
-by Simon Goertzen which provides an implementation of the sequential GAUSS algorithm, meaning
-that we tried to name our functions similarily.
-
-
-To use our package one needs to download it
-@BeginLatexOnly
-\footnote{Download for example from our github repository:
-\url{https://github.com/lbfm-rwth/GaussPar/}}
-@EndLatexOnly
-, navigate inside the directory, open HPCGAP and type
-@BeginExampleSession
-#! gap> LoadPackage( "GAUSSPAR" );
-@EndExampleSession
-Then you can start by following the examples in chapter 3.
-
 
 @Chapter Gaussian Elimination
 @Section Gaussian Elimination
