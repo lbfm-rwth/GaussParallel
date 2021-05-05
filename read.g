@@ -13,9 +13,7 @@ if gauss = fail then
 fi;
 LoadPackage("IO");
 
-if not IsHPCGAP then
-    ReadPackage( "GaussPar", "gap/hpcgap-mockups.g");
-fi;
+ReadPackage( "GaussPar", "gap/hpcgap-mockups.g");
 
 ReadPackage( "GaussPar", "gap/RREF.g");
 ReadPackage( "GaussPar", "gap/dependencies.g");

@@ -310,7 +310,7 @@ function (mat, options)
             ClearDownDeps := GAUSS_ClearDownDependencies(
                 i, j, TaskListClearDown, TaskListUpdateR
             );
-            TaskListClearDown[i][j] := ScheduleTask(
+            TaskListClearDown[i][j] := GAUSS_ScheduleTask(
                 ClearDownDeps, GAUSS_ClearDown_destructive,
                 galoisField, C, D, A, i, j
             );
@@ -318,7 +318,7 @@ function (mat, options)
             ExtendDeps := GAUSS_ExtendDependencies(
                 i, j, TaskListClearDown, TaskListE
             );
-            TaskListE[i][j] := ScheduleTask(
+            TaskListE[i][j] := GAUSS_ScheduleTask(
                 ExtendDeps, GAUSS_Extend_destructive, A, E, i, j
             );
             Info(InfoGauss, 3, "UpdateRowParameters ", i, " ", j);
@@ -326,7 +326,7 @@ function (mat, options)
                 UpdateRowDeps := GAUSS_UpdateRowDependencies(
                     i, j, k, TaskListClearDown, TaskListUpdateR
                 );
-                TaskListUpdateR[i][j][k] := ScheduleTask(
+                TaskListUpdateR[i][j][k] := GAUSS_ScheduleTask(
                     UpdateRowDeps, GAUSS_UpdateRow_destructive,
                     galoisField, A, C, B, i, j, k
                 );
@@ -338,7 +338,7 @@ function (mat, options)
                     UpdateRowTrafoDeps := GAUSS_UpdateRowTrafoDependencies(
                         i, j, h, TaskListClearDown, TaskListE, TaskListUpdateM
                     );
-                    TaskListUpdateM[i][j][h] := ScheduleTask(
+                    TaskListUpdateM[i][j][h] := GAUSS_ScheduleTask(
                         UpdateRowTrafoDeps, GAUSS_UpdateRowTrafo_destructive,
                         galoisField, A, K, M, E, i, h, j
                     );
@@ -347,11 +347,11 @@ function (mat, options)
         od;
     od;
 
-    Info(InfoGauss, 3, "Before WaitTask");
-    WaitTask(Concatenation(TaskListClearDown));
-    WaitTask(Concatenation(TaskListE));
-    WaitTask(Concatenation(List(TaskListUpdateR, Concatenation)));
-    WaitTask(Concatenation(List(TaskListUpdateM, Concatenation)));
+    Info(InfoGauss, 3, "Before GAUSS_WaitTask");
+    GAUSS_WaitTask(Concatenation(TaskListClearDown));
+    GAUSS_WaitTask(Concatenation(TaskListE));
+    GAUSS_WaitTask(Concatenation(List(TaskListUpdateR, Concatenation)));
+    GAUSS_WaitTask(Concatenation(List(TaskListUpdateM, Concatenation)));
     if  withTrafo then
         ## Step 2 ##
         Info(InfoGauss, 2, "Step 2");
@@ -384,7 +384,7 @@ function (mat, options)
                 ClearUpDeps := GAUSS_ClearUpDependencies(
                     j, k, l, l-k, TaskListPreClearUp, TaskListClearUpR
                 );                               
-                TaskListClearUpR[j][l][l-k+1] := ScheduleTask(
+                TaskListClearUpR[j][l][l-k+1] := GAUSS_ScheduleTask(
                     ClearUpDeps, GAUSS_ClearUp_destructive,
                     R, TaskResult(TaskListPreClearUp[j][k]), j, k, l
                 );
@@ -396,7 +396,7 @@ function (mat, options)
                     ClearUpDeps := GAUSS_ClearUpDependencies(
                         j, k, h, k_-1, TaskListPreClearUp, TaskListClearUpM
                     );                               
-                    TaskListClearUpM[j][h][k_] := ScheduleTask(
+                    TaskListClearUpM[j][h][k_] := GAUSS_ScheduleTask(
                         ClearUpDeps, GAUSS_ClearUp_destructive,
                         M, TaskResult(TaskListPreClearUp[j][k]), j, k, h
                     );
@@ -406,10 +406,10 @@ function (mat, options)
     od;
 
     # Wait for the computations of step 3.
-    WaitTask(Concatenation(TaskListPreClearUp));
-    WaitTask(Concatenation(List(TaskListClearUpR, Concatenation)));
+    GAUSS_WaitTask(Concatenation(TaskListPreClearUp));
+    GAUSS_WaitTask(Concatenation(List(TaskListClearUpR, Concatenation)));
     if  withTrafo then
-        WaitTask(Concatenation(List(TaskListClearUpM, Concatenation)));
+        GAUSS_WaitTask(Concatenation(List(TaskListClearUpM, Concatenation)));
     fi;
     # Computations are finished. Now prepare the output.
     result := GAUSS_WriteOutput(mat, a, b, nrColsPerBlockCol, nrRowsPerBlockRow, galoisField, D, R, M,
