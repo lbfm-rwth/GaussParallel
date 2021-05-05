@@ -1,3 +1,5 @@
-\indexentry{DoEchelonMatTransformationBlockwise@\texttt  {DoEchelonMatTransformationBlockwise}|hyperpage}{3}
-\indexentry{EchelonMatTransformationBlockwise@\texttt  {EchelonMatTransformationBlockwise}|hyperpage}{3}
-\indexentry{EchelonMatBlockwise@\texttt  {EchelonMatBlockwise}|hyperpage}{3}
+\indexentry{EchelonMatTransformationBlockwise@\texttt  {EchelonMatTransformationBlockwise}|hyperpage}{4}
+\indexentry{EchelonMatBlockwise@\texttt  {EchelonMatBlockwise}|hyperpage}{6}
+\indexentry{GAUSSuScoreMeasureContention@\texttt  {GAU}\-\texttt  {S}\-\texttt  {S{\textunderscore }}\-\texttt  {Measure}\-\texttt  {Contention}|hyperpage}{7}
+\indexentry{IsMatrixInRREF@\texttt  {IsMatrixInRREF}|hyperpage}{10}
+\indexentry{RandomEchelonMat@\texttt  {RandomEchelonMat}|hyperpage}{10}

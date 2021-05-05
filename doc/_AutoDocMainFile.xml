@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- This is an automatically generated file. -->
-<#Include SYSTEM "_Chapter_High-level_functions.xml">
-<#Include SYSTEM "_Chapter_Low-level_functions.xml">
+<#Include SYSTEM "_Chapter_The_GaussPar_package.xml">
+<#Include SYSTEM "_Chapter_Gaussian_Elimination.xml">
+<#Include SYSTEM "_Chapter_Finding_a_suitable_number_of_blocks.xml">
+<#Include SYSTEM "_Chapter_Using_the_task_framework_provided_by_HPC-GAP.xml">
+<#Include SYSTEM "_Chapter_Utility_Functions.xml">

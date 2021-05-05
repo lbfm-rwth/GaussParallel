@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<script type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<title>GAP (GaussPar) - Chapter 3: Finding a suitable number of blocks</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="GAPDoc2HTML" />
+<link rel="stylesheet" type="text/css" href="manual.css" />
+<script src="manual.js" type="text/javascript"></script>
+<script type="text/javascript">overwriteStyle();</script>
+</head>
+<body class="chap3"  onload="jscontent()">
+
+
+<div class="chlinktop"><span class="chlink1">Goto Chapter: </span><a href="chap0_mj.html">Top</a>  <a href="chap1_mj.html">1</a>  <a href="chap2_mj.html">2</a>  <a href="chap3_mj.html">3</a>  <a href="chap4_mj.html">4</a>  <a href="chap5_mj.html">5</a>  <a href="chapInd_mj.html">Ind</a>  </div>
+
+<div class="chlinkprevnexttop">&nbsp;<a href="chap0_mj.html">[Top of Book]</a>&nbsp;  <a href="chap0_mj.html#contents">[Contents]</a>&nbsp;  &nbsp;<a href="chap2_mj.html">[Previous Chapter]</a>&nbsp;  &nbsp;<a href="chap4_mj.html">[Next Chapter]</a>&nbsp;  </div>
+
+<p id="mathjaxlink" class="pcenter"><a href="chap3.html">[MathJax off]</a></p>
+<p><a id="X82FE947A7FD1801E" name="X82FE947A7FD1801E"></a></p>
+<div class="ChapSects"><a href="chap3_mj.html#X82FE947A7FD1801E">3 <span class="Heading">Finding a suitable number of blocks</span></a>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap3_mj.html#X79ABEDA87A10C6C2">3.1 <span class="Heading">Measure Contention</span></a>
+</span>
+<div class="ContSSBlock">
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap3_mj.html#X85BB04B087C03C20">3.1-1 GAUSS_MeasureContention</a></span>
+</div></div>
+</div>
+
+<h3>3 <span class="Heading">Finding a suitable number of blocks</span></h3>
+
+<p>Experiments with matrices over fields of sizes 2 to 11 and dimensions 500 to 10.000 have found values for <var class="Arg">numberBlocks</var> from 6 to 15 to be acceptable. Note though, that this highly depends on the calculation, the number of used threads and the machine itself.</p>
+
+<p><a id="X79ABEDA87A10C6C2" name="X79ABEDA87A10C6C2"></a></p>
+
+<h4>3.1 <span class="Heading">Measure Contention</span></h4>
+
+<p><a id="X85BB04B087C03C20" name="X85BB04B087C03C20"></a></p>
+
+<h5>3.1-1 GAUSS_MeasureContention</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; GAUSS_MeasureContention</code>( <var class="Arg">numberBlocks</var>, <var class="Arg">q</var>, <var class="Arg">A</var>[, <var class="Arg">showOutput</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>This function helps with finding a suitable value for <var class="Arg">numberBlocks</var>, which has a big influence on the performance of the <code class="func">EchelonMatTransformationBlockwise</code> (<a href="chap2_mj.html#X86CC1A2A7832BB22"><span class="RefLink">2.1-1</span></a>) function. For inputs <var class="Arg">numberBlocks</var>, a field size <var class="Arg">q</var>, and a matrix <var class="Arg">A</var> over <code class="code">GF(q)</code>, this function does the following:</p>
+
+
+<ul>
+<li><p>it calls the parallel function <code class="func">EchelonMatTransformationBlockwise</code> (<a href="chap2_mj.html#X86CC1A2A7832BB22"><span class="RefLink">2.1-1</span></a>),</p>
+
+</li>
+<li><p>it calls the sequential function <code class="code">EchelonMatTransformation</code> from the package <code class="code">Gauss</code>,</p>
+
+</li>
+<li><p>it prints the wall time, that is the elapsed real time, each call took,</p>
+
+</li>
+<li><p>for the parallel function, it prints an estimate of the lock contenation ratio, a short explanation of lock contention is given below. A high lock contention ratio deteriorates the performance of the algorithm.</p>
+
+</li>
+</ul>
+<p>The input <var class="Arg">showOutput</var> can be used to suppress printing of messages.</p>
+
+<p>The influence of <var class="Arg">numberBlocks</var> on the performance is as follows:</p>
+
+
+<ul>
+<li><p>if <var class="Arg">numberBlocks</var> is too small, then not enough calculations can happen in parallel</p>
+
+</li>
+<li><p>if <var class="Arg">numberBlocks</var> is too big then:</p>
+
+
+<ul>
+<li><p>the lock contention ratio increases</p>
+
+</li>
+<li><p>HPC-GAP's task framework generates a big overhead since it is not optimized.</p>
+
+</li>
+</ul>
+</li>
+</ul>
+<p>In a parallel computation several threads may try to access an object at the same time. HPC-GAP needs to prevent situations in which one thread writes into an object that another thread is currently reading, since that could lead to corrupted data. To this end, HPC-GAP can synchronize access to objects via locks.</p>
+
+<p>If a thread reads an object, that thread can acquire a lock for that object, that is no other thread can write into it until the lock is released. If a thread tries to write into said object before the lock is released we say that the lock was contended. In such a situation the contending thread needs to wait until the lock is released. This leads to waiting times or unnecessary context-switches and deteriorates performance if it happens too often.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">n := 4000;; numberBlocks := 8;; q := 5;;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">A := RandomMat(n, n, GF(q));;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAUSS_MeasureContention(numberBlocks, q, A);</span>
+Make sure you called GAP with sufficient preallocated memory via `-m` if you
+try non-trivial examples! Otherwise garbage collection will be a big
+overhead.
+
+Starting the parallel algorithm
+EchelonMatTransformationBlockwise.
+
+Wall time  parallel execution (ms): 33940.
+CPU  time  parallel execution (ms): 2
+Lock statistics(estimates):
+acquired - 181502, contended - 1120, ratio - 1.%
+Locks acquired and contention counters per thread
+[ thread, locks acquired, locks contended ]:
+[ 5, 54093, 248 ]
+[ 6, 51004, 228 ]
+[ 7, 37102, 389 ]
+[ 8, 39303, 255 ]
+
+Starting the sequential algorithm
+EchelonMatTransformation
+
+Wall time Gauss pkg execution (ms): 66778.
+
+Speedup factor (sequential / parallel wall time):
+1.96
+</pre></div>
+
+
+<div class="chlinkprevnextbot">&nbsp;<a href="chap0_mj.html">[Top of Book]</a>&nbsp;  <a href="chap0_mj.html#contents">[Contents]</a>&nbsp;  &nbsp;<a href="chap2_mj.html">[Previous Chapter]</a>&nbsp;  &nbsp;<a href="chap4_mj.html">[Next Chapter]</a>&nbsp;  </div>
+
+
+<div class="chlinkbot"><span class="chlink1">Goto Chapter: </span><a href="chap0_mj.html">Top</a>  <a href="chap1_mj.html">1</a>  <a href="chap2_mj.html">2</a>  <a href="chap3_mj.html">3</a>  <a href="chap4_mj.html">4</a>  <a href="chap5_mj.html">5</a>  <a href="chapInd_mj.html">Ind</a>  </div>
+
+<hr />
+<p class="foot">generated by <a href="http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc">GAPDoc2HTML</a></p>
+</body>
+</html>

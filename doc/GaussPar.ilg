@@ -1,6 +1,6 @@
-This is makeindex, version 2.15 [TeX Live 2017] (kpathsea + Thai support).
-Scanning input file GaussPar.idx....done (3 entries accepted, 0 rejected).
-Sorting entries....done (5 comparisons).
-Generating output file GaussPar.ind....done (10 lines written, 0 warnings).
+This is makeindex, version 2.15 [TeX Live 2019] (kpathsea + Thai support).
+Scanning input file GaussPar.idx....done (5 entries accepted, 0 rejected).
+Sorting entries....done (11 comparisons).
+Generating output file GaussPar.ind....done (19 lines written, 0 warnings).
 Output written in GaussPar.ind.
 Transcript written in GaussPar.ilg.

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This is an automatically generated file. -->
+<Chapter Label="Chapter_Using_the_task_framework_provided_by_HPC-GAP">
+<Heading>Using the task framework provided by HPC-GAP</Heading>
+
+<P/>
+To implement our parallel version of the Gauss algorithm we use the task
+framework provided by HPC-GAP.
+The structure of the source files reflects this by grouping our functions
+depending on how they make use of HPC-GAP's shared memory model.
+<P/>
+<Section Label="Chapter_Using_the_task_framework_provided_by_HPC-GAP_Section_The_Packages_Structure">
+<Heading>The Package's Structure</Heading>
+
+<P/>
+<List>
+<Item>
+<Code>main.gi</Code>:
+  Contains the main function <Code>DoEchelonMatTransformationBlockwise</Code>, which
+  is wrapped by <Ref Func="EchelonMatBlockwise"/> and
+  <Ref Func="EchelonMatTransformationBlockwise"/>.
+  It is the function which schedules all tasks.
+</Item>
+</List>
+<P/>
+<List>
+<Item>
+<Code>dependencies.g</Code>:
+  The functions in this file compute the dependencies of the algorithm's
+  subprograms between each other.
+</Item>
+</List>
+<P/>
+<List>
+<Item>
+<Code>tasks.g</Code>:
+  The functions in this file are scheduled as tasks by the main routine.
+  They need to make sure that they only write read-only objects into the "shared"
+  atomic lists.
+</Item>
+</List>
+<P/>
+<List>
+<Item>
+<Code>thread-local.g</Code>:
+  The functions in this file are called by functions from "tasks.g".
+  In principle, these functions only work in a single thread-local region and
+  don't need to know anything about other threads.
+  These functions may only access read-only objects or objects from the
+  executing thread's thread-local region.
+  They may only emit or write into thread-local objects.
+</Item>
+</List>
+<P/>
+</Section>
+
+
+</Chapter>
+

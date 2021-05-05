@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This is an automatically generated file. -->
+<Chapter Label="Chapter_Gaussian_Elimination">
+<Heading>Gaussian Elimination</Heading>
+
+<Section Label="Chapter_Gaussian_Elimination_Section_Gaussian_Elimination">
+<Heading>Gaussian Elimination</Heading>
+
+<P/>
+This section describes the different variants of our implementation
+of the Gaussian algorithm.
+<P/>
+Note that the value of the option <A>numberBlocks</A> described below has a big
+impact on the performance of our algorithms.
+For information on how to choose a suitable value for <A>numberBlocks</A> see
+Chapter <Ref Chap="Chapter_Finding_a_suitable_number_of_blocks"/>.
+<P/>
+<ManSection>
+  <Func Arg="mat, [options]" Name="EchelonMatTransformationBlockwise" />
+ <Returns>a record that contains information on the echelon form of <Emph>mat</Emph> and the corresponding transformation matrix.
+</Returns>
+ <Description>
+This is the main function of the GaussPar package. It computes the reduced row echelon form (RREF) of the matrix <Emph>mat</Emph> and the corresponding transformation matrix. In a pre-processing step, <Emph>mat</Emph> is split up into a block matrix whose blocks can be processed in parallel.
+<P/>
+  The input parameters have the following meaning:
+<List>
+<Item>
+<Emph>mat</Emph> is a matrix defined over a finite field
+</Item>
+<Item>
+<Emph>options</Emph> is a record that can be used to provide some additional parameters.  Note that a specification of either <Emph>numberBlocks</Emph> or both of
+   <Emph>numberBlocksHeight</Emph> and <Emph>numberBlocksWidth</Emph> is mandatory. The following parameters are currently supported:
+<List>
+<Item>
+<Emph>numberBlocksHeight</Emph> and <Emph>numberBlocksWidth</Emph>:
+   The number of vertical and horizontal blocks in which to divide
+   the matrix during the algorithm.
+</Item>
+<Item>
+<Emph>numberBlocks</Emph>:
+   Use this argument if you want the same number of vertical and horizontal blocks in the block matrix decomposition of <Emph>mat</Emph>.
+</Item>
+<Item>
+<Emph>verify</Emph>: If set to <Emph>true</Emph>, the computation is verified at the end. That is, we check wheter <Emph>coeffs</Emph> * <Emph>mat</Emph> is in RREF. This option is only available for the function <Emph>EchelonMatTransformationBlockwise</Emph>.
+</Item>
+<Item>
+<Emph>isChopped</Emph>: It is possible to input <Emph>mat</Emph> directly as a matrix of block matrices. In this case the parameter <Emph>isChopped</Emph> must be set to <Emph>true</Emph> and the splitting step is skipped.
+</Item>
+</List>
+</Item>
+</List>
+<P/>
+  The output record contains the following items:
+<List>
+<Item>
+<Emph>vectors</Emph>:
+   a matrix that forms the RREF of <Emph>mat</Emph> without zero rows
+</Item>
+<Item>
+<Emph>heads</Emph>:
+    a list of integers, such that <Emph>heads[i]</Emph> gives the number of the row for
+    which the pivot element is in column i. If no such row exists, <Emph>heads[i]</Emph> is <Emph>0</Emph>.
+</Item>
+<Item>
+<Emph>coeffs</Emph>:
+   the corresponding transformation matrix. It holds <Emph>coeffs</Emph> * <Emph>mat</Emph> = <Emph>vectors</Emph>.
+</Item>
+<Item>
+<Emph>relations</Emph>: a matrix whose rows form a basis for the row null space of <Emph>mat</Emph>. If <Emph>relations</Emph> is not the  empty list, it holds that <Emph>relations</Emph> * <Emph>mat</Emph> = <Emph>0</Emph>. Otherwise <Emph>mat</Emph> has full row rank.
+</Item>
+</List>
+<P/>
+<Example><![CDATA[
+gap> A := RandomMat(8, 5, GF(5)) * RandomMat(5, 8, GF(5));;
+gap> Display(A);
+1 4 3 2 4 4 3 4
+4 1 2 4 2 . . 4
+2 3 1 4 3 3 1 3
+3 . 4 3 3 2 4 .
+4 1 3 2 3 3 . 2
+2 1 3 3 1 1 2 3
+. 3 3 . 1 1 3 .
+4 1 4 1 4 3 1 1
+gap> res := EchelonMatTransformationBlockwise(A, rec(numberBlocks := 2));;
+gap> Display(res.vectors);
+1 . . . . . . 3
+. 1 . . . 3 2 3
+. . 1 . . . . 3
+. . . 1 . 2 1 1
+. . . . 1 2 2 2
+gap> res.coeffs * A=res.vectors;
+true
+]]></Example>
+
+
+  The transformation matrix can be easily obtained from the output record as follows:
+<Example><![CDATA[
+gap> trafo := Concatenation(res.coeffs, res.relations);;
+gap> Display(trafo * A);
+1 . . . . . . 3
+. 1 . . . 3 2 3
+. . 1 . . . . 3
+. . . 1 . 2 1 1
+. . . . 1 2 2 2
+. . . . . . . .
+. . . . . . . .
+. . . . . . . .
+]]></Example>
+
+
+It is also possible to directly input a block matrix.
+<Example><![CDATA[
+gap> A := RandomMat(8, 5, GF(5)) * RandomMat(5, 8, GF(5));;
+gap> res1 := EchelonMatTransformationBlockwise(A, rec(numberBlocks := 2));;
+gap> A1 := A{[1..4]}{[1..4]};;
+gap> A2 := A{[1..4]}{[5..8]};;
+gap> A3 := A{[5..8]}{[1..2]};;
+gap> A4 := A{[5..8]}{[5..8]};;
+gap> A_blockwise := [[A1,A2],[A3,A4]];;
+gap> res3 := EchelonMatTransformationBlockwise(A_blockwise, 
+  rec(numberBlocks := 2, isChopped := true));;
+gap> res3 = res1;
+true
+]]></Example>
+
+
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Func Arg="mat, [options]" Name="EchelonMatBlockwise" />
+ <Returns>a record that contains information on the echelon form of <Emph>mat</Emph>.
+</Returns>
+ <Description>
+This is a version of the main function that computes the reduced row echelon form (RREF) of the matrix <Emph>mat</Emph> but doesn't compute the corresponding transformation matrix. In a pre-processing step, <Emph>mat</Emph> is split up into a block matrix whose blocks can be processed in parallel.
+<P/>
+  The input parameters have the following meaning:
+<List>
+<Item>
+<Emph>mat</Emph> is a matrix defined over a finite field
+</Item>
+<Item>
+<Emph>options</Emph> is a record that is used to provide additional parameters. For more information see <Emph>EchelonMatTransformationBlockwise</Emph> (See  <Ref Func="EchelonMatTransformationBlockwise"/>).
+</Item>
+</List>
+<P/>
+  The output record contains the items <Emph>vectors</Emph> and <Emph>heads</Emph>. For their meaning, see <Ref Func="EchelonMatTransformationBlockwise"/>.
+ </Description>
+</ManSection>
+
+
+</Section>
+
+
+</Chapter>
+

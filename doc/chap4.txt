@@ -1,0 +1,30 @@
+  
+  [1X4 [33X[0;0YUsing the task framework provided by HPC-GAP[133X[101X
+  
+  [33X[0;0YTo  implement  our  parallel  version of the Gauss algorithm we use the task
+  framework  provided  by  HPC-GAP. The structure of the source files reflects
+  this  by  grouping our functions depending on how they make use of HPC-GAP's
+  shared memory model.[133X
+  
+  
+  [1X4.1 [33X[0;0YThe Package's Structure[133X[101X
+  
+  [30X    [33X[0;6Y[10Xmain.gi[110X:          Contains          the          main         function
+        [10XDoEchelonMatTransformationBlockwise[110X,     which     is    wrapped    by
+        [2XEchelonMatBlockwise[102X   ([14X2.1-2[114X)   and  [2XEchelonMatTransformationBlockwise[102X
+        ([14X2.1-1[114X). It is the function which schedules all tasks.[133X
+  
+  [30X    [33X[0;6Y[10Xdependencies.g[110X: The functions in this file compute the dependencies of
+        the algorithm's subprograms between each other.[133X
+  
+  [30X    [33X[0;6Y[10Xtasks.g[110X: The functions in this file are scheduled as tasks by the main
+        routine. They need to make sure that they only write read-only objects
+        into the "shared" atomic lists.[133X
+  
+  [30X    [33X[0;6Y[10Xthread-local.g[110X:  The  functions  in  this file are called by functions
+        from  "tasks.g".  In  principle, these functions only work in a single
+        thread-local  region  and  don't  need  to  know  anything about other
+        threads.  These functions may only access read-only objects or objects
+        from the executing thread's thread-local region. They may only emit or
+        write into thread-local objects.[133X
+  

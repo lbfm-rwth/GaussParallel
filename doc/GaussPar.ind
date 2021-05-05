@@ -1,10 +1,19 @@
 \begin{theindex}
 
-  \item \texttt  {DoEchelonMatTransformationBlockwise}, \hyperpage{3}
+  \item \texttt  {EchelonMatBlockwise}, \hyperpage{6}
+  \item \texttt  {EchelonMatTransformationBlockwise}, \hyperpage{4}
 
   \indexspace
 
-  \item \texttt  {EchelonMatBlockwise}, \hyperpage{3}
-  \item \texttt  {EchelonMatTransformationBlockwise}, \hyperpage{3}
+  \item \texttt  {GAU}\-\texttt  {S}\-\texttt  {S{\textunderscore }}\-\texttt  {Measure}\-\texttt  {Contention}, 
+		\hyperpage{7}
+
+  \indexspace
+
+  \item \texttt  {IsMatrixInRREF}, \hyperpage{10}
+
+  \indexspace
+
+  \item \texttt  {RandomEchelonMat}, \hyperpage{10}
 
 \end{theindex}

@@ -1,0 +1,70 @@
+@Chapter The GaussPar package
+@Section Introduction
+This package implements the algorithm described in "A parallel algorithm for Gaussian elimination over finite fields" (Linton, S., Nebe, G., Niemeyer, A., Parker, R. and Thackray, J. (2018)).
+The algorithm divides a given matrix into smaller submatrices (blocks) and carries out steps of the Gaussian elimination block by block.
+The paper identifies the minimal dependencies between processing different blocks. Independent steps can be performed simultaneously, allowing for high levels of parallelism.
+We provide two main functions <Ref Func="EchelonMatBlockwise"/>
+and <Ref Func="EchelonMatTransformationBlockwise"/>, where the latter additionally computes the transformation matrix in parallel. The naming conventions are chosen in accordance with the "Gauss"-package
+@BeginLatexOnly
+\footnote{\url{https://www.gap-system.org/Packages/gauss.html}}
+@EndLatexOnly
+, which provides an implementation of the sequential GAUSS algorithm. Our functions do currently not support sparse matrices.
+
+@Chapter Gaussian Elimination
+@Section Gaussian Elimination
+
+This section describes the different variants of our implementation
+of the Gaussian algorithm.
+
+Note that the value of the option <A>numberBlocks</A> described below has a big
+impact on the performance of our algorithms.
+For information on how to choose a suitable value for <A>numberBlocks</A> see
+Chapter <Ref Chap="Chapter_Finding_a_suitable_number_of_blocks"/>.
+
+@Chapter Finding a suitable number of blocks
+
+Experiments with matrices over fields of sizes 2 to 11 and dimensions 500 to
+10.000 have found values for <A>numberBlocks</A> from 6 to 15 to be acceptable.
+Note though, that this highly depends on the calculation, the number of used
+threads and the machine itself.
+
+@Section Measure Contention
+
+@Chapter Using the task framework provided by HPC-GAP
+
+To implement our parallel version of the Gauss algorithm we use the task
+framework provided by HPC-GAP.
+The structure of the source files reflects this by grouping our functions
+depending on how they make use of HPC-GAP's shared memory model.
+
+@Section The Package's Structure
+
+- `main.gi`:
+  Contains the main function `DoEchelonMatTransformationBlockwise`, which
+  is wrapped by <Ref Func="EchelonMatBlockwise"/> and
+  <Ref Func="EchelonMatTransformationBlockwise"/>.
+  It is the function which schedules all tasks.
+  
+- `dependencies.g`:
+  The functions in this file compute the dependencies of the algorithm's
+  subprograms between each other.
+
+- `tasks.g`:
+  The functions in this file are scheduled as tasks by the main routine.
+  They need to make sure that they only write read-only objects into the "shared"
+  atomic lists.
+  
+- `thread-local.g`:
+  The functions in this file are called by functions from "tasks.g".
+  In principle, these functions only work in a single thread-local region and
+  don't need to know anything about other threads.
+  These functions may only access read-only objects or objects from the
+  executing thread's thread-local region.
+  They may only emit or write into thread-local objects.
+
+@Chapter Utility Functions
+@Section Utility Functions
+
+The following functions were created while implementing the high-level functions,
+but we found that they could be useful outside of our functions, too.
+You can find the specifications of the functions and some small examples here.

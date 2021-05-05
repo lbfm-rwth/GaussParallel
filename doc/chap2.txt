@@ -1,6 +1,140 @@
   
-  [1X2 [33X[0;0YLow-level functions[133X[101X
+  [1X2 [33X[0;0YGaussian Elimination[133X[101X
   
   
-  [1X2.1 [33X[0;0YHelper functions[133X[101X
+  [1X2.1 [33X[0;0YGaussian Elimination[133X[101X
+  
+  [33X[0;0YThis  section  describes the different variants of our implementation of the
+  Gaussian algorithm.[133X
+  
+  [33X[0;0YNote  that  the  value  of the option [3XnumberBlocks[103X described below has a big
+  impact  on  the  performance  of  our  algorithms. For information on how to
+  choose a suitable value for [3XnumberBlocks[103X see Chapter [14X3[114X.[133X
+  
+  [1X2.1-1 EchelonMatTransformationBlockwise[101X
+  
+  [33X[1;0Y[29X[2XEchelonMatTransformationBlockwise[102X( [3Xmat[103X[, [3Xoptions[103X] ) [32X function[133X
+  [6XReturns:[106X  [33X[0;10Ya  record that contains information on the echelon form of [13Xmat[113X and
+            the corresponding transformation matrix.[133X
+  
+  [33X[0;0YThis  is  the main function of the GaussPar package. It computes the reduced
+  row   echelon   form   (RREF)  of  the  matrix  [13Xmat[113X  and  the  corresponding
+  transformation  matrix.  In  a  pre-processing  step, [13Xmat[113X is split up into a
+  block matrix whose blocks can be processed in parallel.[133X
+  
+  [33X[0;0YThe input parameters have the following meaning:[133X
+  
+  [30X    [33X[0;6Y[13Xmat[113X is a matrix defined over a finite field[133X
+  
+  [30X    [33X[0;6Y[13Xoptions[113X  is  a  record  that  can  be  used to provide some additional
+        parameters.  Note  that a specification of either [13XnumberBlocks[113X or both
+        of   [13XnumberBlocksHeight[113X   and   [13XnumberBlocksWidth[113X  is  mandatory.  The
+        following parameters are currently supported:[133X
+  
+        [30X    [33X[0;12Y[13XnumberBlocksHeight[113X and [13XnumberBlocksWidth[113X: The number of vertical
+              and  horizontal  blocks in which to divide the matrix during the
+              algorithm.[133X
+  
+        [30X    [33X[0;12Y[13XnumberBlocks[113X:  Use  this argument if you want the same number of
+              vertical and horizontal blocks in the block matrix decomposition
+              of [13Xmat[113X.[133X
+  
+        [30X    [33X[0;12Y[13Xverify[113X:  If set to [13Xtrue[113X, the computation is verified at the end.
+              That is, we check wheter [13Xcoeffs[113X * [13Xmat[113X is in RREF. This option is
+              only          available         for         the         function
+              [13XEchelonMatTransformationBlockwise[113X.[133X
+  
+        [30X    [33X[0;12Y[13XisChopped[113X:  It  is possible to input [13Xmat[113X directly as a matrix of
+              block matrices. In this case the parameter [13XisChopped[113X must be set
+              to [13Xtrue[113X and the splitting step is skipped.[133X
+  
+  [33X[0;0YThe output record contains the following items:[133X
+  
+  [30X    [33X[0;6Y[13Xvectors[113X: a matrix that forms the RREF of [13Xmat[113X without zero rows[133X
+  
+  [30X    [33X[0;6Y[13Xheads[113X:  a list of integers, such that [13Xheads[i][113X gives the number of the
+        row for which the pivot element is in column i. If no such row exists,
+        [13Xheads[i][113X is [13X0[113X.[133X
+  
+  [30X    [33X[0;6Y[13Xcoeffs[113X: the corresponding transformation matrix. It holds [13Xcoeffs[113X * [13Xmat[113X
+        = [13Xvectors[113X.[133X
+  
+  [30X    [33X[0;6Y[13Xrelations[113X:  a matrix whose rows form a basis for the row null space of
+        [13Xmat[113X. If [13Xrelations[113X is not the empty list, it holds that [13Xrelations[113X * [13Xmat[113X
+        = [13X0[113X. Otherwise [13Xmat[113X has full row rank.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XA := RandomMat(8, 5, GF(5)) * RandomMat(5, 8, GF(5));;[127X[104X
+    [4X[25Xgap>[125X [27XDisplay(A);[127X[104X
+    [4X[28X1 4 3 2 4 4 3 4[128X[104X
+    [4X[28X4 1 2 4 2 . . 4[128X[104X
+    [4X[28X2 3 1 4 3 3 1 3[128X[104X
+    [4X[28X3 . 4 3 3 2 4 .[128X[104X
+    [4X[28X4 1 3 2 3 3 . 2[128X[104X
+    [4X[28X2 1 3 3 1 1 2 3[128X[104X
+    [4X[28X. 3 3 . 1 1 3 .[128X[104X
+    [4X[28X4 1 4 1 4 3 1 1[128X[104X
+    [4X[25Xgap>[125X [27Xres := EchelonMatTransformationBlockwise(A, rec(numberBlocks := 2));;[127X[104X
+    [4X[25Xgap>[125X [27XDisplay(res.vectors);[127X[104X
+    [4X[28X1 . . . . . . 3[128X[104X
+    [4X[28X. 1 . . . 3 2 3[128X[104X
+    [4X[28X. . 1 . . . . 3[128X[104X
+    [4X[28X. . . 1 . 2 1 1[128X[104X
+    [4X[28X. . . . 1 2 2 2[128X[104X
+    [4X[25Xgap>[125X [27Xres.coeffs * A=res.vectors;[127X[104X
+    [4X[28Xtrue[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YThe  transformation  matrix can be easily obtained from the output record as
+  follows:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xtrafo := Concatenation(res.coeffs, res.relations);;[127X[104X
+    [4X[25Xgap>[125X [27XDisplay(trafo * A);[127X[104X
+    [4X[28X1 . . . . . . 3[128X[104X
+    [4X[28X. 1 . . . 3 2 3[128X[104X
+    [4X[28X. . 1 . . . . 3[128X[104X
+    [4X[28X. . . 1 . 2 1 1[128X[104X
+    [4X[28X. . . . 1 2 2 2[128X[104X
+    [4X[28X. . . . . . . .[128X[104X
+    [4X[28X. . . . . . . .[128X[104X
+    [4X[28X. . . . . . . .[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YIt is also possible to directly input a block matrix.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XA := RandomMat(8, 5, GF(5)) * RandomMat(5, 8, GF(5));;[127X[104X
+    [4X[25Xgap>[125X [27Xres1 := EchelonMatTransformationBlockwise(A, rec(numberBlocks := 2));;[127X[104X
+    [4X[25Xgap>[125X [27XA1 := A{[1..4]}{[1..4]};;[127X[104X
+    [4X[25Xgap>[125X [27XA2 := A{[1..4]}{[5..8]};;[127X[104X
+    [4X[25Xgap>[125X [27XA3 := A{[5..8]}{[1..2]};;[127X[104X
+    [4X[25Xgap>[125X [27XA4 := A{[5..8]}{[5..8]};;[127X[104X
+    [4X[25Xgap>[125X [27XA_blockwise := [[A1,A2],[A3,A4]];;[127X[104X
+    [4X[25Xgap>[125X [27Xres3 := EchelonMatTransformationBlockwise(A_blockwise, [127X[104X
+    [4X[28X  rec(numberBlocks := 2, isChopped := true));;[128X[104X
+    [4X[25Xgap>[125X [27Xres3 = res1;[127X[104X
+    [4X[28Xtrue[128X[104X
+  [4X[32X[104X
+  
+  [1X2.1-2 EchelonMatBlockwise[101X
+  
+  [33X[1;0Y[29X[2XEchelonMatBlockwise[102X( [3Xmat[103X[, [3Xoptions[103X] ) [32X function[133X
+  [6XReturns:[106X  [33X[0;10Ya record that contains information on the echelon form of [13Xmat[113X.[133X
+  
+  [33X[0;0YThis is a version of the main function that computes the reduced row echelon
+  form  (RREF)  of  the  matrix  [13Xmat[113X  but  doesn't  compute  the corresponding
+  transformation  matrix.  In  a  pre-processing  step, [13Xmat[113X is split up into a
+  block matrix whose blocks can be processed in parallel.[133X
+  
+  [33X[0;0YThe input parameters have the following meaning:[133X
+  
+  [30X    [33X[0;6Y[13Xmat[113X is a matrix defined over a finite field[133X
+  
+  [30X    [33X[0;6Y[13Xoptions[113X is a record that is used to provide additional parameters. For
+        more    information    see    [13XEchelonMatTransformationBlockwise[113X   (See
+        [2XEchelonMatTransformationBlockwise[102X ([14X2.1-1[114X)).[133X
+  
+  [33X[0;0YThe  output  record contains the items [13Xvectors[113X and [13Xheads[113X. For their meaning,
+  see [2XEchelonMatTransformationBlockwise[102X ([14X2.1-1[114X).[133X
   

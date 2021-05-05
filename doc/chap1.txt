@@ -1,21 +1,20 @@
   
-  [1X1 [33X[0;0YHigh-level functions[133X[101X
+  [1X1 [33X[0;0YThe GaussPar package[133X[101X
   
   
-  [1X1.1 [33X[0;0YTest[133X[101X
+  [1X1.1 [33X[0;0YIntroduction[133X[101X
   
-  [1X1.1-1 DoEchelonMatTransformationBlockwise[101X
-  
-  [33X[1;0Y[29X[2XDoEchelonMatTransformationBlockwise[102X( [3Xarg[103X ) [32X function[133X
-  [6XReturns:[106X  [33X[0;10YStuff[133X
-  
-  [33X[0;0YSome functions[133X
-  
-  [1X1.1-2 EchelonMatTransformationBlockwise[101X
-  
-  [33X[1;0Y[29X[2XEchelonMatTransformationBlockwise[102X( [3Xarg[103X ) [32X function[133X
-  
-  [1X1.1-3 EchelonMatBlockwise[101X
-  
-  [33X[1;0Y[29X[2XEchelonMatBlockwise[102X( [3Xarg[103X ) [32X function[133X
+  [33X[0;0YThis package implements the algorithm described in "A parallel algorithm for
+  Gaussian  elimination  over  finite fields" (Linton, S., Nebe, G., Niemeyer,
+  A.,  Parker,  R.  and  Thackray,  J.  (2018)). The algorithm divides a given
+  matrix  into  smaller  submatrices  (blocks)  and  carries  out steps of the
+  Gaussian  elimination  block  by  block.  The  paper  identifies the minimal
+  dependencies  between  processing different blocks. Independent steps can be
+  performed  simultaneously,  allowing  for  high  levels  of  parallelism. We
+  provide    two    main    functions    [2XEchelonMatBlockwise[102X    ([14X2.1-2[114X)    and
+  [2XEchelonMatTransformationBlockwise[102X  ([14X2.1-1[114X),  where  the  latter additionally
+  computes  the  transformation matrix in parallel. The naming conventions are
+  chosen   in   accordance  with  the  "Gauss"-package  ,  which  provides  an
+  implementation of the sequential GAUSS algorithm. Our functions do currently
+  not support sparse matrices.[133X
   

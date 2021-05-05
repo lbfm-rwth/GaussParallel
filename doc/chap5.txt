@@ -1,0 +1,60 @@
+  
+  [1X5 [33X[0;0YUtility Functions[133X[101X
+  
+  
+  [1X5.1 [33X[0;0YUtility Functions[133X[101X
+  
+  [33X[0;0YThe  following  functions  were  created  while  implementing the high-level
+  functions,  but we found that they could be useful outside of our functions,
+  too.  You  can  find  the  specifications  of  the  functions and some small
+  examples here.[133X
+  
+  [1X5.1-1 IsMatrixInRREF[101X
+  
+  [33X[1;0Y[29X[2XIsMatrixInRREF[102X( [3Xmat[103X ) [32X function[133X
+  [6XReturns:[106X  [33X[0;10Ybool[133X
+  
+  [33X[0;0YChecks whether the matrix [13Xmat[113X is in RREF[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XM := RandomMat( 3, 3 );;[127X[104X
+    [4X[25Xgap>[125X [27XDisplay( M );[127X[104X
+    [4X[28X[ [   1,   0,  -1 ],[128X[104X
+    [4X[28X  [  -1,  -1,   1 ],[128X[104X
+    [4X[28X  [  -1,   1,  -2 ] ][128X[104X
+    [4X[25Xgap>[125X [27XIsMatrixInRREF( M );[127X[104X
+    [4X[28Xfalse[128X[104X
+    [4X[25Xgap>[125X [27XL := [ [ 1, 0, 3 ], [ 0, 1, 5 ] ];;[127X[104X
+    [4X[25Xgap>[125X [27XDisplay( L );[127X[104X
+    [4X[28X[ [  1,  0,  3 ],[128X[104X
+    [4X[28X  [  0,  1,  5 ] ][128X[104X
+    [4X[25Xgap>[125X [27XIsMatrixInRREF( L );[127X[104X
+    [4X[28Xtrue[128X[104X
+  [4X[32X[104X
+  
+  [1X5.1-2 RandomEchelonMat[101X
+  
+  [33X[1;0Y[29X[2XRandomEchelonMat[102X( [3Xheight[103X, [3Xwidth[103X, [3Xrank[103X, [3XrandomSeed[103X, [3Xfield[103X ) [32X function[133X
+  [6XReturns:[106X  [33X[0;10Ymat[133X
+  
+  [33X[0;0YConstructs  a  random  matrix  in RREF of the given height (number of rows),
+  width  (number  of  columns)  and  rank over the given field. Using the same
+  random seed will recreate the same matrix.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27X# We use Mersenne twister as a random seed here.[127X[104X
+    [4X[25Xgap>[125X [27XrandomSeed := RandomSource(IsMersenneTwister, 42);;[127X[104X
+    [4X[25Xgap>[125X [27XM := RandomEchelonMat(10, 10, 5, randomSeed, GF(5));;[127X[104X
+    [4X[25Xgap>[125X [27XDisplay(M);[127X[104X
+    [4X[28X1 . . . . . 1 4 4 .[128X[104X
+    [4X[28X. 1 . . . 1 3 2 4 3[128X[104X
+    [4X[28X. . 1 . . . 3 . 1 .[128X[104X
+    [4X[28X. . . 1 . 2 2 3 4 2[128X[104X
+    [4X[28X. . . . 1 2 2 4 1 4[128X[104X
+    [4X[28X. . . . . . . . . .[128X[104X
+    [4X[28X. . . . . . . . . .[128X[104X
+    [4X[28X. . . . . . . . . .[128X[104X
+    [4X[28X. . . . . . . . . .[128X[104X
+    [4X[28X. . . . . . . . . .[128X[104X
+  [4X[32X[104X
+  

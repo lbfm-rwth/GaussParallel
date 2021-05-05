@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This is an automatically generated file. -->
+<Chapter Label="Chapter_Low-Level_Functions">
+<Heading>Low-Level Functions</Heading>
+
+<P/>
+<Section Label="Chapter_Low-Level_Functions_Section_Low-Level_Functions">
+<Heading>Low-Level Functions</Heading>
+
+<P/>
+<ManSection>
+  <Func Arg="mat, options" Name="DoEchelonMatTransformationBlockwise" />
+ <Returns>a record
+</Returns>
+ <Description>
+This record contains
+<List>
+<Item>
+vectors:
+   the reduced row echelon form of the matrix mat without the zero rows
+</Item>
+<Item>
+pivotrows and pivotcols:
+   a list where the rows resp. columns with pivot elements are marked with 1
+   whereas the other entries are 0
+</Item>
+<Item>
+rank:
+   the rank of the matrix mat
+</Item>
+<Item>
+heads:
+    list that contains at position i, if nonzero, the number of the row for
+    that the pivot element is in column i.
+</Item>
+</List>
+ and optionally
+<List>
+<Item>
+coeffs:
+   the transformation matrix needed to obtain the RREF from mat
+</Item>
+<Item>
+relations:
+   the kernel of the matrix mat if the underlying ring is a field
+</Item>
+<Item>
+transformation:
+   a transformation matrix needed to obtain the RREF from mat
+   (filled with vectors that contain only zeros)
+</Item>
+</List>
+<P/>
+ Calculates the parallel Gauss algorithm. This is the version with the most
+ options to specify the functionality. You can specify how the algorithm
+ works and which return values it computes using the argument options which
+ is a record that may contain the following fields:
+<List>
+<Item>
+galoisField:
+   the galois field of the matrix, e.g. GF(7)
+</Item>
+<Item>
+numberBlocksHeight and numberBlocksWidth:
+   The number of vertical and horizontal blocks in which to divide
+   the matrix during the algorithm, note that you need to specify either none
+   or both of those variables to make it work.
+</Item>
+<Item>
+numberBlocks:
+   Use this argument if you want the same number of vertical and horizontal chops.
+</Item>
+<Item>
+withTrafo:
+   A boolean specifying whether or not the transformation matrix is
+   calculated, the default value is true.
+</Item>
+<Item>
+isChopped: I don't know what this does!!! TODO
+</Item>
+<Item>
+verify:
+   A boolean specifying whether or not the result values should be directly
+   checked, the default value is false.
+</Item>
+</List>
+ </Description>
+</ManSection>
+
+
+</Section>
+
+
+</Chapter>
+

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This is an automatically generated file. -->
+<Chapter Label="Chapter_The_GaussPar_package">
+<Heading>The GaussPar package</Heading>
+
+<Section Label="Chapter_The_GaussPar_package_Section_Introduction">
+<Heading>Introduction</Heading>
+
+This package implements the algorithm described in "A parallel algorithm for Gaussian elimination over finite fields" (Linton, S., Nebe, G., Niemeyer, A., Parker, R. and Thackray, J. (2018)).
+The algorithm divides a given matrix into smaller submatrices (blocks) and carries out steps of the Gaussian elimination block by block.
+The paper identifies the minimal dependencies between processing different blocks. Independent steps can be performed simultaneously, allowing for high levels of parallelism.
+We provide two main functions <Ref Func="EchelonMatBlockwise"/>
+and <Ref Func="EchelonMatTransformationBlockwise"/>, where the latter additionally computes the transformation matrix in parallel. The naming conventions are chosen in accordance with the "Gauss"-package
+<Alt Only="LaTeX"><![CDATA[
+\footnote{\url{https://www.gap-system.org/Packages/gauss.html}}
+]]></Alt>
+, which provides an implementation of the sequential GAUSS algorithm. Our functions do currently not support sparse matrices.
+<P/>
+</Section>
+
+
+</Chapter>
+

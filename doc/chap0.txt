@@ -6,10 +6,10 @@
                 [1X Parallel gaussian algorithm for finite fields [101X
   
   
-                                      0.1
+                                    1.0.0dev
   
   
-                                24 October 2018
+                                   5 May 2021
   
   
                                 Jendrik Brachter
@@ -32,13 +32,21 @@
   
   [1XContents (GaussPar)[101X
   
-  1 [33X[0;0YHigh-level functions[133X
-    1.1 [33X[0;0YTest[133X
-      1.1-1 DoEchelonMatTransformationBlockwise
-      1.1-2 EchelonMatTransformationBlockwise
-      1.1-3 EchelonMatBlockwise
-  2 [33X[0;0YLow-level functions[133X
-    2.1 [33X[0;0YHelper functions[133X
+  1 [33X[0;0YThe GaussPar package[133X
+    1.1 [33X[0;0YIntroduction[133X
+  2 [33X[0;0YGaussian Elimination[133X
+    2.1 [33X[0;0YGaussian Elimination[133X
+      2.1-1 EchelonMatTransformationBlockwise
+      2.1-2 EchelonMatBlockwise
+  3 [33X[0;0YFinding a suitable number of blocks[133X
+    3.1 [33X[0;0YMeasure Contention[133X
+      3.1-1 GAUSS_MeasureContention
+  4 [33X[0;0YUsing the task framework provided by HPC-GAP[133X
+    4.1 [33X[0;0YThe Package's Structure[133X
+  5 [33X[0;0YUtility Functions[133X
+    5.1 [33X[0;0YUtility Functions[133X
+      5.1-1 IsMatrixInRREF
+      5.1-2 RandomEchelonMat
   
   
   [32X

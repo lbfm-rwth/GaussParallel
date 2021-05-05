@@ -1,0 +1,93 @@
+  
+  [1X3 [33X[0;0YFinding a suitable number of blocks[133X[101X
+  
+  [33X[0;0YExperiments with matrices over fields of sizes 2 to 11 and dimensions 500 to
+  10.000  have  found  values  for [3XnumberBlocks[103X from 6 to 15 to be acceptable.
+  Note though, that this highly depends on the calculation, the number of used
+  threads and the machine itself.[133X
+  
+  
+  [1X3.1 [33X[0;0YMeasure Contention[133X[101X
+  
+  [1X3.1-1 GAUSS_MeasureContention[101X
+  
+  [33X[1;0Y[29X[2XGAUSS_MeasureContention[102X( [3XnumberBlocks[103X, [3Xq[103X, [3XA[103X[, [3XshowOutput[103X] ) [32X function[133X
+  
+  [33X[0;0YThis  function  helps  with finding a suitable value for [3XnumberBlocks[103X, which
+  has     a     big     influence     on     the     performance     of    the
+  [2XEchelonMatTransformationBlockwise[102X ([14X2.1-1[114X) function. For inputs [3XnumberBlocks[103X,
+  a field size [3Xq[103X, and a matrix [3XA[103X over [10XGF(q)[110X, this function does the following:[133X
+  
+  [30X    [33X[0;6Yit   calls  the  parallel  function  [2XEchelonMatTransformationBlockwise[102X
+        ([14X2.1-1[114X),[133X
+  
+  [30X    [33X[0;6Yit  calls  the  sequential  function [10XEchelonMatTransformation[110X from the
+        package [10XGauss[110X,[133X
+  
+  [30X    [33X[0;6Yit  prints  the  wall  time,  that is the elapsed real time, each call
+        took,[133X
+  
+  [30X    [33X[0;6Yfor  the  parallel  function,  it  prints  an  estimate  of  the  lock
+        contenation  ratio,  a  short  explanation of lock contention is given
+        below.  A  high  lock contention ratio deteriorates the performance of
+        the algorithm.[133X
+  
+  [33X[0;0YThe input [3XshowOutput[103X can be used to suppress printing of messages.[133X
+  
+  [33X[0;0YThe influence of [3XnumberBlocks[103X on the performance is as follows:[133X
+  
+  [30X    [33X[0;6Yif  [3XnumberBlocks[103X is too small, then not enough calculations can happen
+        in parallel[133X
+  
+  [30X    [33X[0;6Yif [3XnumberBlocks[103X is too big then:[133X
+  
+        [30X    [33X[0;12Ythe lock contention ratio increases[133X
+  
+        [30X    [33X[0;12YHPC-GAP's  task  framework  generates a big overhead since it is
+              not optimized.[133X
+  
+  [33X[0;0YIn a parallel computation several threads may try to access an object at the
+  same  time.  HPC-GAP  needs to prevent situations in which one thread writes
+  into  an  object  that another thread is currently reading, since that could
+  lead  to  corrupted  data.  To  this  end, HPC-GAP can synchronize access to
+  objects via locks.[133X
+  
+  [33X[0;0YIf a thread reads an object, that thread can acquire a lock for that object,
+  that  is  no other thread can write into it until the lock is released. If a
+  thread  tries  to  write into said object before the lock is released we say
+  that the lock was contended. In such a situation the contending thread needs
+  to  wait  until  the  lock  is  released.  This  leads  to  waiting times or
+  unnecessary  context-switches and deteriorates performance if it happens too
+  often.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xn := 4000;; numberBlocks := 8;; q := 5;;[127X[104X
+    [4X[25Xgap>[125X [27XA := RandomMat(n, n, GF(q));;[127X[104X
+    [4X[25Xgap>[125X [27XGAUSS_MeasureContention(numberBlocks, q, A);[127X[104X
+    [4X[28XMake sure you called GAP with sufficient preallocated memory via `-m` if you[128X[104X
+    [4X[28Xtry non-trivial examples! Otherwise garbage collection will be a big[128X[104X
+    [4X[28Xoverhead.[128X[104X
+    [4X[28X[128X[104X
+    [4X[28XStarting the parallel algorithm[128X[104X
+    [4X[28XEchelonMatTransformationBlockwise.[128X[104X
+    [4X[28X[128X[104X
+    [4X[28XWall time  parallel execution (ms): 33940.[128X[104X
+    [4X[28XCPU  time  parallel execution (ms): 2[128X[104X
+    [4X[28XLock statistics(estimates):[128X[104X
+    [4X[28Xacquired - 181502, contended - 1120, ratio - 1.%[128X[104X
+    [4X[28XLocks acquired and contention counters per thread[128X[104X
+    [4X[28X[ thread, locks acquired, locks contended ]:[128X[104X
+    [4X[28X[ 5, 54093, 248 ][128X[104X
+    [4X[28X[ 6, 51004, 228 ][128X[104X
+    [4X[28X[ 7, 37102, 389 ][128X[104X
+    [4X[28X[ 8, 39303, 255 ][128X[104X
+    [4X[28X[128X[104X
+    [4X[28XStarting the sequential algorithm[128X[104X
+    [4X[28XEchelonMatTransformation[128X[104X
+    [4X[28X[128X[104X
+    [4X[28XWall time Gauss pkg execution (ms): 66778.[128X[104X
+    [4X[28X[128X[104X
+    [4X[28XSpeedup factor (sequential / parallel wall time):[128X[104X
+    [4X[28X1.96[128X[104X
+  [4X[32X[104X
+  

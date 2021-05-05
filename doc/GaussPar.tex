@@ -98,8 +98,8 @@
 {\Huge \textbf{ Parallel gaussian algorithm for finite fields \mbox{}}}\\
 \vfill
 
-{\Huge  0.1 \mbox{}}\\[1cm]
-{ 24 October 2018 \mbox{}}\\[1cm]
+{\Huge  1.0.0dev \mbox{}}\\[1cm]
+{ 5 May 2021 \mbox{}}\\[1cm]
 \mbox{}\\[2cm]
 {\Large \textbf{ Jendrik Brachter\\
   \mbox{}}}\\
@@ -134,58 +134,276 @@
 \newpage
 
      
-\chapter{\textcolor{Chapter }{High-level functions}}\label{Chapter_High-level_functions}
+\chapter{\textcolor{Chapter }{The GaussPar package}}\label{Chapter_The_GaussPar_package}
 \logpage{[ 1, 0, 0 ]}
-\hyperdef{L}{X7B5B92268230D098}{}
+\hyperdef{L}{X84544BE787523F80}{}
 {
   
-\section{\textcolor{Chapter }{Test}}\label{Chapter_High-level_functions_Section_Test}
+\section{\textcolor{Chapter }{Introduction}}\label{Chapter_The_GaussPar_package_Section_Introduction}
 \logpage{[ 1, 1, 0 ]}
-\hyperdef{L}{X87712F9D8732193C}{}
+\hyperdef{L}{X7DFB63A97E67C0A1}{}
+{
+  This package implements the algorithm described in "A parallel algorithm for
+Gaussian elimination over finite fields" (Linton, S., Nebe, G., Niemeyer, A.,
+Parker, R. and Thackray, J. (2018)). The algorithm divides a given matrix into
+smaller submatrices (blocks) and carries out steps of the Gaussian elimination
+block by block. The paper identifies the minimal dependencies between
+processing different blocks. Independent steps can be performed
+simultaneously, allowing for high levels of parallelism. We provide two main
+functions \texttt{EchelonMatBlockwise} (\ref{EchelonMatBlockwise}) and \texttt{EchelonMatTransformationBlockwise} (\ref{EchelonMatTransformationBlockwise}), where the latter additionally computes the transformation matrix in
+parallel. The naming conventions are chosen in accordance with the
+"Gauss"-package 
+\footnote{\url{https://www.gap-system.org/Packages/gauss.html}}
+ , which provides an implementation of the sequential GAUSS algorithm. Our
+functions do currently not support sparse matrices. 
+
+ }
+
+ }
+
+   
+\chapter{\textcolor{Chapter }{Gaussian Elimination}}\label{Chapter_Gaussian_Elimination}
+\logpage{[ 2, 0, 0 ]}
+\hyperdef{L}{X84FE9E817C8A74B1}{}
+{
+  
+\section{\textcolor{Chapter }{Gaussian Elimination}}\label{Chapter_Gaussian_Elimination_Section_Gaussian_Elimination}
+\logpage{[ 2, 1, 0 ]}
+\hyperdef{L}{X84FE9E817C8A74B1}{}
 {
   
 
- 
+ This section describes the different variants of our implementation of the
+Gaussian algorithm. 
 
-\subsection{\textcolor{Chapter }{DoEchelonMatTransformationBlockwise}}
-\logpage{[ 1, 1, 1 ]}\nobreak
-\hyperdef{L}{X86C914998014A964}{}
-{\noindent\textcolor{FuncColor}{$\triangleright$\enspace\texttt{DoEchelonMatTransformationBlockwise({\mdseries\slshape arg})\index{DoEchelonMatTransformationBlockwise@\texttt{DoEchelonMatTransformationBlockwise}}
-\label{DoEchelonMatTransformationBlockwise}
-}\hfill{\scriptsize (function)}}\\
-\textbf{\indent Returns:\ }
-Stuff 
-
-
-
- Some functions }
+ Note that the value of the option \mbox{\texttt{\mdseries\slshape numberBlocks}} described below has a big impact on the performance of our algorithms. For
+information on how to choose a suitable value for \mbox{\texttt{\mdseries\slshape numberBlocks}} see Chapter \ref{Chapter_Finding_a_suitable_number_of_blocks}. 
 
  
 
 \subsection{\textcolor{Chapter }{EchelonMatTransformationBlockwise}}
-\logpage{[ 1, 1, 2 ]}\nobreak
+\logpage{[ 2, 1, 1 ]}\nobreak
 \hyperdef{L}{X86CC1A2A7832BB22}{}
-{\noindent\textcolor{FuncColor}{$\triangleright$\enspace\texttt{EchelonMatTransformationBlockwise({\mdseries\slshape arg})\index{EchelonMatTransformationBlockwise@\texttt{EchelonMatTransformationBlockwise}}
+{\noindent\textcolor{FuncColor}{$\triangleright$\enspace\texttt{EchelonMatTransformationBlockwise({\mdseries\slshape mat[, options]})\index{EchelonMatTransformationBlockwise@\texttt{EchelonMatTransformationBlockwise}}
 \label{EchelonMatTransformationBlockwise}
 }\hfill{\scriptsize (function)}}\\
+\textbf{\indent Returns:\ }
+a record that contains information on the echelon form of \emph{mat} and the corresponding transformation matrix. 
 
 
+
+ This is the main function of the GaussPar package. It computes the reduced row
+echelon form (RREF) of the matrix \emph{mat} and the corresponding transformation matrix. In a pre-processing step, \emph{mat} is split up into a block matrix whose blocks can be processed in parallel. 
+
+ The input parameters have the following meaning: 
+\begin{itemize}
+\item  \emph{mat} is a matrix defined over a finite field 
+\item  \emph{options} is a record that can be used to provide some additional parameters. Note that
+a specification of either \emph{numberBlocks} or both of \emph{numberBlocksHeight} and \emph{numberBlocksWidth} is mandatory. The following parameters are currently supported: 
+\begin{itemize}
+\item  \emph{numberBlocksHeight} and \emph{numberBlocksWidth}: The number of vertical and horizontal blocks in which to divide the matrix
+during the algorithm. 
+\item  \emph{numberBlocks}: Use this argument if you want the same number of vertical and horizontal
+blocks in the block matrix decomposition of \emph{mat}. 
+\item  \emph{verify}: If set to \emph{true}, the computation is verified at the end. That is, we check wheter \emph{coeffs} * \emph{mat} is in RREF. This option is only available for the function \emph{EchelonMatTransformationBlockwise}. 
+\item  \emph{isChopped}: It is possible to input \emph{mat} directly as a matrix of block matrices. In this case the parameter \emph{isChopped} must be set to \emph{true} and the splitting step is skipped. 
+\end{itemize}
+ 
+\end{itemize}
  
 
+ The output record contains the following items: 
+\begin{itemize}
+\item  \emph{vectors}: a matrix that forms the RREF of \emph{mat} without zero rows 
+\item  \emph{heads}: a list of integers, such that \emph{heads[i]} gives the number of the row for which the pivot element is in column i. If no
+such row exists, \emph{heads[i]} is \emph{0}. 
+\item  \emph{coeffs}: the corresponding transformation matrix. It holds \emph{coeffs} * \emph{mat} = \emph{vectors}. 
+\item  \emph{relations}: a matrix whose rows form a basis for the row null space of \emph{mat}. If \emph{relations} is not the empty list, it holds that \emph{relations} * \emph{mat} = \emph{0}. Otherwise \emph{mat} has full row rank. 
+\end{itemize}
+ 
+
+ 
+\begin{Verbatim}[commandchars=!@|,fontsize=\small,frame=single,label=Example]
+  !gapprompt@gap>| !gapinput@A := RandomMat(8, 5, GF(5)) * RandomMat(5, 8, GF(5));;|
+  !gapprompt@gap>| !gapinput@Display(A);|
+  1 4 3 2 4 4 3 4
+  4 1 2 4 2 . . 4
+  2 3 1 4 3 3 1 3
+  3 . 4 3 3 2 4 .
+  4 1 3 2 3 3 . 2
+  2 1 3 3 1 1 2 3
+  . 3 3 . 1 1 3 .
+  4 1 4 1 4 3 1 1
+  !gapprompt@gap>| !gapinput@res := EchelonMatTransformationBlockwise(A, rec(numberBlocks := 2));;|
+  !gapprompt@gap>| !gapinput@Display(res.vectors);|
+  1 . . . . . . 3
+  . 1 . . . 3 2 3
+  . . 1 . . . . 3
+  . . . 1 . 2 1 1
+  . . . . 1 2 2 2
+  !gapprompt@gap>| !gapinput@res.coeffs * A=res.vectors;|
+  true
+\end{Verbatim}
+ The transformation matrix can be easily obtained from the output record as
+follows: 
+\begin{Verbatim}[commandchars=!@|,fontsize=\small,frame=single,label=Example]
+  !gapprompt@gap>| !gapinput@trafo := Concatenation(res.coeffs, res.relations);;|
+  !gapprompt@gap>| !gapinput@Display(trafo * A);|
+  1 . . . . . . 3
+  . 1 . . . 3 2 3
+  . . 1 . . . . 3
+  . . . 1 . 2 1 1
+  . . . . 1 2 2 2
+  . . . . . . . .
+  . . . . . . . .
+  . . . . . . . .
+\end{Verbatim}
+ It is also possible to directly input a block matrix. 
+\begin{Verbatim}[commandchars=!@|,fontsize=\small,frame=single,label=Example]
+  !gapprompt@gap>| !gapinput@A := RandomMat(8, 5, GF(5)) * RandomMat(5, 8, GF(5));;|
+  !gapprompt@gap>| !gapinput@res1 := EchelonMatTransformationBlockwise(A, rec(numberBlocks := 2));;|
+  !gapprompt@gap>| !gapinput@A1 := A{[1..4]}{[1..4]};;|
+  !gapprompt@gap>| !gapinput@A2 := A{[1..4]}{[5..8]};;|
+  !gapprompt@gap>| !gapinput@A3 := A{[5..8]}{[1..2]};;|
+  !gapprompt@gap>| !gapinput@A4 := A{[5..8]}{[5..8]};;|
+  !gapprompt@gap>| !gapinput@A_blockwise := [[A1,A2],[A3,A4]];;|
+  !gapprompt@gap>| !gapinput@res3 := EchelonMatTransformationBlockwise(A_blockwise, |
+    rec(numberBlocks := 2, isChopped := true));;
+  !gapprompt@gap>| !gapinput@res3 = res1;|
+  true
+\end{Verbatim}
  }
 
  
 
 \subsection{\textcolor{Chapter }{EchelonMatBlockwise}}
-\logpage{[ 1, 1, 3 ]}\nobreak
+\logpage{[ 2, 1, 2 ]}\nobreak
 \hyperdef{L}{X7DFFD3D985EF8101}{}
-{\noindent\textcolor{FuncColor}{$\triangleright$\enspace\texttt{EchelonMatBlockwise({\mdseries\slshape arg})\index{EchelonMatBlockwise@\texttt{EchelonMatBlockwise}}
+{\noindent\textcolor{FuncColor}{$\triangleright$\enspace\texttt{EchelonMatBlockwise({\mdseries\slshape mat[, options]})\index{EchelonMatBlockwise@\texttt{EchelonMatBlockwise}}
 \label{EchelonMatBlockwise}
+}\hfill{\scriptsize (function)}}\\
+\textbf{\indent Returns:\ }
+a record that contains information on the echelon form of \emph{mat}. 
+
+
+
+ This is a version of the main function that computes the reduced row echelon
+form (RREF) of the matrix \emph{mat} but doesn't compute the corresponding transformation matrix. In a
+pre-processing step, \emph{mat} is split up into a block matrix whose blocks can be processed in parallel. 
+
+ The input parameters have the following meaning: 
+\begin{itemize}
+\item  \emph{mat} is a matrix defined over a finite field 
+\item  \emph{options} is a record that is used to provide additional parameters. For more
+information see \emph{EchelonMatTransformationBlockwise} (See \texttt{EchelonMatTransformationBlockwise} (\ref{EchelonMatTransformationBlockwise})). 
+\end{itemize}
+ 
+
+ The output record contains the items \emph{vectors} and \emph{heads}. For their meaning, see \texttt{EchelonMatTransformationBlockwise} (\ref{EchelonMatTransformationBlockwise}). }
+
+ }
+
+ }
+
+   
+\chapter{\textcolor{Chapter }{Finding a suitable number of blocks}}\label{Chapter_Finding_a_suitable_number_of_blocks}
+\logpage{[ 3, 0, 0 ]}
+\hyperdef{L}{X82FE947A7FD1801E}{}
+{
+  
+
+ Experiments with matrices over fields of sizes 2 to 11 and dimensions 500 to
+10.000 have found values for \mbox{\texttt{\mdseries\slshape numberBlocks}} from 6 to 15 to be acceptable. Note though, that this highly depends on the
+calculation, the number of used threads and the machine itself. 
+
+ 
+\section{\textcolor{Chapter }{Measure Contention}}\label{Chapter_Finding_a_suitable_number_of_blocks_Section_Measure_Contention}
+\logpage{[ 3, 1, 0 ]}
+\hyperdef{L}{X79ABEDA87A10C6C2}{}
+{
+  
+
+ 
+
+\subsection{\textcolor{Chapter }{GAUSS{\textunderscore}MeasureContention}}
+\logpage{[ 3, 1, 1 ]}\nobreak
+\hyperdef{L}{X85BB04B087C03C20}{}
+{\noindent\textcolor{FuncColor}{$\triangleright$\enspace\texttt{GAUSS{\textunderscore}MeasureContention({\mdseries\slshape numberBlocks, q, A[, showOutput]})\index{GAUSSuScoreMeasureContention@\texttt{GAU}\-\texttt{S}\-\texttt{S{\textunderscore}}\-\texttt{Measure}\-\texttt{Contention}}
+\label{GAUSSuScoreMeasureContention}
 }\hfill{\scriptsize (function)}}\\
 
 
  
 
+ This function helps with finding a suitable value for \mbox{\texttt{\mdseries\slshape numberBlocks}}, which has a big influence on the performance of the \texttt{EchelonMatTransformationBlockwise} (\ref{EchelonMatTransformationBlockwise}) function. For inputs \mbox{\texttt{\mdseries\slshape numberBlocks}}, a field size \mbox{\texttt{\mdseries\slshape q}}, and a matrix \mbox{\texttt{\mdseries\slshape A}} over \texttt{GF(q)}, this function does the following: 
+\begin{itemize}
+\item  it calls the parallel function \texttt{EchelonMatTransformationBlockwise} (\ref{EchelonMatTransformationBlockwise}), 
+\item  it calls the sequential function \texttt{EchelonMatTransformation} from the package \texttt{Gauss}, 
+\item  it prints the wall time, that is the elapsed real time, each call took, 
+\item  for the parallel function, it prints an estimate of the lock contenation
+ratio, a short explanation of lock contention is given below. A high lock
+contention ratio deteriorates the performance of the algorithm. 
+\end{itemize}
+ 
+
+ The input \mbox{\texttt{\mdseries\slshape showOutput}} can be used to suppress printing of messages. 
+
+ The influence of \mbox{\texttt{\mdseries\slshape numberBlocks}} on the performance is as follows: 
+\begin{itemize}
+\item  if \mbox{\texttt{\mdseries\slshape numberBlocks}} is too small, then not enough calculations can happen in parallel 
+\item  if \mbox{\texttt{\mdseries\slshape numberBlocks}} is too big then: 
+\begin{itemize}
+\item  the lock contention ratio increases 
+\item  HPC-GAP's task framework generates a big overhead since it is not optimized. 
+\end{itemize}
+ 
+\end{itemize}
+ 
+
+ In a parallel computation several threads may try to access an object at the
+same time. HPC-GAP needs to prevent situations in which one thread writes into
+an object that another thread is currently reading, since that could lead to
+corrupted data. To this end, HPC-GAP can synchronize access to objects via
+locks. 
+
+ If a thread reads an object, that thread can acquire a lock for that object,
+that is no other thread can write into it until the lock is released. If a
+thread tries to write into said object before the lock is released we say that
+the lock was contended. In such a situation the contending thread needs to
+wait until the lock is released. This leads to waiting times or unnecessary
+context-switches and deteriorates performance if it happens too often. 
+
+ 
+\begin{Verbatim}[commandchars=@|D,fontsize=\small,frame=single,label=Example]
+  @gapprompt|gap>D @gapinput|n := 4000;; numberBlocks := 8;; q := 5;;D
+  @gapprompt|gap>D @gapinput|A := RandomMat(n, n, GF(q));;D
+  @gapprompt|gap>D @gapinput|GAUSS_MeasureContention(numberBlocks, q, A);D
+  Make sure you called GAP with sufficient preallocated memory via `-m` if you
+  try non-trivial examples! Otherwise garbage collection will be a big
+  overhead.
+  
+  Starting the parallel algorithm
+  EchelonMatTransformationBlockwise.
+  
+  Wall time  parallel execution (ms): 33940.
+  CPU  time  parallel execution (ms): 2
+  Lock statistics(estimates):
+  acquired - 181502, contended - 1120, ratio - 1.%
+  Locks acquired and contention counters per thread
+  [ thread, locks acquired, locks contended ]:
+  [ 5, 54093, 248 ]
+  [ 6, 51004, 228 ]
+  [ 7, 37102, 389 ]
+  [ 8, 39303, 255 ]
+  
+  Starting the sequential algorithm
+  EchelonMatTransformation
+  
+  Wall time Gauss pkg execution (ms): 66778.
+  
+  Speedup factor (sequential / parallel wall time):
+  1.96
+\end{Verbatim}
  }
 
  }
@@ -193,17 +411,143 @@ Stuff
  }
 
    
-\chapter{\textcolor{Chapter }{Low-level functions}}\label{Chapter_Low-level_functions}
-\logpage{[ 2, 0, 0 ]}
-\hyperdef{L}{X815815D087BA7A55}{}
-{
-  
-\section{\textcolor{Chapter }{Helper functions}}\label{Chapter_Low-level_functions_Section_Helper_functions}
-\logpage{[ 2, 1, 0 ]}
-\hyperdef{L}{X7BD4785D8488BAD5}{}
+\chapter{\textcolor{Chapter }{Using the task framework provided by HPC-GAP}}\label{Chapter_Using_the_task_framework_provided_by_HPC-GAP}
+\logpage{[ 4, 0, 0 ]}
+\hyperdef{L}{X7CF339FF7F595580}{}
 {
   
 
+ To implement our parallel version of the Gauss algorithm we use the task
+framework provided by HPC-GAP. The structure of the source files reflects this
+by grouping our functions depending on how they make use of HPC-GAP's shared
+memory model. 
+
+ 
+\section{\textcolor{Chapter }{The Package's Structure}}\label{Chapter_Using_the_task_framework_provided_by_HPC-GAP_Section_The_Packages_Structure}
+\logpage{[ 4, 1, 0 ]}
+\hyperdef{L}{X7D9749A5807B1B4C}{}
+{
+  
+
+ 
+\begin{itemize}
+\item  \texttt{main.gi}: Contains the main function \texttt{DoEchelonMatTransformationBlockwise}, which is wrapped by \texttt{EchelonMatBlockwise} (\ref{EchelonMatBlockwise}) and \texttt{EchelonMatTransformationBlockwise} (\ref{EchelonMatTransformationBlockwise}). It is the function which schedules all tasks. 
+\end{itemize}
+ 
+
+ 
+\begin{itemize}
+\item  \texttt{dependencies.g}: The functions in this file compute the dependencies of the algorithm's
+subprograms between each other. 
+\end{itemize}
+ 
+
+ 
+\begin{itemize}
+\item  \texttt{tasks.g}: The functions in this file are scheduled as tasks by the main routine. They
+need to make sure that they only write read-only objects into the "shared"
+atomic lists. 
+\end{itemize}
+ 
+
+ 
+\begin{itemize}
+\item  \texttt{thread-local.g}: The functions in this file are called by functions from "tasks.g". In
+principle, these functions only work in a single thread-local region and don't
+need to know anything about other threads. These functions may only access
+read-only objects or objects from the executing thread's thread-local region.
+They may only emit or write into thread-local objects. 
+\end{itemize}
+ 
+
+ }
+
+ }
+
+   
+\chapter{\textcolor{Chapter }{Utility Functions}}\label{Chapter_Utility_Functions}
+\logpage{[ 5, 0, 0 ]}
+\hyperdef{L}{X810FFB1C8035C8BE}{}
+{
+  
+\section{\textcolor{Chapter }{Utility Functions}}\label{Chapter_Utility_Functions_Section_Utility_Functions}
+\logpage{[ 5, 1, 0 ]}
+\hyperdef{L}{X810FFB1C8035C8BE}{}
+{
+  
+
+ The following functions were created while implementing the high-level
+functions, but we found that they could be useful outside of our functions,
+too. You can find the specifications of the functions and some small examples
+here. 
+
+ 
+
+\subsection{\textcolor{Chapter }{IsMatrixInRREF}}
+\logpage{[ 5, 1, 1 ]}\nobreak
+\hyperdef{L}{X781CB82E87F343D1}{}
+{\noindent\textcolor{FuncColor}{$\triangleright$\enspace\texttt{IsMatrixInRREF({\mdseries\slshape mat})\index{IsMatrixInRREF@\texttt{IsMatrixInRREF}}
+\label{IsMatrixInRREF}
+}\hfill{\scriptsize (function)}}\\
+\textbf{\indent Returns:\ }
+bool 
+
+
+
+ Checks whether the matrix \emph{mat} is in RREF }
+
+ 
+\begin{Verbatim}[commandchars=!@|,fontsize=\small,frame=single,label=Example]
+  !gapprompt@gap>| !gapinput@M := RandomMat( 3, 3 );;|
+  !gapprompt@gap>| !gapinput@Display( M );|
+  [ [   1,   0,  -1 ],
+    [  -1,  -1,   1 ],
+    [  -1,   1,  -2 ] ]
+  !gapprompt@gap>| !gapinput@IsMatrixInRREF( M );|
+  false
+  !gapprompt@gap>| !gapinput@L := [ [ 1, 0, 3 ], [ 0, 1, 5 ] ];;|
+  !gapprompt@gap>| !gapinput@Display( L );|
+  [ [  1,  0,  3 ],
+    [  0,  1,  5 ] ]
+  !gapprompt@gap>| !gapinput@IsMatrixInRREF( L );|
+  true
+\end{Verbatim}
+ 
+
+ 
+
+\subsection{\textcolor{Chapter }{RandomEchelonMat}}
+\logpage{[ 5, 1, 2 ]}\nobreak
+\hyperdef{L}{X7D1323CD795E8632}{}
+{\noindent\textcolor{FuncColor}{$\triangleright$\enspace\texttt{RandomEchelonMat({\mdseries\slshape height, width, rank, randomSeed, field})\index{RandomEchelonMat@\texttt{RandomEchelonMat}}
+\label{RandomEchelonMat}
+}\hfill{\scriptsize (function)}}\\
+\textbf{\indent Returns:\ }
+mat 
+
+
+
+ Constructs a random matrix in RREF of the given height (number of rows), width
+(number of columns) and rank over the given field. Using the same random seed
+will recreate the same matrix. }
+
+ 
+\begin{Verbatim}[commandchars=!@|,fontsize=\small,frame=single,label=Example]
+  !gapprompt@gap>| !gapinput@# We use Mersenne twister as a random seed here.|
+  !gapprompt@gap>| !gapinput@randomSeed := RandomSource(IsMersenneTwister, 42);;|
+  !gapprompt@gap>| !gapinput@M := RandomEchelonMat(10, 10, 5, randomSeed, GF(5));;|
+  !gapprompt@gap>| !gapinput@Display(M);|
+  1 . . . . . 1 4 4 .
+  . 1 . . . 1 3 2 4 3
+  . . 1 . . . 3 . 1 .
+  . . . 1 . 2 2 3 4 2
+  . . . . 1 2 2 4 1 4
+  . . . . . . . . . .
+  . . . . . . . . . .
+  . . . . . . . . . .
+  . . . . . . . . . .
+  . . . . . . . . . .
+\end{Verbatim}
  }
 
  }

@@ -9,7 +9,7 @@
     Parallel gaussian algorithm for finite fields
   </Subtitle>
   <Version>
-    0.1
+    1.0.0dev
   </Version>
   <Author>
     Jendrik Brachter<Alt Only="LaTeX"><Br/></Alt>
@@ -27,6 +27,6 @@
 
   </Author>
   <Date>
-    24 October 2018
+    5 May 2021
   </Date>
   </TitlePage>
