@@ -23,13 +23,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: gap-actions/setup-gap-for-packages@latest
+      - uses: gap-actions/setup-gap-for-packages@v1
         with:
           GAPBRANCH: ${{ matrix.gap-branch }}
           HPCGAP: ${{ matrix.HPCGAP }}
           GAP_PKGS_TO_BUILD: "io orb cvec profiling"
-      - uses: gap-actions/compile-documentation-for-packages@latest
-      - uses: gap-actions/run-test-for-packages@latest
+      - uses: gap-actions/compile-documentation-for-packages@v1
+      - uses: gap-actions/run-test-for-packages@v1
 
   benchmark-suite:
     name: benchmark-suite
@@ -40,7 +40,7 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v2
       - name: "Set up HPC-GAP"
-        uses: gap-actions/setup-gap-for-packages@latest
+        uses: gap-actions/setup-gap-for-packages@v1
         env:
           GAPROOT: hpcgap
         with:
@@ -49,7 +49,7 @@ jobs:
       - name: "Clean up"
         run: rm -rf pkg-ci-scripts/
       - name: "Set up GAP"
-        uses: gap-actions/setup-gap-for-packages@latest
+        uses: gap-actions/setup-gap-for-packages@v1
         with:
           GAP_PKGS_TO_BUILD: "io orb cvec profiling"
       - name: "Run benchmark suite"
@@ -72,8 +72,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: gap-actions/setup-gap-for-packages@latest
-      - uses: gap-actions/compile-documentation-for-packages@latest
+      - uses: gap-actions/setup-gap-for-packages@v1
+      - uses: gap-actions/compile-documentation-for-packages@v1
         with:
           use-latex: 'true'
       - name: "Upload documentation"
