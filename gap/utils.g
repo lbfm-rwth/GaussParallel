@@ -137,7 +137,7 @@ flag)
         if flag = 0 then
             return [];
         else
-            tmp := IdentityMatrix(Is8BitMatrixRep, galoisField, Length(riffle));
+            tmp := IdentityMatrix(galoisField, Length(riffle));
             ConvertToMatrixRepNC(tmp, galoisField);
             return flag*tmp;
         fi; 
@@ -173,7 +173,7 @@ flag)
     od;
     
     if not flag = 0 then
-        tmp := flag*IdentityMatrix(Is8BitMatrixRep, galoisField, newRows);
+        tmp := flag*IdentityMatrix(galoisField, newRows);
     else
         tmp := Length(riffle) - Sum(Concatenation(LocalSizeInfo));
         if  tmp = 0 then return newMat; fi;
