@@ -10,7 +10,7 @@ SetPackageInfo( rec(
 
 PackageName := "GaussPar",
 Subtitle := "Parallel gaussian algorithm for finite fields",
-Version := "1.0.0",
+Version := "1.0.0dev",
 Date := "05/05/2021", # dd/mm/yyyy format
 
 Persons := [
