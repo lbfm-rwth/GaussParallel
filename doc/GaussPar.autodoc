@@ -67,6 +67,37 @@ of the Gaussian algorithm.
 @Chapter Finding a suitable number of blocks
 @Section Measure Contention
 
+@Chapter Using the task framework provided by HPC-GAP
+
+To implement our parallel version of the Gauss algorithm we use the task
+framework provided by HPC-GAP.
+The structure of the source files reflects this by grouping our functions
+depending on how they make use of HPC-GAP's shared memory model.
+
+@Section The Package's Structure
+
+- `main.gi`:
+  Contains the main function `DoEchelonMatTransformationBlockwise`, which
+  is wrapped by <Ref Func="EchelonMatBlockwise"/> and
+  <Ref Func="EchelonMatTransformationBlockwise"/>.
+  It is the function which schedules all tasks.
+  
+- `dependencies.g`:
+  The functions in this file compute the dependencies of the algorithm's
+  subprograms between each other.
+
+- `tasks.g`:
+  The functions in this file are scheduled as tasks by the main routine.
+  They need to make sure that they only write read-only objects into the "shared"
+  atomic lists.
+  
+- `thread-local.g`:
+  The functions in this file are called by functions from "tasks.g".
+  In principle, these functions only work in a single thread-local region and
+  don't need to know anything about other threads.
+  These functions may only access read-only objects or objects from the
+  executing thread's thread-local region.
+  They may only emit or write into thread-local objects.
 
 @Chapter Utility Functions
 @Section Utility Functions
