@@ -175,7 +175,7 @@ end;
 GAUSS_ADI := function(galoisField, mat, bitstring)
     local copy, colIndices, one, i;
     if IsEmpty(mat) then
-        copy := IdentityMatrix(Is8BitMatrixRep, galoisField, Length(bitstring));
+        copy := IdentityMatrix(galoisField, Length(bitstring));
         ConvertToMatrixRepNC(copy, galoisField);
         return copy;
     fi;
@@ -282,7 +282,7 @@ GAUSS_ECH := function(galoisField, H)
     gamma := [];
     # Our identity matrix has as many rows as R.
     nrPivots := NrCols(vectors);
-    Id := IdentityMatrix(Is8BitMatrixRep, galoisField, nrPivots);
+    Id := IdentityMatrix(galoisField, nrPivots);
     ConvertToMatrixRepNC(Id, galoisField);
     # FIXME use heads?
     # (M|0) x P_rho = coeffs;
