@@ -10,8 +10,8 @@ SetPackageInfo( rec(
 
 PackageName := "GaussPar",
 Subtitle := "Parallel gaussian algorithm for finite fields",
-Version := "0.1.0",
-Date := "16/12/2020", # dd/mm/yyyy format
+Version := "1.0.0",
+Date := "05/05/2021", # dd/mm/yyyy format
 
 Persons := [
   rec(
@@ -76,12 +76,12 @@ AbstractHTML   :=
   A parallel algorithm for Gaussian elemination over finite fields</a>.",
 
 PackageDoc := rec(
-  BookName  := "GaussPar",
+  BookName  := ~.PackageName,
   ArchiveURLSubset := ["doc"],
   HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
   SixFile   := "doc/manual.six",
-  LongTitle := "Parallel gaussian algorithm for finite fields",
+  LongTitle := ~.Subtitle,
 ),
 
 Dependencies := rec(
@@ -89,8 +89,9 @@ Dependencies := rec(
   # list of pairs [package name, version], package name is case
   # insensitive, exact version denoted with '=' prepended to version string.
   # without these, the package will not load
-  NeededOtherPackages := [["io", "4.5.4"]],
-  SuggestedOtherPackages := [["GAPDoc", "1.6.2"],
+  NeededOtherPackages := [],
+  SuggestedOtherPackages := [["io", "4.5.4"],
+                             ["GAPDoc", "1.6.2"],
                              ["Gauss", "2018.09.08"],
                              ["AutoDoc", "2019.05.20"]],
   ExternalConditions := [ ],
