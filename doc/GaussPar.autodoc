@@ -2,8 +2,7 @@
 @Section Introduction
 This package implements the algorithm described in "A parallel algorithm for Gaussian elimination over finite fields" (Linton, S., Nebe, G., Niemeyer, A., Parker, R. and Thackray, J. (2018)).
 The algorithm divides a given matrix into smaller submatrices (blocks) and carries out steps of the Gaussian elimination block by block.
-The paper identifies the minimal dependencies between processing steps for different blocks.
-Independent steps can be performed simultaneously, allowing for high levels of parallelism.
+The paper identifies the minimal dependencies between processing different blocks. Independent steps can be performed simultaneously, allowing for high levels of parallelism.
 We provide two main functions <Ref Func="EchelonMatBlockwise"/>
 and <Ref Func="EchelonMatTransformationBlockwise"/>, where the latter additionally computes the transformation matrix in parallel. The naming conventions are chosen in accordance with the "Gauss"-package 
 @BeginLatexOnly
