@@ -1,15 +1,15 @@
 #
-# GaussPar: Parallel gaussian algorithm for finite fields
+# GaussParallel: Parallel gaussian algorithm for finite fields
 #
 # Reading the declaration part of the package.
 #
 DeclareInfoClass("InfoGauss");
 
-ReadPackage("GaussPar", "gap/main.gd");
-ReadPackage("GaussPar", "gap/echelon-form.gd");
-ReadPackage("GaussPar", "gap/RREF.gd");
-ReadPackage("GaussPar", "gap/upstream.gd");
+ReadPackage("GaussParallel", "gap/main.gd");
+ReadPackage("GaussParallel", "gap/echelon-form.gd");
+ReadPackage("GaussParallel", "gap/RREF.gd");
+ReadPackage("GaussParallel", "gap/upstream.gd");
 
 if IsHPCGAP then
-    ReadPackage( "GaussPar", "gap/benchmarking/measure_contention.gd");
+    ReadPackage( "GaussParallel", "gap/benchmarking/measure_contention.gd");
 fi;

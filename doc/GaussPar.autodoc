@@ -1,4 +1,4 @@
-@Chapter The GaussPar package
+@Chapter The GaussParallel package
 @Section Introduction
 This package implements the algorithm described in "A parallel algorithm for Gaussian elimination over finite fields" (Linton, S., Nebe, G., Niemeyer, A., Parker, R. and Thackray, J. (2018)).
 The algorithm divides a given matrix into smaller submatrices (blocks) and carries out steps of the Gaussian elimination block by block.

@@ -1,5 +1,5 @@
 gap> START_TEST("standard/chief.tst");
-gap> ReadPackage("GaussPar", "tst/testfunctions.g");;
+gap> ReadPackage("GaussParallel", "tst/testfunctions.g");;
 gap> GAUSS_BasicTestEchelonMatTransformationBlockwise(200, 8, 8, 5, true);
 true
 gap> GAUSS_BasicTestEchelonMatTransformationBlockwise(200, 8, 8, 5, false);

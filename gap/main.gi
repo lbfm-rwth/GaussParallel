@@ -419,7 +419,7 @@ function (mat, options)
     if verify and not IsMatrixInRREF(Concatenation(result.coeffs, result.relations) * mat) then
         Error("Result verification failed! Result is not in RREF!\n",
               "Please report this bug to\n",
-              "https://github.com/lbfm-rwth/GaussPar#contact");
+              "https://github.com/lbfm-rwth/GaussParallel#contact");
     fi;
     return result;
 end);

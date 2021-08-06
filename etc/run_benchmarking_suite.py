@@ -69,9 +69,9 @@ for (d, rank, ring, numberBlocks, p) in specifications:
             + ';; numberBlocks := ' + str(numberBlocks) \
             + ';;\n'
         instructions = "\n".join([
-            'LoadPackage("GaussPar");;',
+            'LoadPackage("GaussParallel");;',
             'LoadPackage("io");;',
-            'ReadPackage("GaussPar", "gap/benchmarking/timing.g");;',
+            'ReadPackage("GaussParallel", "gap/benchmarking/timing.g");;',
             'measuredTime := GAUSS_CalculateAverageTime(isParallel, '
             + 'dimension, dimension, rank, ring, numberBlocks, numberBlocks);;',
             'AppendTo(' + outfile 

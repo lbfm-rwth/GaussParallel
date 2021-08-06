@@ -1,5 +1,5 @@
 #
-# GaussPar: Parallel gaussian algorithm for finite fields
+# GaussParallel: Parallel gaussian algorithm for finite fields
 #
 # Reading the implementation part of the package.
 #
@@ -8,23 +8,23 @@
 # the functions we need from the following files we copied.
 gauss := LoadPackage("GAUSS");
 if gauss = fail then
-    ReadPackage( "GaussPar", "compatibility-old-hpc/gauss-upwards.gd");
-    ReadPackage( "GaussPar", "compatibility-old-hpc/gauss-upwards.gi");
+    ReadPackage( "GaussParallel", "compatibility-old-hpc/gauss-upwards.gd");
+    ReadPackage( "GaussParallel", "compatibility-old-hpc/gauss-upwards.gi");
 fi;
 LoadPackage("IO");
 
-ReadPackage( "GaussPar", "gap/hpcgap-mockups.g");
+ReadPackage( "GaussParallel", "gap/hpcgap-mockups.g");
 
-ReadPackage( "GaussPar", "gap/RREF.g");
-ReadPackage( "GaussPar", "gap/dependencies.g");
-ReadPackage( "GaussPar", "gap/thread-local.g");
-ReadPackage( "GaussPar", "gap/utils.g");
-ReadPackage( "GaussPar", "gap/tasks.g");
+ReadPackage( "GaussParallel", "gap/RREF.g");
+ReadPackage( "GaussParallel", "gap/dependencies.g");
+ReadPackage( "GaussParallel", "gap/thread-local.g");
+ReadPackage( "GaussParallel", "gap/utils.g");
+ReadPackage( "GaussParallel", "gap/tasks.g");
 
-ReadPackage( "GaussPar", "gap/main.gi");
-ReadPackage( "GaussPar", "gap/echelon-form.g");
+ReadPackage( "GaussParallel", "gap/main.gi");
+ReadPackage( "GaussParallel", "gap/echelon-form.g");
 
 if IsHPCGAP then
-    ReadPackage( "GaussPar", "gap/benchmarking/timing.g");
-    ReadPackage( "GaussPar", "gap/benchmarking/measure_contention.gi");
+    ReadPackage( "GaussParallel", "gap/benchmarking/timing.g");
+    ReadPackage( "GaussParallel", "gap/benchmarking/measure_contention.gi");
 fi;

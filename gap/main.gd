@@ -11,7 +11,7 @@ fi;
 
 #! @Arguments mat, [options]
 #! @Returns a record that contains information on the echelon form of **mat** and the corresponding transformation matrix.
-#! @Description This is the main function of the GaussPar package. It computes the reduced row echelon form (RREF) of the matrix **mat** and the corresponding transformation matrix. In a pre-processing step, **mat** is split up into a block matrix whose blocks can be processed in parallel.
+#! @Description This is the main function of the GaussParallel package. It computes the reduced row echelon form (RREF) of the matrix **mat** and the corresponding transformation matrix. In a pre-processing step, **mat** is split up into a block matrix whose blocks can be processed in parallel.
 #!
 #!  The input parameters have the following meaning:
 #! * **mat** is a matrix defined over a finite field

@@ -19,7 +19,7 @@ GAUSS_prepare := function(nrAvailableThreads)
                   x -> RunTask(GAUSS_prepareCounters));
     taskNumbers := List(tasks, TaskResult);
     if Size(Set(taskNumbers)) <> GAPInfo.KernelInfo.NUM_CPUS then
-        ErrorNoReturn("GaussPar: Unable to activate counters for all threads");
+        ErrorNoReturn("GaussParallel: Unable to activate counters for all threads");
     fi;
 end;
 
@@ -76,7 +76,7 @@ GAUSS_evaluate := function(nrAvailableThreads, bench, A, showOutput)
     correct := resStd.vectors = resPar.vectors
            and resStd.coeffs = resPar.coeffs;
     if not correct then
-        ErrorNoReturn("GaussPar: Result incorrect!");
+        ErrorNoReturn("GaussParallel: Result incorrect!");
     fi;
     if (showOutput) then
         Print("Wall time Gauss pkg execution (ms): ", benchStd.time, "\n\n");

@@ -1,6 +1,6 @@
 gap> START_TEST("parallel/special_matrices.tst");
-gap> ReadPackage("GaussPar", "tst/testdata/matrices.g");;
-gap> ReadPackage("GaussPar", "tst/testfunctions.g");;
+gap> ReadPackage("GaussParallel", "tst/testdata/matrices.g");;
+gap> ReadPackage("GaussParallel", "tst/testfunctions.g");;
 gap> for i in [1..Length(M)] do
 >     result := GAUSS_TestEchelonMatTransformationBlockwiseWithGivenEchelonForm(
 >     M[i], M_height[i], M_width[i], randomSource, M_q[i],

@@ -4,10 +4,10 @@
 ##
 ##
 
-LoadPackage("GaussPar");
+LoadPackage("GaussParallel");
 SetInfoLevel(InfoGauss, 0);
 TestDirectory(
-    DirectoriesPackageLibrary("GaussPar", "tst/standard"),
+    DirectoriesPackageLibrary("GaussParallel", "tst/standard"),
     rec(exitGAP := true)
 );
 FORCE_QUIT_GAP(1);

@@ -1,5 +1,5 @@
 #
-# GaussPar: Parallel gaussian algorithm for finite fields
+# GaussParallel: Parallel gaussian algorithm for finite fields
 #
 # This file contains package meta data. For additional information on
 # the meaning and correct usage of these fields, please consult the
@@ -8,7 +8,7 @@
 #
 SetPackageInfo( rec(
 
-PackageName := "GaussPar",
+PackageName := "GaussParallel",
 Subtitle := "Parallel gaussian algorithm for finite fields",
 Version := "1.0.0dev",
 Date := "05/05/2021", # dd/mm/yyyy format
@@ -51,7 +51,7 @@ Persons := [
 
 #SourceRepository := rec( Type := "TODO", URL := "URL" ),
 #IssueTrackerURL := "TODO",
-PackageWWWHome := "https://github.com/lbfm-rwth/GaussPar/",
+PackageWWWHome := "https://github.com/lbfm-rwth/GaussParallel/",
 PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
 README_URL     := Concatenation( ~.PackageWWWHome, "README.md" ),
 ArchiveURL     := Concatenation( ~.PackageWWWHome,
@@ -70,7 +70,7 @@ ArchiveFormats := ".tar.gz",
 Status := "dev",
 
 AbstractHTML   :=  
-  "The <span class=\"pkgname\">GaussPar</span> package provides an \
+  "The <span class=\"pkgname\">GaussParallel</span> package provides an \
   implementation of a parallel Gaussian elimination algorithm as described in \
   <a href=\"https://arxiv.org/abs/1806.04211\">\
   A parallel algorithm for Gaussian elemination over finite fields</a>.",

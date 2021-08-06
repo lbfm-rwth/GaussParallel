@@ -1,12 +1,12 @@
 #
-# GaussPar: Parallel gaussian algorithm for finite fields
+# GaussParallel: Parallel gaussian algorithm for finite fields
 #
 # This file is a script which compiles the package manual.
 #
 if fail = LoadPackage("AutoDoc", "2018.02.14") then
     Error("AutoDoc version 2018.02.14 or newer is required.");
 fi;
-LoadPackage("GaussPar");
+LoadPackage("GaussParallel");
 
 scan_dirs := [
     "doc",
